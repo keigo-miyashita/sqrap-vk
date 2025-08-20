@@ -1,0 +1,39 @@
+#pragma once
+
+#include "pch.hpp"
+
+#include "Alias.hpp"
+
+#include "Device.hpp"
+
+namespace sqrp
+{
+	class Device;
+
+	class Swapchain
+	{
+	private:
+		Device* pDevice_ = nullptr;
+
+		uint32_t minImageCount_ = 3;
+		uint32_t imageIndex_ = 0;
+
+		uint32_t inflightCount_ = 3;
+		uint32_t inflightIndex_ = 0;
+
+		vk::SurfaceCapabilitiesKHR capabilities_;
+		vk::SurfaceFormatKHR surfaceFormat_;
+		vk::PresentModeKHR presentMode_;
+		vk::UniqueSwapchainKHR swapchain_;
+		uint32_t width_;
+		uint32_t height_;
+		// Swapchain images are managed by the swapchain itself
+		// so are not managed by user and you should not use vk::UniqueImage
+		std::vector<vk::Image> swapchainImages_;
+		std::vector<vk::UniqueImageView> swapchainImageViews_;
+
+	public:
+		Swapchain(const Device& device, uint32_t width, uint32_t height);
+		~Swapchain() = default;
+	};
+}
