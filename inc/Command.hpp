@@ -2,18 +2,24 @@
 
 #include "pch.hpp"
 
-class Command
+#include "Device.hpp"
+
+#include "Alias.hpp"
+
+namespace sqrp
 {
-private:
-	vk::Queue queue;
-	uint32_t queueIndex{};
-	vk::UniqueCommandPool commandPool;
-	vk::UniqueCommandBuffer commandBuffer;
+	class Device;
 
-public:
-	vk::Queue GetQueue(vk::Device dev, uint32_t queueFamilyIndex);
+	class Command
+	{
+	private:
+		const Device* pDevice_ = nullptr;
+		uint32_t queueIndex = {};
+		vk::UniqueCommandBuffer commandBuffer;
 
-	vk::UniqueCommandPool CreateCommandPool(vk::Device dev, uint32_t queueFamilyIndex);
+	public:
+		Command(const Device& device, uint32_t queueFamilyIndex, uint32_t queueIndex = 0);
 
-	vk::UniqueCommandBuffer CreateCommandBuffer(vk::Device dev, vk::CommandPool commandPool);
-};
+		vk::UniqueCommandBuffer CreateCommandBuffer(vk::Device dev, vk::CommandPool commandPool);
+	};
+}

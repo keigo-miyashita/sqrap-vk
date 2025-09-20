@@ -6,7 +6,14 @@ SampleApp::SampleApp(std::string appName, unsigned int windowWidth, unsigned int
 
 }
 
-void SampleApp::Render()
+void SampleApp::OnStart()
+{
+	device_.Init(*this);
+
+	swapchain_ = device_.CreateSwapchain(windowWidth_, windowHeight_);
+}
+
+void SampleApp::OnUpdate()
 {
 
 }

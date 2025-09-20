@@ -15,16 +15,17 @@ namespace sqrp
 		unsigned int windowHeight_;
 
 		void CreateGLFWWindow();
-		virtual void Render();
 
 	public:
 		Application();
 		Application(std::string appName = "App", unsigned int windowWidth = 1280, unsigned int windowHeight = 720);
 		~Application() = default;
 
-		virtual void Init();
-		virtual void Run();
-		virtual void Terminate();
+		bool Init();
+		void Run();
+		virtual void OnStart();
+		virtual void OnUpdate();
+		virtual void OnTerminate();
 		std::string GetAppName();
 		GLFWwindow* GetPWindow();
 		unsigned int GetWindowWidth();

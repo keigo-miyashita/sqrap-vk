@@ -7,6 +7,9 @@ int main()
 	SampleApp sampleApp;
 
 	try {
+		if (!sampleApp.Init()) {
+			throw std::runtime_error("Failed to initialize application.");
+		}
 		sampleApp.Run();
 	}
 	catch (const std::exception& e) {

@@ -1,6 +1,6 @@
 #include "Device.hpp"
 
-#define VULKAN_HPP_DISPATCH_DYNAMIC 1
+VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
 
 using namespace std;
 
@@ -43,12 +43,17 @@ namespace sqrp
 		return true;
 	}
 
-	Device::Device(Application application)
+	Device::Device()
+	{
+		
+	}
+
+	bool Device::Init(Application application)
 	{
 		// Setup dynamic library loader
 		static vk::DynamicLoader dl;
 		auto vkGetInstanceProcAddr = dl.getProcAddress<PFN_vkGetInstanceProcAddr>("vkGetInstanceProcAddr");
-		dispatchLoder_.init(vkGetInstanceProcAddr);
+		VULKAN_HPP_DEFAULT_DISPATCHER.init(vkGetInstanceProcAddr);
 
 		vk::ApplicationInfo appInfo = vk::ApplicationInfo()
 			.setPApplicationName(application.GetAppName().c_str())
@@ -77,7 +82,7 @@ namespace sqrp
 			.setEnabledExtensionCount(requestInstanceExtensions_.size())
 			.setPpEnabledExtensionNames(requestInstanceExtensions_.data())
 		);
-		dispatchLoder_.init(*instance_);
+		VULKAN_HPP_DEFAULT_DISPATCHER.init(*instance_);
 
 		// Create Debug Messager
 		vk::DebugUtilsMessengerCreateInfoEXT createInfo{};
@@ -97,14 +102,16 @@ namespace sqrp
 			throw std::runtime_error("failed to create window surface!");
 		}
 		surface_ = vk::UniqueSurfaceKHR(rawSurface, instance_.get());
-		
+
 		// Select physical device
 		for (const auto& physDev : instance_->enumeratePhysicalDevices()) {
 			if (isDeviceSuitable(physDev)) { // == VK_SUCCESS ???
 				physicalDevice_ = physDev;
 			}
 		}
-		throw std::runtime_error("Failed to select device!");
+		if (!physicalDevice_) {
+			throw std::runtime_error("Failed to select device!");
+		}
 
 		// Find queue family
 		auto queueFamilies = physicalDevice_.getQueueFamilyProperties();
@@ -114,7 +121,9 @@ namespace sqrp
 				graphicsQueueFamilyIndex_ = i;
 			}
 		}
-		throw std::runtime_error("No graphics queuefamily!");
+		if (graphicsQueueFamilyIndex_ == -1) {
+			throw std::runtime_error("No graphics queue family!");
+		}
 
 		for (uint32_t i = 0; i < queueFamilies.size(); i++) {
 			// Check selected physical device can handle the surface
@@ -123,18 +132,22 @@ namespace sqrp
 				presentQueueFamilyIndex_ = i;
 			}
 		}
-		throw std::runtime_error("No present queuefamily!");
+		if (presentQueueFamilyIndex_ == -1) {
+			throw std::runtime_error("No present queue family!");
+		}
 
 		// NOTE : Fix to turn on compute queue only using async compute
-		auto queueFamilies = physicalDevice_.getQueueFamilyProperties();
+		queueFamilies = physicalDevice_.getQueueFamilyProperties();
 		// Find Queue family index has graphics queue and present queue
 		for (uint32_t i = 0; i < queueFamilies.size(); i++) {
 			if (queueFamilies[i].queueFlags & vk::QueueFlagBits::eCompute) {
 				computeQueueFamilyIndex_ = i;
 			}
 		}
-		throw std::runtime_error("No compute queuefamily!");
-		
+		if (computeQueueFamilyIndex_ == -1) {
+			throw std::runtime_error("No compute queue family!");
+		}
+
 		// Create logical device
 		vector<vk::DeviceQueueCreateInfo> queueCreateInfos = {};
 		set<uint32_t> queueFamilyIndices = { graphicsQueueFamilyIndex_, presentQueueFamilyIndex_, computeQueueFamilyIndex_ };
@@ -150,8 +163,8 @@ namespace sqrp
 		vk::DeviceCreateInfo deviceCreateInfo{};
 		deviceCreateInfo
 			.setPQueueCreateInfos(queueCreateInfos.data())
-			.setQueueCreateInfoCount(queueCreateInfos.size()) // If you need multi queue when async compute, set mutivalue
-			.setPpEnabledExtensionNames(requestInstanceExtensions_.data());
+			.setQueueCreateInfoCount(queueCreateInfos.size()) // If you need multi queue when async compute, set multivalue
+			.setPEnabledExtensionNames(requestDeviceExtensions_);
 		// NOTE : FIX!
 		vk::StructureChain<vk::DeviceCreateInfo/*, features*/> createInfoChain{
 			deviceCreateInfo,
@@ -159,24 +172,57 @@ namespace sqrp
 		};
 
 		device_ = physicalDevice_.createDeviceUnique(createInfoChain.get<vk::DeviceCreateInfo>());
-		dispatchLoder_.init(device_.get());
+		VULKAN_HPP_DEFAULT_DISPATCHER.init(device_.get());
 
+		computeQueue_ = device_->getQueue(computeQueueFamilyIndex_, 0);
+		computeCommandPool_ = device_->createCommandPoolUnique(
+			vk::CommandPoolCreateInfo()
+			.setFlags(vk::CommandPoolCreateFlagBits::eResetCommandBuffer)
+			.setQueueFamilyIndex(computeQueueFamilyIndex_)
+		);
 		graphicsQueue_ = device_->getQueue(graphicsQueueFamilyIndex_, 0);
+		graphicsCommandPool_ = device_->createCommandPoolUnique(
+			vk::CommandPoolCreateInfo()
+			.setFlags(vk::CommandPoolCreateFlagBits::eResetCommandBuffer)
+			.setQueueFamilyIndex(graphicsQueueFamilyIndex_)
+		);
 		presentQueue_ = device_->getQueue(presentQueueFamilyIndex_, 0);
+		presentCommandPool_ = device_->createCommandPoolUnique(
+			vk::CommandPoolCreateInfo()
+			.setFlags(vk::CommandPoolCreateFlagBits::eResetCommandBuffer)
+			.setQueueFamilyIndex(presentQueueFamilyIndex_)
+		);
+
+		return true;
 	}
 
-	vk::PhysicalDevice Device::GetPhysicalDevice()
+	SwapchainHandle Device::CreateSwapchain(uint32_t width, uint32_t height)
+	{
+		return std::make_shared<Swapchain>(*this, width, height);
+	}
+
+	vk::PhysicalDevice Device::GetPhysicalDevice() const
 	{
 		return physicalDevice_;
 	}
 
-	vk::Device Device::GetDevice()
+	vk::Device Device::GetDevice() const
 	{
 		return device_.get();
 	}
 
-	vk::SurfaceKHR Device::GetSurface()
+	vk::SurfaceKHR Device::GetSurface() const
 	{
 		return surface_.get();
+	}
+
+	uint32_t Device::GetGraphicsQueueFamilyIndex() const
+	{
+		return graphicsQueueFamilyIndex_;
+	}
+
+	uint32_t Device::GetPresentQueueFamilyIndex() const
+	{
+		return presentQueueFamilyIndex_;
 	}
 }

@@ -12,20 +12,22 @@ namespace sqrp
 		pWindow_ = glfwCreateWindow(windowWidth_, windowHeight_, appName_.c_str(), nullptr, nullptr);
 	}
 
+	Application::Application()
+	{
+
+	}
+
 	Application::Application(string appName, unsigned int windowWidth, unsigned int windowHeight)
 		: appName_(appName), windowWidth_(windowWidth), windowHeight_(windowHeight)
 	{
 		CreateGLFWWindow();
 	}
 
-	void Application::Init()
+	bool Application::Init()
 	{
+		OnStart();
 
-	}
-
-	void Application::Render()
-	{
-
+		return true;
 	}
 
 	void Application::Run()
@@ -33,14 +35,26 @@ namespace sqrp
 		while (!glfwWindowShouldClose(pWindow_)) {
 			glfwPollEvents();
 
-			Render();
+			OnUpdate();
 		}
-	}
 
-	void Application::Terminate()
-	{
 		glfwDestroyWindow(pWindow_);
 		glfwTerminate();
+	}
+
+	void Application::OnStart()
+	{
+
+	}
+
+	void Application::OnUpdate()
+	{
+
+	}
+
+	void Application::OnTerminate()
+	{
+
 	}
 
 	std::string Application::GetAppName()

@@ -13,7 +13,7 @@ namespace sqrp
 	class Swapchain
 	{
 	private:
-		Device* pDevice_ = nullptr;
+		const Device* pDevice_ = nullptr;
 
 		uint32_t minImageCount_ = 3;
 		uint32_t imageIndex_ = 0;
