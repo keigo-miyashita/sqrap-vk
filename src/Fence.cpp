@@ -6,7 +6,7 @@ using namespace std;
 
 namespace sqrp
 {
-	Fence::Fence(const Device& device, bool signal = true)
+	Fence::Fence(const Device& device, bool signal)
 		: pDevice_(&device)
 	{
 		if (signal) {
@@ -22,7 +22,7 @@ namespace sqrp
 		}
 	}
 
-	FenceHandle Fence::CreateFence(const Device& device, bool signal = true)
+	FenceHandle Fence::CreateFence(const Device& device, bool signal)
 	{
 		return std::make_shared<Fence>(device, signal);
 	}
@@ -39,10 +39,10 @@ namespace sqrp
 
 	void Fence::Wait()
 	{
-		pDevice_->GetDevice().waitForFences(fence_.get(), VK_TRUE, std::numeric_limits<uint64_t>::max());
+		pDevice_->GetDevice().waitForFences(fence_.get(), VK_TRUE, UINT64_MAX);
 	}
 
-	vk::Fence GetFence() const
+	vk::Fence Fence::GetFence() const
 	{
 		return fence_.get();
 	}

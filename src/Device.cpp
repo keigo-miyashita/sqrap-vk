@@ -1,6 +1,7 @@
 #include "Device.hpp"
 
 #include "Swapchain.hpp"
+#include "Fence.hpp"
 
 VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
 
@@ -245,6 +246,11 @@ namespace sqrp
 		);*/
 
 		return true;
+	}
+
+	FenceHandle Device::CreateFence(bool signal)
+	{
+		return std::make_shared<Fence>(*this, signal);
 	}
 
 	SwapchainHandle Device::CreateSwapchain(uint32_t width, uint32_t height)

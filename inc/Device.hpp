@@ -9,6 +9,7 @@
 namespace sqrp
 {
 	class Application;
+	class Fence;
 	class Swawpchain;
 
 	enum class QueueContextType
@@ -56,6 +57,7 @@ namespace sqrp
 		Device();
 		~Device() = default;
 		bool Init(Application application);
+		FenceHandle CreateFence(bool signal = true);
 		SwapchainHandle CreateSwapchain(uint32_t width, uint32_t height);
 		vk::PhysicalDevice GetPhysicalDevice() const;
 		vk::Device GetDevice() const;
