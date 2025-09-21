@@ -4,6 +4,10 @@ target_compile_features(${PROJECT_NAME}-sample-raster PRIVATE cxx_std_20)
 target_compile_options(${PROJECT_NAME}-sample-raster PRIVATE $<$<CXX_COMPILER_ID:MSVC>:/Zc:__cplusplus /utf-8>)
 target_sources(${PROJECT_NAME}-sample-raster PRIVATE main.cpp "SampleApp.cpp")
 
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 # ƒ‰ƒCƒuƒ‰ƒŠ‚ÌƒŠƒ“ƒN
 target_link_libraries(
     ${PROJECT_NAME}-sample-raster PRIVATE

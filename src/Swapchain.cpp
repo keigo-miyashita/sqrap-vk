@@ -29,11 +29,14 @@ namespace sqrp
 		}
 
 		// Remove duplicate queue family indices
-		set<uint32_t> uniqueQueueFamilyIndices = 
-		{
+		set<uint32_t> uniqueQueueFamilyIndices;
+		/*= {
 			pDevice_->GetGraphicsQueueFamilyIndex(),
 			pDevice_->GetPresentQueueFamilyIndex()
-		};
+		};*/
+		for (const auto& element : pDevice_->GetQueueContexts()) {
+			uniqueQueueFamilyIndices.insert(element.second.queueFamilyIndex);
+		}
 		vector<uint32_t> requiredQueueFamilyIndices(uniqueQueueFamilyIndices.begin(), uniqueQueueFamilyIndices.end());
 
 		swapchain_ = pDevice_->GetDevice().createSwapchainKHRUnique(

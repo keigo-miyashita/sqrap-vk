@@ -117,40 +117,66 @@ namespace sqrp
 		auto queueFamilies = physicalDevice_.getQueueFamilyProperties();
 		// Find Queue family index has graphics queue and present queue
 		for (uint32_t i = 0; i < queueFamilies.size(); i++) {
-			if (queueFamilies[i].queueFlags & vk::QueueFlagBits::eGraphics) {
+			auto isSupportGraphics = queueFamilies[i].queueFlags & vk::QueueFlagBits::eGraphics;
+			auto isSupportCompute = queueFamilies[i].queueFlags & vk::QueueFlagBits::eCompute;
+			auto isSupportTransfer = queueFamilies[i].queueFlags & vk::QueueFlagBits::eTransfer;
+			if (surface_) {
+				auto isSupportPresent = physicalDevice_.getSurfaceSupportKHR(i, surface_.get());
+				if (isSupportGraphics && isSupportCompute && isSupportTransfer && isSupportPresent) {
+					queueContexts_[QueueContextType::General] = { i, {}, 0, {} };
+					if (queueFamilies[i].queueCount > 1) {
+						queueContexts_[QueueContextType::Compute] = { i, {}, 1, {} };
+					}
+					continue;
+				}
+				if (isSupportGraphics && isSupportPresent) {
+					queueContexts_[QueueContextType::Graphics] = { i, {}, 0, {} };
+					continue;
+				}
+			}
+			
+			/*if (queueFamilies[i].queueFlags & vk::QueueFlagBits::eGraphics) {
 				graphicsQueueFamilyIndex_ = i;
-			}
+			}*/
 		}
-		if (graphicsQueueFamilyIndex_ == -1) {
-			throw std::runtime_error("No graphics queue family!");
-		}
+		//if (graphicsQueueFamilyIndex_ == -1) {
+		//	throw std::runtime_error("No graphics queue family!");
+		//}
 
-		for (uint32_t i = 0; i < queueFamilies.size(); i++) {
-			// Check selected physical device can handle the surface
-			vk::Bool32 presentSupport = physicalDevice_.getSurfaceSupportKHR(i, surface_.get());
-			if (presentSupport) {
-				presentQueueFamilyIndex_ = i;
-			}
-		}
-		if (presentQueueFamilyIndex_ == -1) {
-			throw std::runtime_error("No present queue family!");
-		}
+		//for (uint32_t i = 0; i < queueFamilies.size(); i++) {
+		//	// Check selected physical device can handle the surface
+		//	vk::Bool32 presentSupport = physicalDevice_.getSurfaceSupportKHR(i, surface_.get());
+		//	if (presentSupport) {
+		//		presentQueueFamilyIndex_ = i;
+		//	}
+		//}
+		//if (presentQueueFamilyIndex_ == -1) {
+		//	throw std::runtime_error("No present queue family!");
+		//}
 
-		// NOTE : Fix to turn on compute queue only using async compute
-		queueFamilies = physicalDevice_.getQueueFamilyProperties();
-		// Find Queue family index has graphics queue and present queue
-		for (uint32_t i = 0; i < queueFamilies.size(); i++) {
-			if (queueFamilies[i].queueFlags & vk::QueueFlagBits::eCompute) {
-				computeQueueFamilyIndex_ = i;
-			}
-		}
-		if (computeQueueFamilyIndex_ == -1) {
-			throw std::runtime_error("No compute queue family!");
-		}
+		//// NOTE : Fix to turn on compute queue only using async compute
+		//queueFamilies = physicalDevice_.getQueueFamilyProperties();
+		//// Find Queue family index has graphics queue and present queue
+		//for (uint32_t i = 0; i < queueFamilies.size(); i++) {
+		//	if (queueFamilies[i].queueFlags & vk::QueueFlagBits::eCompute) {
+		//		computeQueueFamilyIndex_ = i;
+		//	}
+		//}
+		//if (computeQueueFamilyIndex_ == -1) {
+		//	throw std::runtime_error("No compute queue family!");
+		//}
 
 		// Create logical device
 		vector<vk::DeviceQueueCreateInfo> queueCreateInfos = {};
-		set<uint32_t> queueFamilyIndices = { graphicsQueueFamilyIndex_, presentQueueFamilyIndex_, computeQueueFamilyIndex_ };
+		set<uint32_t> queueFamilyIndices/* = { graphicsQueueFamilyIndex_, presentQueueFamilyIndex_, computeQueueFamilyIndex_ }*/;
+		/*for (const auto& element : queueContexts_) {
+			const auto& type = element.first;
+			const auto& context = element.second;
+			queueFamilyIndices.insert(context.queueFamilyIndex);
+		}*/
+		for (const auto& [type, context] : queueContexts_) {
+			queueFamilyIndices.insert(context.queueFamilyIndex);
+		}
 		float queuePriority = 1.0f;
 		for (uint32_t queueFamilyIndice : queueFamilyIndices) {
 			queueCreateInfos.push_back(
@@ -174,7 +200,15 @@ namespace sqrp
 		device_ = physicalDevice_.createDeviceUnique(createInfoChain.get<vk::DeviceCreateInfo>());
 		VULKAN_HPP_DEFAULT_DISPATCHER.init(device_.get());
 
-		computeQueue_ = device_->getQueue(computeQueueFamilyIndex_, 0);
+		for (auto& [type, context] : queueContexts_) {
+			context.queue = device_->getQueue(context.queueFamilyIndex, context.queueIndex);
+		}
+		/*for (auto& element : queueContexts_) {
+			auto& type = element.first;
+			auto& context = element.second;
+			context.queue = device_->getQueue(context.queueFamilyIndex, context.queueIndex);
+		}*/
+		/*computeQueue_ = device_->getQueue(computeQueueFamilyIndex_, 0);
 		computeCommandPool_ = device_->createCommandPoolUnique(
 			vk::CommandPoolCreateInfo()
 			.setFlags(vk::CommandPoolCreateFlagBits::eResetCommandBuffer)
@@ -191,7 +225,7 @@ namespace sqrp
 			vk::CommandPoolCreateInfo()
 			.setFlags(vk::CommandPoolCreateFlagBits::eResetCommandBuffer)
 			.setQueueFamilyIndex(presentQueueFamilyIndex_)
-		);
+		);*/
 
 		return true;
 	}
@@ -216,7 +250,12 @@ namespace sqrp
 		return surface_.get();
 	}
 
-	uint32_t Device::GetGraphicsQueueFamilyIndex() const
+	const std::unordered_map<QueueContextType, QueueContext>& Device::GetQueueContexts() const
+	{
+		return queueContexts_;
+	}
+
+	/*uint32_t Device::GetGraphicsQueueFamilyIndex() const
 	{
 		return graphicsQueueFamilyIndex_;
 	}
@@ -224,5 +263,5 @@ namespace sqrp
 	uint32_t Device::GetPresentQueueFamilyIndex() const
 	{
 		return presentQueueFamilyIndex_;
-	}
+	}*/
 }

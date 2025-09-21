@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.20)
 
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 project(sqrap-vk CXX)
 
 file(TO_CMAKE_PATH $ENV{VULKAN_SDK} VULKAN_SDK)
