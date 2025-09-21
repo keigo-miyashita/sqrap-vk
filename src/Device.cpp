@@ -1,5 +1,6 @@
 #include "Device.hpp"
 
+#include "Semaphore.hpp"
 #include "Swapchain.hpp"
 #include "Fence.hpp"
 
@@ -251,6 +252,11 @@ namespace sqrp
 	FenceHandle Device::CreateFence(bool signal)
 	{
 		return std::make_shared<Fence>(*this, signal);
+	}
+
+	SemaphoreHandle Device::CreateSemaphore()
+	{
+		return std::make_shared<Semaphore>(*this);
 	}
 
 	SwapchainHandle Device::CreateSwapchain(uint32_t width, uint32_t height)

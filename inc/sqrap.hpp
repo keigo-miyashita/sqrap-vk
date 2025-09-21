@@ -5,4 +5,5 @@
 #include <Device.hpp>
 #include <Fence.hpp>
 #include <Shader.hpp>
+#include <Semaphore.hpp>
 #include <Swapchain.hpp>
