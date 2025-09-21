@@ -1,5 +1,8 @@
 #include "Swapchain.hpp"
 
+#include "CommandBuffer.hpp"
+#include "Device.hpp"
+
 using namespace std;
 
 namespace sqrp
@@ -67,6 +70,21 @@ namespace sqrp
 								vk::ComponentSwizzle::eB, vk::ComponentSwizzle::eA })
 					.setSubresourceRange({ vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1 }))
 			);
+		}
+
+		for (const auto& [flag, context] : pDevice_->GetQueueContexts()) {
+			if (flag == QueueContextType::General || flag == QueueContextType::Graphics) {
+				graphicsCommandBuffers_.resize(inflightCount_);
+				for (int i = 0; i < inflightCount_; i++) {
+					graphicsCommandBuffers_[i] = std::make_shared<CommandBuffer>(*pDevice_, flag);
+				}
+			}
+			else if (flag == QueueContextType::Compute) {
+				computeCommandBuffers_.resize(inflightCount_);
+				for (int i = 0; i < inflightCount_; i++) {
+					computeCommandBuffers_[i] = std::make_shared<CommandBuffer>(*pDevice_, QueueContextType::Compute);
+				}
+			}
 		}
 	}
 

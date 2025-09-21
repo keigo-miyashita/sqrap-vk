@@ -1,5 +1,7 @@
 #include "Device.hpp"
 
+#include "Swapchain.hpp"
+
 VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
 
 using namespace std;
@@ -168,22 +170,32 @@ namespace sqrp
 
 		// Create logical device
 		vector<vk::DeviceQueueCreateInfo> queueCreateInfos = {};
-		set<uint32_t> queueFamilyIndices/* = { graphicsQueueFamilyIndex_, presentQueueFamilyIndex_, computeQueueFamilyIndex_ }*/;
-		/*for (const auto& element : queueContexts_) {
-			const auto& type = element.first;
-			const auto& context = element.second;
-			queueFamilyIndices.insert(context.queueFamilyIndex);
-		}*/
+		struct QueueFamilyInfo {
+			uint32_t familyIndex;
+			uint32_t count;
+		};
+		map<uint32_t, uint32_t> queueFamilyInfos; /*pair<>*/
 		for (const auto& [type, context] : queueContexts_) {
-			queueFamilyIndices.insert(context.queueFamilyIndex);
+			if (queueFamilyInfos.find(context.queueFamilyIndex) != queueFamilyInfos.end()) {
+				queueFamilyInfos[context.queueFamilyIndex]++;
+			}
+			else {
+				queueFamilyInfos[context.queueFamilyIndex] = 1;
+			}
 		}
+		cout << "queueFamilyInfos.size() = " << queueFamilyInfos.size() << endl;
 		float queuePriority = 1.0f;
-		for (uint32_t queueFamilyIndice : queueFamilyIndices) {
+		vector<float> queuePriorities;
+		for (const auto [familyIndex, count] : queueFamilyInfos) {
+			queuePriorities.resize(count);
+			for (uint32_t i = 0; i < count; i++) {
+				queuePriorities[i] = queuePriority;
+			}
 			queueCreateInfos.push_back(
 				vk::DeviceQueueCreateInfo{}
-				.setQueueFamilyIndex(queueFamilyIndice)
-				.setQueueCount(1)
-				.setPQueuePriorities(&queuePriority)
+				.setQueueFamilyIndex(familyIndex)
+				.setQueueCount(count)
+				.setPQueuePriorities(queuePriorities.data())
 			);
 		}
 		vk::DeviceCreateInfo deviceCreateInfo{};
@@ -202,6 +214,11 @@ namespace sqrp
 
 		for (auto& [type, context] : queueContexts_) {
 			context.queue = device_->getQueue(context.queueFamilyIndex, context.queueIndex);
+			context.commandPool = device_->createCommandPoolUnique(
+				vk::CommandPoolCreateInfo()
+				.setFlags(vk::CommandPoolCreateFlagBits::eResetCommandBuffer)
+				.setQueueFamilyIndex(context.queueFamilyIndex)
+			);
 		}
 		/*for (auto& element : queueContexts_) {
 			auto& type = element.first;

@@ -2,12 +2,12 @@
 
 namespace sqrp
 {
-	class Command;
+	class CommandBuffer;
 	class Device;
 	class Shader;
 	class Swapchain;
 
-	using CommandHandle = std::shared_ptr<Command>;
+	using CommandBufferHandle = std::shared_ptr<CommandBuffer>;
 	using ShaderHandle = std::shared_ptr<Shader>;
 	using SwapchainHandle = std::shared_ptr<Swapchain>;
 }

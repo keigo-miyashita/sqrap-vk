@@ -4,8 +4,6 @@
 
 #include "Alias.hpp"
 
-#include "Device.hpp"
-
 namespace sqrp
 {
 	class Device;

@@ -4,10 +4,9 @@
 
 #include "Alias.hpp"
 
-#include "Device.hpp"
-
 namespace sqrp
 {
+	class CommandBuffer;
 	class Device;
 
 	class Swapchain
@@ -31,6 +30,8 @@ namespace sqrp
 		// so are not managed by user and you should not use vk::UniqueImage
 		std::vector<vk::Image> swapchainImages_;
 		std::vector<vk::UniqueImageView> swapchainImageViews_;
+		std::vector<CommandBufferHandle> graphicsCommandBuffers_;
+		std::vector<CommandBufferHandle> computeCommandBuffers_;
 
 	public:
 		Swapchain(const Device& device, uint32_t width, uint32_t height);

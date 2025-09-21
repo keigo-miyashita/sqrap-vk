@@ -2,10 +2,9 @@
 
 #include "pch.hpp"
 
-#include "Application.hpp"
-#include "Swapchain.hpp"
-
 #include "Alias.hpp"
+
+#include "Application.hpp"
 
 namespace sqrp
 {

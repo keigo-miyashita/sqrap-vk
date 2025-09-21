@@ -1,5 +1,7 @@
 #include "Shader.hpp"
 
+#include "Device.hpp"
+
 namespace sqrp
 {
 	Shader::Shader(const Device& device, const std::string& filename)
