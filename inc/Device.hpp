@@ -9,7 +9,9 @@
 namespace sqrp
 {
 	class Application;
+	class Buffer;
 	class Fence;
+	class Image;
 	class Semaphore;
 	class Swawpchain;
 
@@ -50,6 +52,7 @@ namespace sqrp
 		vk::UniqueCommandPool graphicsCommandPool_;
 		vk::Queue presentQueue_;
 		vk::UniqueCommandPool presentCommandPool_;*/
+		VmaAllocator allocator_;
 
 		bool isDeviceExtensionSupport(vk::PhysicalDevice physDev);
 		bool isDeviceSuitable(vk::PhysicalDevice physDev);
@@ -58,9 +61,12 @@ namespace sqrp
 		Device();
 		~Device() = default;
 		bool Init(Application application);
+		BufferHandle CreateBuffer(int size);
 		FenceHandle CreateFence(bool signal = true);
+		ImageHandle CreateImage();
 		SemaphoreHandle CreateSemaphore();
 		SwapchainHandle CreateSwapchain(uint32_t width, uint32_t height);
+		VmaAllocator GetAllocator() const;
 		vk::PhysicalDevice GetPhysicalDevice() const;
 		vk::Device GetDevice() const;
 		vk::SurfaceKHR GetSurface() const;

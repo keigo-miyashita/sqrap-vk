@@ -22,6 +22,8 @@ find_package(glm CONFIG REQUIRED)
 find_package(glfw3       REQUIRED)
 find_package(imgui CONFIG REQUIRED)
 find_path(TINYGLTF_INCLUDE_DIRS "tiny_gltf.h")
+find_package(VulkanHeaders CONFIG)
+find_package(VulkanMemoryAllocator CONFIG REQUIRED)
 
 # ヘッダーファイルのあるディレクトリをインクルード
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/inc)
@@ -37,6 +39,8 @@ target_link_libraries(
         glm::glm
         glfw
         imgui::imgui
+        Vulkan::Headers
+        GPUOpen::VulkanMemoryAllocator
 )
 
 add_subdirectory(sample/raster)

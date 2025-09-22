@@ -11,6 +11,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include <vk_mem_alloc.h>
+
 // define statement is needed to cpp file
 #include <tiny_gltf.h>
 #include <stb_image.h>

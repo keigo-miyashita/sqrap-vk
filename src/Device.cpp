@@ -1,10 +1,15 @@
 #include "Device.hpp"
 
+#include "Buffer.hpp"
+#include "Fence.hpp"
+#include "Image.hpp"
 #include "Semaphore.hpp"
 #include "Swapchain.hpp"
-#include "Fence.hpp"
 
 VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
+
+#define VMA_IMPLEMENTATION
+#include <vk_mem_alloc.h>
 
 using namespace std;
 
@@ -246,12 +251,32 @@ namespace sqrp
 			.setQueueFamilyIndex(presentQueueFamilyIndex_)
 		);*/
 
+		VmaAllocatorCreateInfo allocatorInfo{};
+		allocatorInfo.physicalDevice = physicalDevice_;
+		allocatorInfo.device = device_.get();
+		allocatorInfo.instance = instance_.get();
+		allocatorInfo.vulkanApiVersion = VK_API_VERSION_1_3;
+
+		if (vmaCreateAllocator(&allocatorInfo, &allocator_) != VK_SUCCESS) {
+			throw std::runtime_error("Failed to create VMA allocator");
+		}
+
 		return true;
+	}
+
+	BufferHandle Device::CreateBuffer(int size)
+	{
+		return std::make_shared<Buffer>(*this, size);
 	}
 
 	FenceHandle Device::CreateFence(bool signal)
 	{
 		return std::make_shared<Fence>(*this, signal);
+	}
+
+	ImageHandle Device::CreateImage()
+	{
+		return std::make_shared<Image>(*this);
 	}
 
 	SemaphoreHandle Device::CreateSemaphore()
@@ -262,6 +287,11 @@ namespace sqrp
 	SwapchainHandle Device::CreateSwapchain(uint32_t width, uint32_t height)
 	{
 		return std::make_shared<Swapchain>(*this, width, height);
+	}
+
+	VmaAllocator Device::GetAllocator() const
+	{
+		return allocator_;;
 	}
 
 	vk::PhysicalDevice Device::GetPhysicalDevice() const
