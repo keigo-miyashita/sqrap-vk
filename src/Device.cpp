@@ -264,9 +264,9 @@ namespace sqrp
 		return true;
 	}
 
-	BufferHandle Device::CreateBuffer(int size)
+	BufferHandle Device::CreateBuffer(int size, vk::BufferUsageFlagBits usage)
 	{
-		return std::make_shared<Buffer>(*this, size);
+		return std::make_shared<Buffer>(*this, size, usage);
 	}
 
 	FenceHandle Device::CreateFence(bool signal)

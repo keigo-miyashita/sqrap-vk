@@ -7,6 +7,7 @@ namespace sqrp
 	class Device;
 	class Fence;
 	class Image;
+	class RenderPass;
 	class Semaphore;
 	class Shader;
 	class Swapchain;
@@ -15,6 +16,7 @@ namespace sqrp
 	using CommandBufferHandle = std::shared_ptr<CommandBuffer>;
 	using FenceHandle = std::shared_ptr<Fence>;
 	using ImageHandle = std::shared_ptr<Image>;
+	using RenderPassHandle = std::shared_ptr<RenderPass>;
 	using SemaphoreHandle = std::shared_ptr<Semaphore>;
 	using ShaderHandle = std::shared_ptr<Shader>;
 	using SwapchainHandle = std::shared_ptr<Swapchain>;

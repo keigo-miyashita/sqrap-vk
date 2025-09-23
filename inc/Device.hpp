@@ -61,7 +61,7 @@ namespace sqrp
 		Device();
 		~Device() = default;
 		bool Init(Application application);
-		BufferHandle CreateBuffer(int size);
+		BufferHandle CreateBuffer(int size, vk::BufferUsageFlagBits usage);
 		FenceHandle CreateFence(bool signal = true);
 		ImageHandle CreateImage();
 		SemaphoreHandle CreateSemaphore();

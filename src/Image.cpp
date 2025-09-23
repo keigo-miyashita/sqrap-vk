@@ -8,15 +8,15 @@ namespace sqrp
 {
 	Image::Image(
 		const Device& device,
-		vk::Extent3D extent3D = vk::Extent3D{ 512, 512, 1 },
-		vk::ImageType imageType = vk::ImageType::e2D,
-		vk::ImageUsageFlagBits usage = vk::ImageUsageFlagBits::eSampled,
-		vk::Format format = vk::Format::eR8G8B8A8Srgb,
-		int mipLevels = 1,
-		int arrayLayers = 1,
-		vk::SampleCountFlagBits samples = vk::SampleCountFlagBits::e1,
-		vk::ImageTiling tiling = vk::ImageTiling::eOptimal,
-		vk::SamplerCreateInfo samplerCreateInfo = {}
+		vk::Extent3D extent3D,
+		vk::ImageType imageType,
+		vk::ImageUsageFlagBits usage,
+		vk::Format format,
+		int mipLevels,
+		int arrayLayers,
+		vk::SampleCountFlagBits samples,
+		vk::ImageTiling tiling,
+		vk::SamplerCreateInfo samplerCreateInfo
 	)
 		: pDevice_(&device), extent3D_(extent3D), imageType_(imageType), format_(format)
 	{
