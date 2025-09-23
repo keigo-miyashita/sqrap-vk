@@ -274,9 +274,19 @@ namespace sqrp
 		return std::make_shared<Fence>(*this, signal);
 	}
 
-	ImageHandle Device::CreateImage()
+	ImageHandle Device::CreateImage(
+		vk::Extent3D extent3D,
+		vk::ImageType imageType,
+		vk::ImageUsageFlagBits usage,
+		vk::Format format,
+		int mipLevels,
+		int arrayLayers,
+		vk::SampleCountFlagBits samples,
+		vk::ImageTiling tiling,
+		vk::SamplerCreateInfo samplerCreateInfo
+	)
 	{
-		return std::make_shared<Image>(*this);
+		return std::make_shared<Image>(*this, extent3D, imageType, usage, format, mipLevels, arrayLayers, samples, tiling, samplerCreateInfo);
 	}
 
 	SemaphoreHandle Device::CreateSemaphore()

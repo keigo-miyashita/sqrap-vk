@@ -63,7 +63,17 @@ namespace sqrp
 		bool Init(Application application);
 		BufferHandle CreateBuffer(int size, vk::BufferUsageFlagBits usage);
 		FenceHandle CreateFence(bool signal = true);
-		ImageHandle CreateImage();
+		ImageHandle CreateImage(
+			vk::Extent3D extent3D = vk::Extent3D{ 512, 512, 1 },
+			vk::ImageType imageType = vk::ImageType::e2D,
+			vk::ImageUsageFlagBits usage = vk::ImageUsageFlagBits::eSampled,
+			vk::Format format = vk::Format::eR8G8B8A8Srgb,
+			int mipLevels = 1,
+			int arrayLayers = 1,
+			vk::SampleCountFlagBits samples = vk::SampleCountFlagBits::e1,
+			vk::ImageTiling tiling = vk::ImageTiling::eOptimal,
+			vk::SamplerCreateInfo samplerCreateInfo = {}
+		);
 		SemaphoreHandle CreateSemaphore();
 		SwapchainHandle CreateSwapchain(uint32_t width, uint32_t height);
 		VmaAllocator GetAllocator() const;

@@ -59,7 +59,7 @@ namespace sqrp
 
 		swapchainImages_ = pDevice_->GetDevice().getSwapchainImagesKHR(swapchain_.get());
 
-		for (auto& swapchainImage : swapchainImages_) {
+		/*for (auto& swapchainImage : swapchainImages_) {
 			swapchainImageViews_.push_back(
 				pDevice_->GetDevice().createImageViewUnique(
 					vk::ImageViewCreateInfo()
@@ -70,7 +70,7 @@ namespace sqrp
 								vk::ComponentSwizzle::eB, vk::ComponentSwizzle::eA })
 					.setSubresourceRange({ vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1 }))
 			);
-		}
+		}*/
 
 		for (const auto& [flag, context] : pDevice_->GetQueueContexts()) {
 			if (flag == QueueContextType::General || flag == QueueContextType::Graphics) {
@@ -88,5 +88,29 @@ namespace sqrp
 		}
 	}
 
+	const std::vector<vk::Image>& Swapchain::GetSwapchainImages() const
+	{
+		return swapchainImages_;
+	}
+
+	uint32_t Swapchain::GetWidth() const
+	{
+		return width_;
+	}
+
+	uint32_t Swapchain::GetHeight() const
+	{
+		return height_;
+	}
+
+	vk::Format Swapchain::GetSurfaceFormat() const
+	{
+		return surfaceFormat_.format;
+	}
+
+	uint32_t Swapchain::GetInflightCount() const
+	{
+		return inflightCount_;
+	}
 
 }

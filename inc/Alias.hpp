@@ -6,6 +6,7 @@ namespace sqrp
 	class CommandBuffer;
 	class Device;
 	class Fence;
+	class FrameBuffer;
 	class Image;
 	class RenderPass;
 	class Semaphore;
@@ -15,6 +16,7 @@ namespace sqrp
 	using BufferHandle = std::shared_ptr<Buffer>;
 	using CommandBufferHandle = std::shared_ptr<CommandBuffer>;
 	using FenceHandle = std::shared_ptr<Fence>;
+	using FrameBufferHandle = std::shared_ptr<FrameBuffer>;
 	using ImageHandle = std::shared_ptr<Image>;
 	using RenderPassHandle = std::shared_ptr<RenderPass>;
 	using SemaphoreHandle = std::shared_ptr<Semaphore>;

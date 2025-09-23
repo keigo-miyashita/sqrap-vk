@@ -29,12 +29,18 @@ namespace sqrp
 		// Swapchain images are managed by the swapchain itself
 		// so are not managed by user and you should not use vk::UniqueImage
 		std::vector<vk::Image> swapchainImages_;
-		std::vector<vk::UniqueImageView> swapchainImageViews_;
+		//std::vector<vk::UniqueImageView> swapchainImageViews_;
 		std::vector<CommandBufferHandle> graphicsCommandBuffers_;
 		std::vector<CommandBufferHandle> computeCommandBuffers_;
 
 	public:
 		Swapchain(const Device& device, uint32_t width, uint32_t height);
 		~Swapchain() = default;
+
+		const std::vector<vk::Image>& GetSwapchainImages() const;
+		uint32_t GetWidth() const;
+		uint32_t GetHeight() const;
+		vk::Format GetSurfaceFormat() const;
+		uint32_t GetInflightCount() const;
 	};
 }
