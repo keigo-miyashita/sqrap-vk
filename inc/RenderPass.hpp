@@ -21,5 +21,7 @@ namespace sqrp
 			const Device& device
 		);
 		~RenderPass() = default;
+
+		vk::RenderPass GetRenderPass() const;
 	};
 }

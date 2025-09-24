@@ -4,8 +4,8 @@
 
 namespace sqrp
 {
-	Shader::Shader(const Device& device, const std::string& filename)
-		: pDevice_(&device)
+	Shader::Shader(const Device& device, const std::string& filename, vk::ShaderStageFlagBits shaderStage)
+		: pDevice_(&device), shaderStage_(shaderStage)
 	{
         std::ifstream file(filename, std::ios::ate | std::ios::binary);
         if (!file.is_open()) {
@@ -24,4 +24,14 @@ namespace sqrp
             .setPCode(buffer.data())
 		);
 	}
+
+    vk::ShaderModule Shader::GetShaderModule() const
+    { 
+        return shaderModule_.get(); 
+    }
+
+    vk::ShaderStageFlagBits Shader::GetShaderStage() const
+    {
+        return shaderStage_; 
+    }
 }

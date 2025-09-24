@@ -8,6 +8,7 @@ namespace sqrp
 	class Fence;
 	class FrameBuffer;
 	class Image;
+	class PipeLine;
 	class RenderPass;
 	class Semaphore;
 	class Shader;
@@ -18,6 +19,7 @@ namespace sqrp
 	using FenceHandle = std::shared_ptr<Fence>;
 	using FrameBufferHandle = std::shared_ptr<FrameBuffer>;
 	using ImageHandle = std::shared_ptr<Image>;
+	using PipeLineHandle = std::shared_ptr<PipeLine>;
 	using RenderPassHandle = std::shared_ptr<RenderPass>;
 	using SemaphoreHandle = std::shared_ptr<Semaphore>;
 	using ShaderHandle = std::shared_ptr<Shader>;

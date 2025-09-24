@@ -59,4 +59,9 @@ namespace sqrp
 
         renderPass = device.createRenderPass(renderPassInfo);
 	}
+
+    vk::RenderPass RenderPass::GetRenderPass() const
+    {
+        return renderPass_.get();
+    }
 }

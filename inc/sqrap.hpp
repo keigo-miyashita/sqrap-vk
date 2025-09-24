@@ -7,6 +7,7 @@
 #include <Fence.hpp>
 #include <FrameBuffer.hpp>
 #include <Image.hpp>
+#include <PipeLine.hpp>
 #include <RenderPass.hpp>
 #include <Shader.hpp>
 #include <Semaphore.hpp>
