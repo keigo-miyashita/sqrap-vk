@@ -39,7 +39,7 @@ namespace sqrp
 		vk::UniqueDevice device_;
 		vk::UniqueDebugUtilsMessengerEXT debugMessenger_;
 		vk::UniqueSurfaceKHR surface_;
-		std::unordered_map<QueueContextType, QueueContext> queueContexts_;
+		std::map<QueueContextType, QueueContext> queueContexts_;
 		/*QueueContext computeQueueContext_;
 		QueueContext graphicsQueueContext_;
 		QueueContext computeQueueContext_;
@@ -61,26 +61,53 @@ namespace sqrp
 		Device();
 		~Device() = default;
 		bool Init(Application application);
-		BufferHandle CreateBuffer(int size, vk::BufferUsageFlagBits usage);
-		FenceHandle CreateFence(bool signal = true);
+		BufferHandle CreateBuffer(
+			int size,
+			vk::BufferUsageFlags usage,
+			VmaMemoryUsage memoryUsage = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE,
+			VmaAllocationCreateFlags allocationFlags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT
+		) const;
+		CommandBufferHandle CreateCommandBuffer(QueueContextType type = QueueContextType::General, bool begin = false) const;
+		FenceHandle CreateFence(bool signal = true) const;
 		ImageHandle CreateImage(
 			vk::Extent3D extent3D = vk::Extent3D{ 512, 512, 1 },
 			vk::ImageType imageType = vk::ImageType::e2D,
-			vk::ImageUsageFlagBits usage = vk::ImageUsageFlagBits::eSampled,
+			vk::ImageUsageFlags usage = vk::ImageUsageFlagBits::eSampled,
 			vk::Format format = vk::Format::eR8G8B8A8Srgb,
 			int mipLevels = 1,
 			int arrayLayers = 1,
 			vk::SampleCountFlagBits samples = vk::SampleCountFlagBits::e1,
 			vk::ImageTiling tiling = vk::ImageTiling::eOptimal,
 			vk::SamplerCreateInfo samplerCreateInfo = {}
-		);
-		SemaphoreHandle CreateSemaphore();
-		SwapchainHandle CreateSwapchain(uint32_t width, uint32_t height);
+		)  const;
+		SemaphoreHandle CreateSemaphore() const;
+		SwapchainHandle CreateSwapchain(uint32_t width, uint32_t height) const;
+
+		void Submit(
+			QueueContextType type,
+			CommandBufferHandle pCommandBuffer,
+			const std::vector<vk::PipelineStageFlags>& waitDstStageMasks,
+			const std::vector<vk::Semaphore>& pWaitSemaphores,
+			const std::vector<vk::Semaphore>& pSignalSemaphores,
+			FenceHandle pFence = nullptr
+		) const;
+		void Submit(
+			QueueContextType type,
+			CommandBufferHandle pCommandBuffer,
+			vk::PipelineStageFlags waitDstStageMask = vk::PipelineStageFlagBits::eNone,
+			SemaphoreHandle pWaitSemaphore = nullptr,
+			SemaphoreHandle pSignalSemaphore = nullptr,
+			FenceHandle pFence = nullptr
+		) const;
+		void WaitIdle(QueueContextType type) const;
+
+		void OneTimeSubmit(std::function<void(CommandBufferHandle pCommandBuffer)>&& command) const;
+
 		VmaAllocator GetAllocator() const;
 		vk::PhysicalDevice GetPhysicalDevice() const;
 		vk::Device GetDevice() const;
 		vk::SurfaceKHR GetSurface() const;
-		const std::unordered_map<QueueContextType, QueueContext>& GetQueueContexts() const;
+		const std::map<QueueContextType, QueueContext>& GetQueueContexts() const;
 		//uint32_t GetPresentQueueFamilyIndex() const;
 	};
 }

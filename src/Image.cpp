@@ -10,7 +10,7 @@ namespace sqrp
 		const Device& device,
 		vk::Extent3D extent3D,
 		vk::ImageType imageType,
-		vk::ImageUsageFlagBits usage,
+		vk::ImageUsageFlags usage,
 		vk::Format format,
 		int mipLevels,
 		int arrayLayers,

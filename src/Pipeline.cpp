@@ -10,7 +10,7 @@ using namespace std;
 namespace sqrp
 {
     Pipeline::Pipeline(
-        const Device pDevice,
+        const Device device,
         RenderPassHandle pRenderPass,
         SwapchainHandle pSwapchain,
         ShaderHandle pVertexShader,
@@ -25,7 +25,7 @@ namespace sqrp
         vertStage.pName = "main";
 
         vk::PipelineShaderStageCreateInfo fragStage{};
-        fragStage.stage = pPixelShader->GetShaderState();
+        fragStage.stage = pPixelShader->GetShaderStage();
         fragStage.module = pPixelShader->GetShaderModule();
         fragStage.pName = "main";
 
@@ -46,7 +46,7 @@ namespace sqrp
         viewport.minDepth = 0.0f;
         viewport.maxDepth = 1.0f;
 
-        vk::Rect2D scissor{ {0, 0}, swapchainExtent };
+        vk::Rect2D scissor{ {0, 0}, {pSwapchain->GetWidth(), pSwapchain->GetHeight()}};
         vk::PipelineViewportStateCreateInfo viewportState{};
         viewportState.viewportCount = 1;
         viewportState.pViewports = &viewport;
@@ -90,13 +90,13 @@ namespace sqrp
         pipelineInfo.pMultisampleState = &multisampling;
         pipelineInfo.pColorBlendState = &colorBlending;
         pipelineInfo.layout = m_pipelineLayout;
-        pipelineInfo.renderPass = pRenderPass->GetRenderPasss();
+        pipelineInfo.renderPass = pRenderPass->GetRenderPass();
         pipelineInfo.subpass = 0;
 
-        auto result = device.createGraphicsPipeline(nullptr, pipelineInfo);
+        auto result = pDevice_->GetDevice().createGraphicsPipeline(nullptr, pipelineInfo);
         if (result.result != vk::Result::eSuccess) {
             throw std::runtime_error("failed to create graphics pipeline!");
         }
-        m_pipeline = result.value;
+        pipeline_ = vk::UniquePipeline(result.value);
     }
 }

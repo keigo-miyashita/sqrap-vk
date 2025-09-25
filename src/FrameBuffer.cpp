@@ -17,7 +17,7 @@ namespace sqrp
 					vk::ImageViewCreateInfo()
 					.setImage(swapchainImage)
 					.setViewType(vk::ImageViewType::e2D)
-					.setFormat(surfaceFormat_.format)
+					.setFormat(pSwapchain_->GetSurfaceFormat())
 					.setComponents({ vk::ComponentSwizzle::eR, vk::ComponentSwizzle::eG,
 								vk::ComponentSwizzle::eB, vk::ComponentSwizzle::eA })
 					.setSubresourceRange({ vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1 }))
@@ -26,7 +26,7 @@ namespace sqrp
 
 		for (int i = 0; i < numAttachmentBuffers; i++) {
 			attachmentBuffers_[i] = vector<ImageHandle>();
-			for (size_t j = 0; j < pSwapchain_->GetInflightCount; j++) {
+			for (size_t j = 0; j < pSwapchain_->GetInflightCount(); j++) {
 				attachmentBuffers_[i].push_back(
 					pDevice_->CreateImage(
 						vk::Extent3D{ pSwapchain_->GetWidth(), pSwapchain_->GetHeight(), 1 },

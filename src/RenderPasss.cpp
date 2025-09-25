@@ -57,7 +57,7 @@ namespace sqrp
         renderPassInfo.subpassCount = 1;
         renderPassInfo.pSubpasses = &subpass;
 
-        renderPass = device.createRenderPass(renderPassInfo);
+        renderPass_ = pDevice_->GetDevice().createRenderPassUnique(renderPassInfo);
 	}
 
     vk::RenderPass RenderPass::GetRenderPass() const

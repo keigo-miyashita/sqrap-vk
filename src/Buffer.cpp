@@ -6,19 +6,19 @@ using namespace std;
 
 namespace sqrp
 {
-	Buffer::Buffer(const Device& device, int size, vk::BufferUsageFlagBits usage)
-		: pDevice_(&device), size_(vk::DeviceSize(size))
+	Buffer::Buffer(const Device& device, int size, vk::BufferUsageFlags usage, VmaMemoryUsage memoryUsage, VmaAllocationCreateFlags allocationFlags)
+		: pDevice_(&device), size_(vk::DeviceSize(size)), usage_(usage), memoryUsage_(memoryUsage), allocationFlags_(allocationFlags)
 	{
 		vk::BufferCreateInfo bufferCreateInfo{};
 
 		bufferCreateInfo
 			.setSize(size_)
-			.setUsage(usage)
+			.setUsage(usage_)
 			.setSharingMode(vk::SharingMode::eExclusive);
 
 		VmaAllocationCreateInfo allocCreateInfo{};
-		allocCreateInfo.usage = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE;
-		allocCreateInfo.flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT;
+		allocCreateInfo.usage = memoryUsage_;
+		allocCreateInfo.flags = allocationFlags_;
 
 		VkBuffer buffer;
 		if (vmaCreateBuffer(pDevice_->GetAllocator(), reinterpret_cast<const VkBufferCreateInfo*>(&bufferCreateInfo), &allocCreateInfo, &buffer, &allocation_, &allocationInfo_) != VK_SUCCESS) {
@@ -46,5 +46,14 @@ namespace sqrp
 		vmaUnmapMemory(pDevice_->GetAllocator(), allocation_);
 	}
 
+	vk::Buffer Buffer::GetBuffer() const
+	{
+		return buffer_;
+	}
+
+	vk::DeviceSize Buffer::GetSize() const
+	{
+		return size_;
+	}
 
 }

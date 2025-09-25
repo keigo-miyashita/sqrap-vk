@@ -28,7 +28,7 @@ namespace sqrp
 			const Device& device,
 			vk::Extent3D extent3D = vk::Extent3D{ 512, 512, 1 },
 			vk::ImageType imageType = vk::ImageType::e2D,
-			vk::ImageUsageFlagBits usage = vk::ImageUsageFlagBits::eSampled,
+			vk::ImageUsageFlags usage = vk::ImageUsageFlagBits::eSampled,
 			vk::Format format = vk::Format::eR8G8B8A8Srgb,
 			int mipLevels = 1,
 			int arrayLayers = 1,

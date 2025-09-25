@@ -18,7 +18,6 @@ namespace sqrp
 	public:
 		Fence(const Device& device, bool signal = true);
 		~Fence() = default;
-		FenceHandle CreateFence(const Device& device, bool signal = true);
 		void Finished();
 		void Reset();
 		void Wait();

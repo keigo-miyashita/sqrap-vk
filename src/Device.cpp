@@ -1,5 +1,6 @@
 #include "Device.hpp"
 
+#include "CommandBuffer.hpp"
 #include "Buffer.hpp"
 #include "Fence.hpp"
 #include "Image.hpp"
@@ -264,12 +265,20 @@ namespace sqrp
 		return true;
 	}
 
-	BufferHandle Device::CreateBuffer(int size, vk::BufferUsageFlagBits usage)
+	BufferHandle Device::CreateBuffer(int size,
+		vk::BufferUsageFlags usage,
+		VmaMemoryUsage memoryUsage,
+		VmaAllocationCreateFlags allocationFlags) const
 	{
-		return std::make_shared<Buffer>(*this, size, usage);
+		return std::make_shared<Buffer>(*this, size, usage, memoryUsage, allocationFlags);
 	}
 
-	FenceHandle Device::CreateFence(bool signal)
+	CommandBufferHandle Device::CreateCommandBuffer(QueueContextType type, bool begin) const
+	{
+		return std::make_shared<CommandBuffer>(*this, type, begin);
+	}
+
+	FenceHandle Device::CreateFence(bool signal) const
 	{
 		return std::make_shared<Fence>(*this, signal);
 	}
@@ -277,26 +286,115 @@ namespace sqrp
 	ImageHandle Device::CreateImage(
 		vk::Extent3D extent3D,
 		vk::ImageType imageType,
-		vk::ImageUsageFlagBits usage,
+		vk::ImageUsageFlags usage,
 		vk::Format format,
 		int mipLevels,
 		int arrayLayers,
 		vk::SampleCountFlagBits samples,
 		vk::ImageTiling tiling,
 		vk::SamplerCreateInfo samplerCreateInfo
-	)
+	) const
 	{
 		return std::make_shared<Image>(*this, extent3D, imageType, usage, format, mipLevels, arrayLayers, samples, tiling, samplerCreateInfo);
 	}
 
-	SemaphoreHandle Device::CreateSemaphore()
+	SemaphoreHandle Device::CreateSemaphore() const
 	{
 		return std::make_shared<Semaphore>(*this);
 	}
 
-	SwapchainHandle Device::CreateSwapchain(uint32_t width, uint32_t height)
+	SwapchainHandle Device::CreateSwapchain(uint32_t width, uint32_t height) const
 	{
 		return std::make_shared<Swapchain>(*this, width, height);
+	}
+
+	void Device::Submit(
+		QueueContextType type,
+		CommandBufferHandle pCommandBuffer,
+		const std::vector<vk::PipelineStageFlags>& waitDstStageMasks,
+		const std::vector<vk::Semaphore>& pWaitSemaphores,
+		const std::vector<vk::Semaphore>& pSignalSemaphores,
+		FenceHandle pFence
+	) const
+	{
+		vk::Queue queue = queueContexts_.at(type).queue;
+		auto commandBuffer = pCommandBuffer->GetCommandBuffer();
+
+		vk::SubmitInfo submitInfo{};
+		submitInfo
+			.setCommandBuffers(commandBuffer)
+			.setWaitSemaphoreCount(pWaitSemaphores.size())
+			.setPWaitSemaphores(pWaitSemaphores.data())
+			.setPWaitDstStageMask(waitDstStageMasks.data())
+			.setSignalSemaphoreCount(pSignalSemaphores.size())
+			.setPSignalSemaphores(pSignalSemaphores.data());
+
+		if (pFence) {
+			queue.submit(submitInfo, pFence->GetFence());
+		}
+		else {
+			queue.submit(submitInfo, nullptr);
+		}
+	}
+
+	void Device::Submit(
+		QueueContextType type,
+		CommandBufferHandle pCommandBuffer,
+		vk::PipelineStageFlags waitDstStageMask,
+		SemaphoreHandle pWaitSemaphores,
+		SemaphoreHandle pSignalSemaphores,
+		FenceHandle pFence
+	) const
+	{
+		vk::Queue queue = queueContexts_.at(type).queue;
+		auto commandBuffer = pCommandBuffer->GetCommandBuffer();
+		auto waitSemaphores = pWaitSemaphores->GetSemaphore();
+		auto signalSemaphore = pSignalSemaphores->GetSemaphore();
+
+		vk::SubmitInfo submitInfo{};
+		submitInfo
+			.setCommandBuffers(commandBuffer)
+			.setWaitDstStageMask(waitDstStageMask)
+			.setWaitSemaphores(waitSemaphores)
+			.setSignalSemaphores(signalSemaphore);
+
+		if (pFence) {
+			queue.submit(submitInfo, pFence->GetFence());
+		}
+		else {
+			queue.submit(submitInfo, nullptr);
+		}
+	}
+
+	void Device::WaitIdle(QueueContextType type) const
+	{
+		queueContexts_.at(type).queue.waitIdle();
+	}
+
+	void Device::OneTimeSubmit(std::function<void(CommandBufferHandle pCommandBuffer)>&& command) const
+	{
+		QueueContextType selectedType = QueueContextType::General;
+		for (const auto& [type, context] : queueContexts_) {
+			if (type == QueueContextType::General || type == QueueContextType::Graphics) {
+				selectedType = type;
+				break;
+			}
+		}
+
+		CommandBufferHandle commandBuffer = CreateCommandBuffer(selectedType);
+
+		vk::CommandBufferBeginInfo beginInfo{};
+		beginInfo.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit;
+
+		commandBuffer->Begin(vk::CommandBufferUsageFlagBits::eOneTimeSubmit);
+
+		command(commandBuffer);
+
+		commandBuffer->End();
+
+		Submit(selectedType, commandBuffer);
+
+		WaitIdle(selectedType);
 	}
 
 	VmaAllocator Device::GetAllocator() const
@@ -319,7 +417,7 @@ namespace sqrp
 		return surface_.get();
 	}
 
-	const std::unordered_map<QueueContextType, QueueContext>& Device::GetQueueContexts() const
+	const std::map<QueueContextType, QueueContext>& Device::GetQueueContexts() const
 	{
 		return queueContexts_;
 	}

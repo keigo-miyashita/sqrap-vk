@@ -22,11 +22,6 @@ namespace sqrp
 		}
 	}
 
-	FenceHandle Fence::CreateFence(const Device& device, bool signal)
-	{
-		return std::make_shared<Fence>(device, signal);
-	}
-
 	void Fence::Finished()
 	{
 		pDevice_->GetDevice().getFenceStatus(fence_.get());
