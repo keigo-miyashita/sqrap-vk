@@ -6,6 +6,7 @@
 
 namespace sqrp
 {
+	class DescriptorSet;
 	class Device;
 	class RenderPass;
 	class Shader;
@@ -17,16 +18,17 @@ namespace sqrp
 		const Device* pDevice_ = nullptr;
 
 		vk::UniquePipeline pipeline_;
+		vk::UniquePipelineLayout pipelineLayout_;
 
 
 	public:
 		Pipeline(
-			const Device pDevice,
+			const Device device,
 			RenderPassHandle pRenderPass,
 			SwapchainHandle pSwapchain,
 			ShaderHandle pVertexShader,
 			ShaderHandle pPixelShader,
-			vk::DescriptorSetLayout descriptorSetLayout
+			DescriptorSetHandle pDescriptorSet
 		);
 		~Pipeline() = default;
 	};

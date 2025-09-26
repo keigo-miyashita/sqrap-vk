@@ -4,6 +4,7 @@ namespace sqrp
 {
 	class Buffer;
 	class CommandBuffer;
+	class DescriptorSet;
 	class Device;
 	class Fence;
 	class FrameBuffer;
@@ -16,6 +17,7 @@ namespace sqrp
 
 	using BufferHandle = std::shared_ptr<Buffer>;
 	using CommandBufferHandle = std::shared_ptr<CommandBuffer>;
+	using DescriptorSetHandle = std::shared_ptr<DescriptorSet>;
 	using FenceHandle = std::shared_ptr<Fence>;
 	using FrameBufferHandle = std::shared_ptr<FrameBuffer>;
 	using ImageHandle = std::shared_ptr<Image>;

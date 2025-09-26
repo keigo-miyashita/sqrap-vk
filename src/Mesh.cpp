@@ -80,7 +80,7 @@ namespace sqrp
 		return true;
 	}
 
-	HRESULT Mesh::CreateVertexBuffer()
+	bool Mesh::CreateVertexBuffer()
 	{
 		shared_ptr<Buffer> vertexStagingBuffer;
 		vertexStagingBuffer = pDevice_->CreateBuffer(
@@ -109,10 +109,10 @@ namespace sqrp
 		/*command_->CopyBuffer(vertexUploadBuffer, vertexBuffer_);
 		command_->WaitCommand();*/
 
-		return S_OK;
+		return true;
 	}
 
-	HRESULT Mesh::CreateIndexBuffer()
+	bool Mesh::CreateIndexBuffer()
 	{
 		shared_ptr<Buffer> indexStagingBuffer;
 		indexStagingBuffer = pDevice_->CreateBuffer(
@@ -140,7 +140,7 @@ namespace sqrp
 		/*command_->CopyBuffer(indexUploadBuffer, indexBuffer_);
 		command_->WaitCommand();*/
 
-		return S_OK;
+		return true;
 	}
 
 	Mesh::Mesh(const Device& device, std::string modelPath)

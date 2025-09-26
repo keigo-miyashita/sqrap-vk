@@ -1,19 +1,21 @@
 #include "RenderPass.hpp"
 
 #include "Device.hpp"
+#include "Swapchain.hpp"
 
 using namespace std;
 
 namespace sqrp
 {
 	RenderPass::RenderPass(
-		const Device& device
+        const Device& device,
+        SwapchainHandle pSwapchain
 	)
 		: pDevice_(&device)
 	{
         // カラーアタッチメント
         vk::AttachmentDescription colorAttachment{};
-        colorAttachment.format = colorFormat;
+        colorAttachment.format = pSwapchain->GetSurfaceFormat();
         colorAttachment.samples = vk::SampleCountFlagBits::e1;
         colorAttachment.loadOp = vk::AttachmentLoadOp::eClear; // 初期化時にクリア
         colorAttachment.storeOp = vk::AttachmentStoreOp::eStore; // 書き戻す
@@ -24,7 +26,7 @@ namespace sqrp
 
         // 深度アタッチメント
         vk::AttachmentDescription depthAttachment{};
-        depthAttachment.format = depthFormat;
+        depthAttachment.format = vk::Format::eD32Sfloat;
         depthAttachment.samples = vk::SampleCountFlagBits::e1;
         depthAttachment.loadOp = vk::AttachmentLoadOp::eClear;
         depthAttachment.storeOp = vk::AttachmentStoreOp::eDontCare;

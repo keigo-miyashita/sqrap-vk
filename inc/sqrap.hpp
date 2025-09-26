@@ -4,6 +4,7 @@
 #include <Buffer.hpp>
 #include <CommandBuffer.hpp>
 #include <Device.hpp>
+#include <DescriptorSet.hpp>
 #include <Fence.hpp>
 #include <FrameBuffer.hpp>
 #include <Image.hpp>

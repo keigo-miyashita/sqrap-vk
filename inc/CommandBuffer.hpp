@@ -19,7 +19,7 @@ namespace sqrp
 		vk::UniqueCommandBuffer commandBuffer_;
 
 	public:
-		CommandBuffer(const Device& device, QueueContextType queueType);
+		CommandBuffer(const Device& device, QueueContextType queueType = QueueContextType::General);
 		~CommandBuffer() = default;
 
 		void Begin(vk::CommandBufferUsageFlags flag);

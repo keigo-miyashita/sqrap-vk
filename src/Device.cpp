@@ -3,7 +3,9 @@
 #include "CommandBuffer.hpp"
 #include "Buffer.hpp"
 #include "Fence.hpp"
+#include "FrameBuffer.hpp"
 #include "Image.hpp"
+#include "RenderPass.hpp"
 #include "Semaphore.hpp"
 #include "Swapchain.hpp"
 
@@ -273,14 +275,19 @@ namespace sqrp
 		return std::make_shared<Buffer>(*this, size, usage, memoryUsage, allocationFlags);
 	}
 
-	CommandBufferHandle Device::CreateCommandBuffer(QueueContextType type, bool begin) const
+	CommandBufferHandle Device::CreateCommandBuffer(const Device& device, QueueContextType queueType) const
 	{
-		return std::make_shared<CommandBuffer>(*this, type, begin);
+		return std::make_shared<CommandBuffer>(*this, queueType);
 	}
 
 	FenceHandle Device::CreateFence(bool signal) const
 	{
 		return std::make_shared<Fence>(*this, signal);
+	}
+
+	FrameBufferHandle Device::CreateFrameBuffer(SwapchainHandle pSwapchain, int numAttachmentBuffers0) const
+	{
+		return std::make_shared<FrameBuffer>(*this, pSwapchain, numAttachmentBuffers0);
 	}
 
 	ImageHandle Device::CreateImage(
@@ -296,6 +303,11 @@ namespace sqrp
 	) const
 	{
 		return std::make_shared<Image>(*this, extent3D, imageType, usage, format, mipLevels, arrayLayers, samples, tiling, samplerCreateInfo);
+	}
+
+	RenderPassHandle Device::CreateRenderPass(SwapchainHandle pSwapchain) const
+	{
+		return std::make_shared<RenderPass>(*this, pSwapchain);
 	}
 
 	SemaphoreHandle Device::CreateSemaphore() const
@@ -381,7 +393,7 @@ namespace sqrp
 			}
 		}
 
-		CommandBufferHandle commandBuffer = CreateCommandBuffer(selectedType);
+		CommandBufferHandle commandBuffer = CreateCommandBuffer(*this, selectedType);
 
 		vk::CommandBufferBeginInfo beginInfo{};
 		beginInfo.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit;

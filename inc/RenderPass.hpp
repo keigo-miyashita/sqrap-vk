@@ -7,6 +7,7 @@
 namespace sqrp
 {
 	class Device;
+	class Swapchain;
 
 	class RenderPass
 	{
@@ -18,7 +19,8 @@ namespace sqrp
 
 	public:
 		RenderPass(
-			const Device& device
+			const Device& device,
+			SwapchainHandle pSwapchain
 		);
 		~RenderPass() = default;
 

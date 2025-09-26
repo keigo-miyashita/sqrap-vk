@@ -19,7 +19,7 @@ namespace sqrp
 
 	class Mesh
 	{
-	private:
+	protected:
 		const Device* pDevice_ = nullptr;
 
 		std::vector<Vertex> vertices_;
@@ -28,8 +28,8 @@ namespace sqrp
 		BufferHandle indexBuffer_ = nullptr;
 
 		static bool LoadModel(std::string modelPath, std::vector<Vertex>& vertices, std::vector<uint32_t>& indices);
-		virtual HRESULT CreateVertexBuffer();
-		HRESULT CreateIndexBuffer();
+		virtual bool CreateVertexBuffer();
+		bool CreateIndexBuffer();
 		
 
 	public:

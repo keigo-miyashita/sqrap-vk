@@ -71,6 +71,13 @@ namespace sqrp
 
 	Image::~Image()
 	{
+		if (imageView_) {
+			pDevice_->GetDevice().destroyImageView(imageView_);
+		}
+		if (sampler_) {
+			pDevice_->GetDevice().destroySampler(sampler_);
+		}
+
 		vmaDestroyImage(pDevice_->GetAllocator(), image_, allocation_);
 	}
 

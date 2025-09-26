@@ -1,5 +1,6 @@
 #include "Pipeline.hpp"
 
+#include "DescriptorSet.hpp"
 #include "Device.hpp"
 #include "RenderPass.hpp"
 #include "Shader.hpp"
@@ -15,7 +16,7 @@ namespace sqrp
         SwapchainHandle pSwapchain,
         ShaderHandle pVertexShader,
         ShaderHandle pPixelShader,
-        vk::DescriptorSetLayout descriptorSetLayout
+        DescriptorSetHandle pDescriptorSet
     )
         : pDevice_(&device)
     {
@@ -75,9 +76,10 @@ namespace sqrp
 
         // 3. パイプラインレイアウト
         vk::PipelineLayoutCreateInfo layoutInfo{};
+		auto descriptorSetLayout = pDescriptorSet->GetDescriptorSetLayout();
         layoutInfo.setLayoutCount = 1;
         layoutInfo.pSetLayouts = &descriptorSetLayout;
-        m_pipelineLayout = device.createPipelineLayout(layoutInfo);
+        pipelineLayout_ = pDevice_->GetDevice().createPipelineLayoutUnique(layoutInfo);
 
         // 4. パイプライン作成
         vk::GraphicsPipelineCreateInfo pipelineInfo{};
@@ -89,7 +91,7 @@ namespace sqrp
         pipelineInfo.pRasterizationState = &rasterizer;
         pipelineInfo.pMultisampleState = &multisampling;
         pipelineInfo.pColorBlendState = &colorBlending;
-        pipelineInfo.layout = m_pipelineLayout;
+        pipelineInfo.layout = pipelineLayout_.get();
         pipelineInfo.renderPass = pRenderPass->GetRenderPass();
         pipelineInfo.subpass = 0;
 

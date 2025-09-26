@@ -11,7 +11,9 @@ namespace sqrp
 	class Application;
 	class Buffer;
 	class Fence;
+	class FrameBuffer;
 	class Image;
+	class RenderPass;
 	class Semaphore;
 	class Swawpchain;
 
@@ -67,8 +69,9 @@ namespace sqrp
 			VmaMemoryUsage memoryUsage = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE,
 			VmaAllocationCreateFlags allocationFlags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT
 		) const;
-		CommandBufferHandle CreateCommandBuffer(QueueContextType type = QueueContextType::General, bool begin = false) const;
+		CommandBufferHandle CreateCommandBuffer(const Device& device, QueueContextType queueType = QueueContextType::General) const;
 		FenceHandle CreateFence(bool signal = true) const;
+		FrameBufferHandle CreateFrameBuffer(SwapchainHandle pSwapchain, int numAttachmentBuffers0) const;
 		ImageHandle CreateImage(
 			vk::Extent3D extent3D = vk::Extent3D{ 512, 512, 1 },
 			vk::ImageType imageType = vk::ImageType::e2D,
@@ -80,6 +83,7 @@ namespace sqrp
 			vk::ImageTiling tiling = vk::ImageTiling::eOptimal,
 			vk::SamplerCreateInfo samplerCreateInfo = {}
 		)  const;
+		RenderPassHandle CreateRenderPass(SwapchainHandle pSwapchain) const;
 		SemaphoreHandle CreateSemaphore() const;
 		SwapchainHandle CreateSwapchain(uint32_t width, uint32_t height) const;
 
