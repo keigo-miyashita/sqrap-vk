@@ -5,9 +5,10 @@
 #include "Fence.hpp"
 #include "FrameBuffer.hpp"
 #include "Image.hpp"
-#include "Mesh.hpp"
+#include "Pipeline.hpp"
 #include "RenderPass.hpp"
 #include "Semaphore.hpp"
+#include "Shader.hpp"
 #include "Swapchain.hpp"
 
 VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
@@ -281,6 +282,11 @@ namespace sqrp
 		return std::make_shared<CommandBuffer>(*this, queueType);
 	}
 
+	DescriptorSetHandle Device::CreateDescriptorSet(std::vector<DescriptorSetCreateInfo> descriptorSetCreateInfos, vk::ShaderStageFlags shaderStageFlags) const
+	{
+		return std::make_shared<DescriptorSet>(*this, descriptorSetCreateInfos, shaderStageFlags);
+	}
+
 	FenceHandle Device::CreateFence(bool signal) const
 	{
 		return std::make_shared<Fence>(*this, signal);
@@ -311,9 +317,20 @@ namespace sqrp
 		return std::make_shared<Mesh>(*this, modelPath);
 	}
 
-	MeshHandle Device::CreateMesh(const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indicesh) const
+	MeshHandle Device::CreateMesh(const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices) const
 	{
-		return std::make_shared<Mesh>(*this, vertices, indicesh);
+		return std::make_shared<Mesh>(*this, vertices, indices);
+	}
+
+	PipelineHandle Device::CreatePipeline(
+		RenderPassHandle pRenderPass,
+		SwapchainHandle pSwapchain,
+		ShaderHandle pVertexShader,
+		ShaderHandle pPixelShader,
+		DescriptorSetHandle pDescriptorSet
+	) const
+	{
+		return std::make_shared<Pipeline>(*this, pRenderPass, pSwapchain, pVertexShader, pPixelShader, pDescriptorSet);
 	}
 
 	RenderPassHandle Device::CreateRenderPass(SwapchainHandle pSwapchain) const
@@ -324,6 +341,11 @@ namespace sqrp
 	SemaphoreHandle Device::CreateSemaphore() const
 	{
 		return std::make_shared<Semaphore>(*this);
+	}
+
+	ShaderHandle Device::CreateShader(const Compiler& compiler, const std::string& fileName, ShaderType shaderType) const
+	{
+		return std::make_shared<Shader>(*this, compiler, fileName, shaderType);
 	}
 
 	SwapchainHandle Device::CreateSwapchain(uint32_t width, uint32_t height) const

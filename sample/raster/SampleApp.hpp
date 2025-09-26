@@ -7,10 +7,19 @@ class SampleApp : public sqrp::Application
 {
 private:
 	sqrp::Device device_;
+	sqrp::Compiler compiler_;
 	sqrp::SwapchainHandle swapchain_;
 	sqrp::RenderPassHandle renderPass_;
 	sqrp::FrameBufferHandle	frameBuffer_;
 	sqrp::MeshHandle mesh_;
+
+	sqrp::ShaderHandle vertShader_;
+	sqrp::ShaderHandle pixelShader_;
+
+	/*sqrp::DescriptorSetHandle descriptorSet_;
+	sqrp::PipelineHandle pipeline_;*/
+
+
 
 public:
 	SampleApp(std::string appName = "sample-raster", unsigned int windowWidth = 1280, unsigned int windowHeight = 720);

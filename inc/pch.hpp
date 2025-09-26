@@ -13,6 +13,9 @@
 
 #include <vk_mem_alloc.h>
 
+#include <glslang/Public/ShaderLang.h>
+#include <glslang/SPIRV/GLSLangToSpv.h>
+
 // define statement is needed to cpp file
 #include <tiny_gltf.h>
 #include <stb_image.h>
@@ -29,6 +32,7 @@
 #include <map>
 #include <optional>
 #include <set>
+#include <sstream>
 #include <string>
 #include <unordered_map>
 #include <vector>

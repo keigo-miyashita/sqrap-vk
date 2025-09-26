@@ -5,17 +5,23 @@
 #include "Alias.hpp"
 
 #include "Application.hpp"
+#include "Compiler.hpp"
+#include "DescriptorSet.hpp"
+#include "Mesh.hpp"
 
 namespace sqrp
 {
 	class Application;
 	class Buffer;
+	class CommandBuffer;
+	class DescriptorSet;
 	class Fence;
 	class FrameBuffer;
 	class Image;
-	class Mesh;
+	class Pipeline;
 	class RenderPass;
 	class Semaphore;
+	class Shader;
 	class Swawpchain;
 
 	struct Vertex;
@@ -73,6 +79,7 @@ namespace sqrp
 			VmaAllocationCreateFlags allocationFlags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT
 		) const;
 		CommandBufferHandle CreateCommandBuffer(const Device& device, QueueContextType queueType = QueueContextType::General) const;
+		DescriptorSetHandle CreateDescriptorSet(std::vector<DescriptorSetCreateInfo> descriptorSetCreateInfos, vk::ShaderStageFlags shaderStageFlags) const;
 		FenceHandle CreateFence(bool signal = true) const;
 		FrameBufferHandle CreateFrameBuffer(SwapchainHandle pSwapchain, int numAttachmentBuffers0) const;
 		ImageHandle CreateImage(
@@ -87,9 +94,17 @@ namespace sqrp
 			vk::SamplerCreateInfo samplerCreateInfo = {}
 		)  const;
 		MeshHandle CreateMesh(std::string modelPath) const;
-		MeshHandle CreateMesh(const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indicesh) const;
+		MeshHandle CreateMesh(const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices) const;
+		PipelineHandle CreatePipeline(
+			RenderPassHandle pRenderPass,
+			SwapchainHandle pSwapchain,
+			ShaderHandle pVertexShader,
+			ShaderHandle pPixelShader,
+			DescriptorSetHandle pDescriptorSet
+		) const;
 		RenderPassHandle CreateRenderPass(SwapchainHandle pSwapchain) const;
 		SemaphoreHandle CreateSemaphore() const;
+		ShaderHandle CreateShader(const Compiler& compiler, const std::string& fileName, ShaderType shaderType) const;
 		SwapchainHandle CreateSwapchain(uint32_t width, uint32_t height) const;
 
 		void Submit(

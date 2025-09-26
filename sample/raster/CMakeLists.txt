@@ -18,7 +18,7 @@ target_link_libraries(
 # 作成したラッパーのincludeを指定
 target_include_directories(${PROJECT_NAME}-sample-raster PRIVATE "${PROJECT_SOURCE_DIR}/inc")
 
-set(SHADER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/")
-add_compile_definitions(SHADER_DIR=L"${SHADER_DIR}")
+set(SHADER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/shaders/")
+add_compile_definitions(SHADER_DIR="${SHADER_DIR}")
 set(MODEL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../model/")
 add_compile_definitions(MODEL_DIR="${MODEL_DIR}")

@@ -24,6 +24,8 @@ find_package(imgui CONFIG REQUIRED)
 find_path(TINYGLTF_INCLUDE_DIRS "tiny_gltf.h")
 find_package(VulkanHeaders CONFIG)
 find_package(VulkanMemoryAllocator CONFIG REQUIRED)
+find_package(glslang CONFIG REQUIRED)
+
 
 # ヘッダーファイルのあるディレクトリをインクルード
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/inc)
@@ -41,6 +43,7 @@ target_link_libraries(
         imgui::imgui
         Vulkan::Headers
         GPUOpen::VulkanMemoryAllocator
+        glslang::glslang glslang::glslang-default-resource-limits glslang::SPIRV glslang::SPVRemapper
 )
 
 add_subdirectory(sample/raster)

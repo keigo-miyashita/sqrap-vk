@@ -3,6 +3,7 @@
 #include <Application.hpp>
 #include <Buffer.hpp>
 #include <CommandBuffer.hpp>
+#include <Compiler.hpp>
 #include <Device.hpp>
 #include <DescriptorSet.hpp>
 #include <Fence.hpp>

@@ -11,7 +11,7 @@ using namespace std;
 namespace sqrp
 {
     Pipeline::Pipeline(
-        const Device device,
+        const Device& device,
         RenderPassHandle pRenderPass,
         SwapchainHandle pSwapchain,
         ShaderHandle pVertexShader,

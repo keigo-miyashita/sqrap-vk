@@ -23,7 +23,7 @@ namespace sqrp
 
 	public:
 		Pipeline(
-			const Device device,
+			const Device& device,
 			RenderPassHandle pRenderPass,
 			SwapchainHandle pSwapchain,
 			ShaderHandle pVertexShader,

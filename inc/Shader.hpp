@@ -4,6 +4,8 @@
 
 #include "Alias.hpp"
 
+#include "Compiler.hpp"
+
 namespace sqrp
 {
 	class Device;
@@ -12,12 +14,13 @@ namespace sqrp
 	{
 	private:
 		const Device* pDevice_ = nullptr;
+		const Compiler* pCompiler_ = nullptr;
 
 		vk::UniqueShaderModule shaderModule_;
 		vk::ShaderStageFlagBits shaderStage_;
 
 	public:
-		Shader(const Device& device, const std::string& filename, vk::ShaderStageFlagBits shaderStage);
+		Shader(const Device& device, const Compiler& compiler, const std::string& fileName, ShaderType shaderType);
 		~Shader() = default;
 
 		vk::ShaderModule GetShaderModule() const;
