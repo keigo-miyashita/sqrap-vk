@@ -21,8 +21,8 @@ layout(set = 0, binding = 0) uniform MVP /*type name*/
 void main()
 {
 	fWorldPosition = mvp.model * vPosition;
-	fNormal = normalize(mvp.ITmodel * vNormal);
-	fTangent = normalize(mvp.ITmodel * vTangent);
+	fNormal = normalize(mvp.ITModel * vNormal);
+	fTangent = normalize(mvp.ITModel * vTangent);
 	fUV = vUV;
 
 	gl_Position = mvp.proj * mvp.view * fWorldPosition;

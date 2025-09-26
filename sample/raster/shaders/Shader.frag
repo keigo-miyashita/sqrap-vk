@@ -7,7 +7,7 @@ layout(location = 3) in vec2 fUV;
 
 layout(location = 0) out vec4 outColor;
 
-layout(set = 0, binding = 1) uniform Light /*type name*/
+layout(set = 0, binding = 0) uniform Light /*type name*/
 {
 	vec4 lightPos;
 	vec4 lightColor;
@@ -15,7 +15,7 @@ layout(set = 0, binding = 1) uniform Light /*type name*/
 
 void main()
 {
-	vec3 N = normalize(fNormal);
+	vec3 N = normalize(fNormal.xyz);
 	vec3 L = normalize(light.lightPos.xyz);
 
 	float diff = max(dot(N, L), 0.0);
