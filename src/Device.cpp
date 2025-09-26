@@ -5,6 +5,7 @@
 #include "Fence.hpp"
 #include "FrameBuffer.hpp"
 #include "Image.hpp"
+#include "Mesh.hpp"
 #include "RenderPass.hpp"
 #include "Semaphore.hpp"
 #include "Swapchain.hpp"
@@ -305,6 +306,16 @@ namespace sqrp
 		return std::make_shared<Image>(*this, extent3D, imageType, usage, format, mipLevels, arrayLayers, samples, tiling, samplerCreateInfo);
 	}
 
+	MeshHandle Device::CreateMesh(std::string modelPath) const
+	{
+		return std::make_shared<Mesh>(*this, modelPath);
+	}
+
+	MeshHandle Device::CreateMesh(const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indicesh) const
+	{
+		return std::make_shared<Mesh>(*this, vertices, indicesh);
+	}
+
 	RenderPassHandle Device::CreateRenderPass(SwapchainHandle pSwapchain) const
 	{
 		return std::make_shared<RenderPass>(*this, pSwapchain);
@@ -360,15 +371,20 @@ namespace sqrp
 	{
 		vk::Queue queue = queueContexts_.at(type).queue;
 		auto commandBuffer = pCommandBuffer->GetCommandBuffer();
-		auto waitSemaphores = pWaitSemaphores->GetSemaphore();
-		auto signalSemaphore = pSignalSemaphores->GetSemaphore();
 
 		vk::SubmitInfo submitInfo{};
-		submitInfo
-			.setCommandBuffers(commandBuffer)
-			.setWaitDstStageMask(waitDstStageMask)
-			.setWaitSemaphores(waitSemaphores)
-			.setSignalSemaphores(signalSemaphore);
+		submitInfo.setCommandBuffers(commandBuffer);
+		if (waitDstStageMask != vk::PipelineStageFlagBits::eNone) {
+			submitInfo.setPWaitDstStageMask(&waitDstStageMask);
+		}
+		if (pWaitSemaphores) {
+			auto waitSemaphores = pWaitSemaphores->GetSemaphore();
+			submitInfo.setWaitSemaphores(waitSemaphores);
+		}
+		if (pSignalSemaphores) {
+			auto signalSemaphore = pSignalSemaphores->GetSemaphore();
+			submitInfo.setSignalSemaphores(signalSemaphore);
+		}
 
 		if (pFence) {
 			queue.submit(submitInfo, pFence->GetFence());
@@ -407,6 +423,17 @@ namespace sqrp
 		Submit(selectedType, commandBuffer);
 
 		WaitIdle(selectedType);
+	}
+
+	void Device::SetObjectName(uint64_t object, vk::ObjectType objectType, const std::string& name) const
+	{
+		if (!debugMessenger_) return;
+		vk::DebugUtilsObjectNameInfoEXT nameInfo{};
+		nameInfo
+			.setObjectType(objectType)
+			.setObjectHandle(object)
+			.setPObjectName(name.c_str());
+		device_->setDebugUtilsObjectNameEXT(nameInfo);
 	}
 
 	VmaAllocator Device::GetAllocator() const

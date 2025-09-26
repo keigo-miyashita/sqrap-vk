@@ -1,5 +1,7 @@
 #include "SampleApp.hpp"
 
+using namespace std;
+
 SampleApp::SampleApp(std::string appName, unsigned int windowWidth, unsigned int windowHeight)
 	: Application(appName, windowWidth, windowHeight)
 {
@@ -14,6 +16,8 @@ void SampleApp::OnStart()
 
 	renderPass_ = device_.CreateRenderPass(swapchain_);
 	frameBuffer_ = device_.CreateFrameBuffer(swapchain_, 1);
+
+	mesh_ = device_.CreateMesh(string(MODEL_DIR) + "Suzanne.gltf");
 
 }
 

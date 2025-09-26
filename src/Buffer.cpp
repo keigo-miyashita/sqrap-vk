@@ -25,6 +25,7 @@ namespace sqrp
 			throw std::runtime_error("Failed to create buffer!");
 		}
 		buffer_ = vk::Buffer(buffer);
+		pDevice_->SetObjectName(reinterpret_cast<uint64_t>(static_cast<VkBuffer>(buffer_)), vk::ObjectType::eBuffer, "Buffer");
 	}
 
 	Buffer::~Buffer()

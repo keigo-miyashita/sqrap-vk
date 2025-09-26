@@ -13,9 +13,12 @@ namespace sqrp
 	class Fence;
 	class FrameBuffer;
 	class Image;
+	class Mesh;
 	class RenderPass;
 	class Semaphore;
 	class Swawpchain;
+
+	struct Vertex;
 
 	enum class QueueContextType
 	{
@@ -83,6 +86,8 @@ namespace sqrp
 			vk::ImageTiling tiling = vk::ImageTiling::eOptimal,
 			vk::SamplerCreateInfo samplerCreateInfo = {}
 		)  const;
+		MeshHandle CreateMesh(std::string modelPath) const;
+		MeshHandle CreateMesh(const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indicesh) const;
 		RenderPassHandle CreateRenderPass(SwapchainHandle pSwapchain) const;
 		SemaphoreHandle CreateSemaphore() const;
 		SwapchainHandle CreateSwapchain(uint32_t width, uint32_t height) const;
@@ -106,6 +111,7 @@ namespace sqrp
 		void WaitIdle(QueueContextType type) const;
 
 		void OneTimeSubmit(std::function<void(CommandBufferHandle pCommandBuffer)>&& command) const;
+		void SetObjectName(uint64_t object, vk::ObjectType objectType, const std::string& name) const;
 
 		VmaAllocator GetAllocator() const;
 		vk::PhysicalDevice GetPhysicalDevice() const;

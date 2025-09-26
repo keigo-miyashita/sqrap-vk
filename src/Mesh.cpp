@@ -82,12 +82,12 @@ namespace sqrp
 
 	bool Mesh::CreateVertexBuffer()
 	{
-		shared_ptr<Buffer> vertexStagingBuffer;
+		BufferHandle vertexStagingBuffer;
 		vertexStagingBuffer = pDevice_->CreateBuffer(
 			sizeof(Vertex) * vertices_.size(),
 			vk::BufferUsageFlagBits::eTransferSrc,
 			VmaMemoryUsage::VMA_MEMORY_USAGE_AUTO_PREFER_HOST,
-			VmaAllocationCreateFlagBits::VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT
+			VmaAllocationCreateFlagBits::VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT | VmaAllocationCreateFlagBits::VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT
 		);
 		void* rawPtr = vertexStagingBuffer->Map();
 		if (rawPtr) {
@@ -114,12 +114,12 @@ namespace sqrp
 
 	bool Mesh::CreateIndexBuffer()
 	{
-		shared_ptr<Buffer> indexStagingBuffer;
+		BufferHandle indexStagingBuffer;
 		indexStagingBuffer = pDevice_->CreateBuffer(
 			sizeof(uint32_t) * indices_.size(),
 			vk::BufferUsageFlagBits::eTransferSrc,
 			VmaMemoryUsage::VMA_MEMORY_USAGE_AUTO_PREFER_HOST,
-			VmaAllocationCreateFlagBits::VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT
+			VmaAllocationCreateFlagBits::VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT | VmaAllocationCreateFlagBits::VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT
 		);
 		void* rawPtr = indexStagingBuffer->Map();
 		if (rawPtr) {
