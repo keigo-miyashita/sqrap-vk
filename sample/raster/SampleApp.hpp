@@ -20,10 +20,18 @@ private:
 	sqrp::MeshHandle mesh_;
 
 	sqrp::Camera camera_;
-	Light light_;
+	Light light0_;
+	sqrp::TransformMatrix object_;
+
+	BufferHandle cameraBuffer_;
+	BufferHandle lightBuffer_;
+	BufferHandle objectBuffer_;
 
 	sqrp::ShaderHandle vertShader_;
 	sqrp::ShaderHandle pixelShader_;
+
+	sqrp::DescriptorSetHandle descriptorSet_;
+	sqrp::PipelineHandle pipeline_;
 
 	/*sqrp::DescriptorSetHandle descriptorSet_;
 	sqrp::PipelineHandle pipeline_;*/

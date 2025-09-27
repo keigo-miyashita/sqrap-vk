@@ -20,7 +20,23 @@ void SampleApp::OnStart()
 
 	mesh_ = device_.CreateMesh(string(MODEL_DIR) + "Suzanne.gltf");
 
-	//vertShader_ = compiler_.CompileShader(string(SHADER_DIR) + "shader.vert", sqrp::ShaderType::Vertex);
+	// Camera
+	camera_.Init((float)GetWindowWidth() / (float)GetWindowHeight(), glm::vec3(0.0f, 0.0f, -5.0f)); // Note sign
+
+	// Light
+	light0_.pos = glm::vec4(10.0f, 10.0f, -5.0f, 1.0f);
+	light0_.color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+
+	// Sphere0
+	object_ = {};
+	/*XMMATRIX modelMat = XMMatrixMultiply(XMMatrixRotationY(XMConvertToRadians(180)), XMMatrixIdentity());
+	sphere0_.model = modelMat;
+	sphere0_.invTransModel = XMMatrixTranspose(XMMatrixInverse(nullptr, sphere0_.model));*/
+
+	cameraBuffer_ = device_.CreateBuffer(sizeof(CameraMatrix), vk::BufferUsageFlagBits::eUniformBuffer, VMA_MEMORY_USAGE_AUTO_PREFER_HOST);
+	lightBuffer_ = device_.CreateBuffer(sizeof(Light), vk::BufferUsageFlagBits::eUniformBuffer, VMA_MEMORY_USAGE_AUTO_PREFER_HOST);
+	objectBuffer_ = device_.CreateBuffer(sizeof(TransformMatrix), vk::BufferUsageFlagBits::eUniformBuffer, VMA_MEMORY_USAGE_AUTO_PREFER_HOST);
+
 	vertShader_ = device_.CreateShader(compiler_, string(SHADER_DIR) + "Shader.vert", sqrp::ShaderType::Vertex);
 	pixelShader_ = device_.CreateShader(compiler_, string(SHADER_DIR) + "Shader.frag", sqrp::ShaderType::Pixel);
 

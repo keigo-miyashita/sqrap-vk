@@ -11,6 +11,7 @@
 #include <FrameBuffer.hpp>
 #include <Image.hpp>
 #include <Mesh.hpp>
+#include <Object.hpp>
 #include <PipeLine.hpp>
 #include <RenderPass.hpp>
 #include <Shader.hpp>

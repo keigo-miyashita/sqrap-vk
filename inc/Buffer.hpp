@@ -28,6 +28,14 @@ namespace sqrp
 		void* Map();
 		void Unmap();
 		void Copy();
+		template<typename T>
+		void Write(const T& data)
+		{
+			void* rawPtr = Map();
+			*static_cast<T*>(rawPtr) = data;
+
+			Unmap();
+		}
 
 		vk::Buffer GetBuffer() const;
 		vk::DeviceSize GetSize() const;
