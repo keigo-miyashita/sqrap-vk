@@ -13,6 +13,7 @@ namespace sqrp
 	{
 		BufferHandle pBuffer = nullptr;
 		vk::DescriptorType type;
+		vk::ShaderStageFlags shaderStageFlags;
 	};
 
 	class DescriptorSet
@@ -26,7 +27,7 @@ namespace sqrp
 		vk::UniqueDescriptorSet descriptorSets_;
 
 	public:
-		DescriptorSet(const Device& device, std::vector<DescriptorSetCreateInfo> descriptorSetCreateInfos, vk::ShaderStageFlags shaderStageFlags);
+		DescriptorSet(const Device& device, std::vector<DescriptorSetCreateInfo> descriptorSetCreateInfos);
 		~DescriptorSet() = default;
 
 		vk::DescriptorSetLayout GetDescriptorSetLayout() const;

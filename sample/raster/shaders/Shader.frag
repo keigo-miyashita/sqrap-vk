@@ -13,6 +13,11 @@ layout(set = 0, binding = 0) uniform Light /*type name*/
 	vec4 lightColor;
 } light;
 
+layout(set = 0, binding = 1) uniform Color
+{
+	vec4 baseColor;
+} color;
+
 void main()
 {
 	vec3 N = normalize(fNormal.xyz);
@@ -20,7 +25,7 @@ void main()
 
 	float diff = max(dot(N, L), 0.0);
 
-	vec3 color = light.lightColor.rgb * diff;
+	vec3 color = color.baseColor.rgb * light.lightColor.rgb * diff;
 
 	outColor = vec4(color, 1.0);
 }

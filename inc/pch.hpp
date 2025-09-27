@@ -32,6 +32,8 @@
 #include <imgui_impl_glfw.h>
 
 #include <algorithm>
+#include <array>
+#include <cstdlib>
 #include <fstream>
 #include <functional>
 #include <initializer_list>

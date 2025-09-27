@@ -12,13 +12,15 @@ namespace sqrp
 		vk::ImageType imageType,
 		vk::ImageUsageFlags usage,
 		vk::Format format,
+		vk::ImageLayout imageLayout,
+		vk::ImageAspectFlags aspectFlags,
 		int mipLevels,
 		int arrayLayers,
 		vk::SampleCountFlagBits samples,
 		vk::ImageTiling tiling,
 		vk::SamplerCreateInfo samplerCreateInfo
 	)
-		: pDevice_(&device), extent3D_(extent3D), imageType_(imageType), format_(format)
+		: pDevice_(&device), extent3D_(extent3D), imageType_(imageType), format_(format), imageLayout_(imageLayout), aspectFlags_(aspectFlags)
 	{
 		vk::ImageCreateInfo imageCreateInfo{};
 		
@@ -32,7 +34,7 @@ namespace sqrp
 			.setSamples(samples)
 			.setTiling(tiling)
 			.setSharingMode(vk::SharingMode::eExclusive)
-			.setInitialLayout(vk::ImageLayout::eUndefined);
+			.setInitialLayout(imageLayout_);
 
 		VmaAllocationCreateInfo allocCreateInfo{};
 		allocCreateInfo.usage = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE;
@@ -57,7 +59,7 @@ namespace sqrp
 		}
 		imageViewCreateInfo.setSubresourceRange(
 			vk::ImageSubresourceRange()
-			.setAspectMask(vk::ImageAspectFlagBits::eColor)
+			.setAspectMask(aspectFlags_)
 			.setBaseMipLevel(0)
 			.setLevelCount(mipLevels)
 			.setBaseArrayLayer(0)
@@ -81,5 +83,28 @@ namespace sqrp
 		vmaDestroyImage(pDevice_->GetAllocator(), image_, allocation_);
 	}
 
+	vk::Image Image::GetImage() const
+	{
+		return image_;
+	}
 
+	vk::ImageView Image::GetImageView() const
+	{
+		return imageView_;
+	}
+
+	vk::ImageLayout Image::GetImageLayout() const
+	{
+		return imageLayout_;
+	}
+
+	vk::ImageAspectFlags Image::GetAspectFlags() const
+	{
+		return aspectFlags_;
+	}
+
+	void Image::SetImageLayout(vk::ImageLayout imageLayout)
+	{
+		imageLayout_ = imageLayout;
+	}
 }

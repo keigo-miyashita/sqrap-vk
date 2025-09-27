@@ -23,9 +23,10 @@ private:
 	Light light0_;
 	sqrp::TransformMatrix object_;
 
-	BufferHandle cameraBuffer_;
-	BufferHandle lightBuffer_;
-	BufferHandle objectBuffer_;
+	sqrp::BufferHandle cameraBuffer_;
+	sqrp::BufferHandle objectBuffer_;
+	sqrp::BufferHandle lightBuffer_;
+	sqrp::BufferHandle colorBuffer_;
 
 	sqrp::ShaderHandle vertShader_;
 	sqrp::ShaderHandle pixelShader_;

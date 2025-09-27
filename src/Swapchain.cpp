@@ -2,6 +2,7 @@
 
 #include "CommandBuffer.hpp"
 #include "Device.hpp"
+#include "Fence.hpp"
 
 using namespace std;
 
@@ -75,17 +76,49 @@ namespace sqrp
 		for (const auto& [flag, context] : pDevice_->GetQueueContexts()) {
 			if (flag == QueueContextType::General || flag == QueueContextType::Graphics) {
 				graphicsCommandBuffers_.resize(inflightCount_);
+				graphicsFences_.resize(inflightCount_);
 				for (int i = 0; i < inflightCount_; i++) {
-					graphicsCommandBuffers_[i] = std::make_shared<CommandBuffer>(*pDevice_, flag);
+					graphicsCommandBuffers_[i] = pDevice_->CreateCommandBuffer(flag);
+					graphicsFences_[i] = pDevice_->CreateFence(false);
 				}
 			}
 			else if (flag == QueueContextType::Compute) {
 				computeCommandBuffers_.resize(inflightCount_);
+				computeFences_.resize(inflightCount_);
 				for (int i = 0; i < inflightCount_; i++) {
-					computeCommandBuffers_[i] = std::make_shared<CommandBuffer>(*pDevice_, QueueContextType::Compute);
+					computeCommandBuffers_[i] = pDevice_->CreateCommandBuffer(flag);
+					computeFences_[i] = pDevice_->CreateFence(false);
 				}
 			}
 		}
+	}
+
+	void Swapchain::BeginRender()
+	{
+		graphicsFences_[inflightIndex_]->Reset();
+
+		auto result = pDevice_->GetDevice().acquireNextImageKHR(swapchain_.get(), std::numeric_limits<uint64_t>::max(), nullptr, graphicsFences_[inflightIndex_]->GetFence());
+
+		imageIndex_ = result.value;
+	}
+
+	const CommandBufferHandle& Swapchain::GetCurrentCommandBuffer()
+	{
+		return graphicsCommandBuffers_[inflightIndex_];
+	}
+
+	void Swapchain::EndRender()
+	{
+		graphicsFences_[inflightCount_]->Wait();
+
+		vk::PresentInfoKHR presentInfo;
+		presentInfo.setSwapchains(swapchain_.get());
+		presentInfo.setImageIndices(imageIndex_);
+		if (pDevice_->GetQueue(QueueContextType::General).presentKHR(presentInfo) != vk::Result::eSuccess) {
+			return;
+		}
+		inflightIndex_++;
+		inflightIndex_ %= inflightCount_;
 	}
 
 	const std::vector<vk::Image>& Swapchain::GetSwapchainImages() const
@@ -103,6 +136,11 @@ namespace sqrp
 		return height_;
 	}
 
+	vk::Extent2D Swapchain::GetExtent2D() const
+	{
+		return vk::Extent2D{ width_, height_ };
+	}
+
 	vk::Format Swapchain::GetSurfaceFormat() const
 	{
 		return surfaceFormat_.format;
@@ -111,6 +149,11 @@ namespace sqrp
 	uint32_t Swapchain::GetInflightCount() const
 	{
 		return inflightCount_;
+	}
+
+	uint32_t Swapchain::GetImageIndex() const
+	{
+		return imageIndex_;
 	}
 
 }

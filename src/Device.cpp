@@ -277,14 +277,14 @@ namespace sqrp
 		return std::make_shared<Buffer>(*this, size, usage, memoryUsage, allocationFlags);
 	}
 
-	CommandBufferHandle Device::CreateCommandBuffer(const Device& device, QueueContextType queueType) const
+	CommandBufferHandle Device::CreateCommandBuffer(QueueContextType queueType) const
 	{
 		return std::make_shared<CommandBuffer>(*this, queueType);
 	}
 
-	DescriptorSetHandle Device::CreateDescriptorSet(std::vector<DescriptorSetCreateInfo> descriptorSetCreateInfos, vk::ShaderStageFlags shaderStageFlags) const
+	DescriptorSetHandle Device::CreateDescriptorSet(std::vector<DescriptorSetCreateInfo> descriptorSetCreateInfos) const
 	{
-		return std::make_shared<DescriptorSet>(*this, descriptorSetCreateInfos, shaderStageFlags);
+		return std::make_shared<DescriptorSet>(*this, descriptorSetCreateInfos);
 	}
 
 	FenceHandle Device::CreateFence(bool signal) const
@@ -292,9 +292,9 @@ namespace sqrp
 		return std::make_shared<Fence>(*this, signal);
 	}
 
-	FrameBufferHandle Device::CreateFrameBuffer(SwapchainHandle pSwapchain, int numAttachmentBuffers0) const
+	FrameBufferHandle Device::CreateFrameBuffer(SwapchainHandle pSwapchain, RenderPassHandle pRenderPass, int numAttachmentBuffers) const
 	{
-		return std::make_shared<FrameBuffer>(*this, pSwapchain, numAttachmentBuffers0);
+		return std::make_shared<FrameBuffer>(*this, pSwapchain, pRenderPass, numAttachmentBuffers);
 	}
 
 	ImageHandle Device::CreateImage(
@@ -302,6 +302,8 @@ namespace sqrp
 		vk::ImageType imageType,
 		vk::ImageUsageFlags usage,
 		vk::Format format,
+		vk::ImageLayout imageLayout,
+		vk::ImageAspectFlags aspectFlags,
 		int mipLevels,
 		int arrayLayers,
 		vk::SampleCountFlagBits samples,
@@ -309,7 +311,7 @@ namespace sqrp
 		vk::SamplerCreateInfo samplerCreateInfo
 	) const
 	{
-		return std::make_shared<Image>(*this, extent3D, imageType, usage, format, mipLevels, arrayLayers, samples, tiling, samplerCreateInfo);
+		return std::make_shared<Image>(*this, extent3D, imageType, usage, format, imageLayout, aspectFlags, mipLevels, arrayLayers, samples, tiling, samplerCreateInfo);
 	}
 
 	MeshHandle Device::CreateMesh(std::string modelPath) const
@@ -431,7 +433,7 @@ namespace sqrp
 			}
 		}
 
-		CommandBufferHandle commandBuffer = CreateCommandBuffer(*this, selectedType);
+		CommandBufferHandle commandBuffer = CreateCommandBuffer(selectedType);
 
 		vk::CommandBufferBeginInfo beginInfo{};
 		beginInfo.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit;
@@ -481,6 +483,11 @@ namespace sqrp
 	const std::map<QueueContextType, QueueContext>& Device::GetQueueContexts() const
 	{
 		return queueContexts_;
+	}
+
+	vk::Queue Device::GetQueue(QueueContextType type) const
+	{
+		return queueContexts_.at(type).queue;
 	}
 
 	/*uint32_t Device::GetGraphicsQueueFamilyIndex() const

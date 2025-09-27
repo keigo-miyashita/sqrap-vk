@@ -7,7 +7,7 @@ using namespace std;
 
 namespace sqrp
 {
-	DescriptorSet::DescriptorSet(const Device& device, std::vector<DescriptorSetCreateInfo> descriptorSetCreateInfos, vk::ShaderStageFlags shaderStageFlags)
+	DescriptorSet::DescriptorSet(const Device& device, std::vector<DescriptorSetCreateInfo> descriptorSetCreateInfos)
 		: pDevice_(&device), descriptorSetCreateInfos_(descriptorSetCreateInfos)
 	{
 		vector<vk::DescriptorSetLayoutBinding> layoutBindings(descriptorSetCreateInfos_.size());
@@ -19,7 +19,7 @@ namespace sqrp
 				.setBinding(index)
 				.setDescriptorType(type)
 				.setDescriptorCount(1)
-				.setStageFlags(shaderStageFlags);
+				.setStageFlags(descriptorSetCreateInfo.shaderStageFlags);
 
 			if (descriptorTypeCounts.find(type) != descriptorTypeCounts.end()) {
 				descriptorTypeCounts[type]++;
@@ -34,7 +34,12 @@ namespace sqrp
 			.setBindingCount(static_cast<uint32_t>(layoutBindings.size()))
 			.setPBindings(layoutBindings.data())
 		);
-
+		if (!descriptorSetLayout_) {
+			cout << "Failed to create descriptor set layout" << endl;
+		}
+		else {
+			cout << "Successed to create descriptor set layout" << endl;
+		}
 		vector<vk::DescriptorPoolSize> poolSizes(descriptorTypeCounts.size());
 		index = 0;
 		for (const auto& [type, count] : descriptorTypeCounts) {
@@ -43,7 +48,9 @@ namespace sqrp
 				.setDescriptorCount(count);
 		};
 
-		vk::UniqueDescriptorPool descriptorPool = pDevice_->GetDevice().createDescriptorPoolUnique(vk::DescriptorPoolCreateInfo{}
+		cout << "poolSizes.size() = " << poolSizes.size() << endl;
+		descriptorPool_ = pDevice_->GetDevice().createDescriptorPoolUnique(vk::DescriptorPoolCreateInfo{}
+			.setFlags(vk::DescriptorPoolCreateFlagBits::eFreeDescriptorSet)
 			.setMaxSets(1)
 			.setPoolSizeCount(static_cast<uint32_t>(poolSizes.size()))
 			.setPPoolSizes(poolSizes.data())

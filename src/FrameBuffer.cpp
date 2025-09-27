@@ -2,14 +2,15 @@
 
 #include "Device.hpp"
 #include "Image.hpp"
+#include "RenderPass.hpp"
 #include "Swapchain.hpp"
 
 using namespace std;
 
 namespace sqrp
 {
-	FrameBuffer::FrameBuffer(const Device& device, SwapchainHandle pSwapchain, int numAttachmentBuffers)
-		: pDevice_(&device), pSwapchain_(pSwapchain)
+	FrameBuffer::FrameBuffer(const Device& device, SwapchainHandle pSwapchain, RenderPassHandle pRenderPass, int numAttachmentBuffers)
+		: pDevice_(&device), pRenderPass_(pRenderPass), pSwapchain_(pSwapchain)
 	{
 		for (const auto& swapchainImage : pSwapchain_->GetSwapchainImages()) {
 			swapchainImageViews_.push_back(
@@ -31,15 +32,41 @@ namespace sqrp
 					pDevice_->CreateImage(
 						vk::Extent3D{ pSwapchain_->GetWidth(), pSwapchain_->GetHeight(), 1 },
 						vk::ImageType::e2D,
-						vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eSampled,
-						vk::Format::eR8G8B8A8Srgb
+						vk::ImageUsageFlagBits::eDepthStencilAttachment | vk::ImageUsageFlagBits::eSampled,
+						vk::Format::eD32Sfloat,
+						vk::ImageLayout::eUndefined,
+						vk::ImageAspectFlagBits::eDepth
 					)
 				);
 			}
 		}
 
-
+		framebuffers_.resize(pSwapchain_->GetInflightCount());
+		for (int i = 0; i < pSwapchain_->GetInflightCount(); i++) {
+			vector<vk::ImageView> attachments;
+			attachments.push_back(swapchainImageViews_[i].get());
+			for (int j = 0; j < numAttachmentBuffers; j++) {
+				attachments.push_back(attachmentBuffers_[j][i]->GetImageView());
+			}
+			vk::FramebufferCreateInfo framebufferInfo = {};
+			framebufferInfo
+				.setRenderPass(pRenderPass_->GetRenderPass())
+				.setAttachmentCount(static_cast<uint32_t>(attachments.size()))
+				.setPAttachments(attachments.data())
+				.setWidth(pSwapchain_->GetWidth())
+				.setHeight(pSwapchain_->GetHeight())
+				.setLayers(1);
+			framebuffers_[i] = pDevice_->GetDevice().createFramebufferUnique(framebufferInfo);
+		}
 	}
 
+	vk::Framebuffer FrameBuffer::GetFrameBuffer(int index) const
+	{
+		return framebuffers_[index].get();
+	}
 
+	SwapchainHandle FrameBuffer::GetSwapchain() const
+	{
+		return pSwapchain_;
+	}
 }

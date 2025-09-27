@@ -78,15 +78,17 @@ namespace sqrp
 			VmaMemoryUsage memoryUsage = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE,
 			VmaAllocationCreateFlags allocationFlags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT
 		) const;
-		CommandBufferHandle CreateCommandBuffer(const Device& device, QueueContextType queueType = QueueContextType::General) const;
-		DescriptorSetHandle CreateDescriptorSet(std::vector<DescriptorSetCreateInfo> descriptorSetCreateInfos, vk::ShaderStageFlags shaderStageFlags) const;
+		CommandBufferHandle CreateCommandBuffer(QueueContextType queueType = QueueContextType::General) const;
+		DescriptorSetHandle CreateDescriptorSet(std::vector<DescriptorSetCreateInfo> descriptorSetCreateInfos) const;
 		FenceHandle CreateFence(bool signal = true) const;
-		FrameBufferHandle CreateFrameBuffer(SwapchainHandle pSwapchain, int numAttachmentBuffers0) const;
+		FrameBufferHandle CreateFrameBuffer(SwapchainHandle pSwapchain, RenderPassHandle pRenderPass, int numAttachmentBuffers = 0) const;
 		ImageHandle CreateImage(
 			vk::Extent3D extent3D = vk::Extent3D{ 512, 512, 1 },
 			vk::ImageType imageType = vk::ImageType::e2D,
 			vk::ImageUsageFlags usage = vk::ImageUsageFlagBits::eSampled,
 			vk::Format format = vk::Format::eR8G8B8A8Srgb,
+			vk::ImageLayout imageLayout = vk::ImageLayout::eUndefined,
+			vk::ImageAspectFlags aspectFlags = vk::ImageAspectFlagBits::eColor,
 			int mipLevels = 1,
 			int arrayLayers = 1,
 			vk::SampleCountFlagBits samples = vk::SampleCountFlagBits::e1,
@@ -133,6 +135,7 @@ namespace sqrp
 		vk::Device GetDevice() const;
 		vk::SurfaceKHR GetSurface() const;
 		const std::map<QueueContextType, QueueContext>& GetQueueContexts() const;
+		vk::Queue GetQueue(QueueContextType type) const;
 		//uint32_t GetPresentQueueFamilyIndex() const;
 	};
 }

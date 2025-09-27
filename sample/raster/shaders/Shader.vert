@@ -10,20 +10,25 @@ layout(location = 1) out vec4 fNormal;
 layout(location = 2) out vec4 fTangent;
 layout(location = 3) out vec2 fUV;
 
-layout(set = 0, binding = 0) uniform MVP /*type name*/
+layout(set = 0, binding = 0) uniform Camera /*type name*/
 {
-	mat4 model;
 	mat4 view;
 	mat4 proj;
+} camera;
+
+layout(set = 0, binding = 1) uniform Object /*type name*/
+{
+	// add model uniforms here
+	mat4 model;
 	mat4 ITModel;
-} mvp;
+} object;
 
 void main()
 {
-	fWorldPosition = mvp.model * vPosition;
-	fNormal = normalize(mvp.ITModel * vNormal);
-	fTangent = normalize(mvp.ITModel * vTangent);
+	fWorldPosition = object.model * vPosition;
+	fNormal = normalize(object.ITModel * vNormal);
+	fTangent = normalize(object.ITModel * vTangent);
 	fUV = vUV;
 
-	gl_Position = mvp.proj * mvp.view * fWorldPosition;
+	gl_Position = camera.proj * camera.view * fWorldPosition;
 }

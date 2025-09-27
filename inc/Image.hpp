@@ -17,6 +17,8 @@ namespace sqrp
 		vk::Extent3D extent3D_;
 		vk::ImageType imageType_;
 		vk::Format format_;
+		vk::ImageLayout imageLayout_;
+		vk::ImageAspectFlags aspectFlags_;
 		VmaAllocation allocation_;
 		VmaAllocationInfo allocationInfo_;
 
@@ -30,6 +32,8 @@ namespace sqrp
 			vk::ImageType imageType = vk::ImageType::e2D,
 			vk::ImageUsageFlags usage = vk::ImageUsageFlagBits::eSampled,
 			vk::Format format = vk::Format::eR8G8B8A8Srgb,
+			vk::ImageLayout imageLayout = vk::ImageLayout::eUndefined,
+			vk::ImageAspectFlags aspectFlags = vk::ImageAspectFlagBits::eColor,
 			int mipLevels = 1,
 			int arrayLayers = 1,
 			vk::SampleCountFlagBits samples = vk::SampleCountFlagBits::e1,
@@ -38,6 +42,12 @@ namespace sqrp
 		);
 		~Image();
 
+		vk::Image GetImage() const;
+		vk::ImageView GetImageView() const;
+		vk::ImageLayout GetImageLayout() const;
+		vk::ImageAspectFlags GetAspectFlags() const;
+
+		void SetImageLayout(vk::ImageLayout imageLayout);
 
 	};
 }
