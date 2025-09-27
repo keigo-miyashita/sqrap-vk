@@ -2,6 +2,7 @@
 
 #include <Application.hpp>
 #include <Buffer.hpp>
+#include <Camera.hpp>
 #include <CommandBuffer.hpp>
 #include <Compiler.hpp>
 #include <Device.hpp>

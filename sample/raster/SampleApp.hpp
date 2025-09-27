@@ -3,6 +3,12 @@
 #include <pch.hpp>
 #include <sqrap.hpp>
 
+struct Light
+{
+	glm::vec4 pos;
+	glm::vec4 color;
+};
+
 class SampleApp : public sqrp::Application
 {
 private:
@@ -12,6 +18,9 @@ private:
 	sqrp::RenderPassHandle renderPass_;
 	sqrp::FrameBufferHandle	frameBuffer_;
 	sqrp::MeshHandle mesh_;
+
+	sqrp::Camera camera_;
+	Light light_;
 
 	sqrp::ShaderHandle vertShader_;
 	sqrp::ShaderHandle pixelShader_;
