@@ -6,8 +6,8 @@ using namespace std;
 
 namespace sqrp
 {
-	Buffer::Buffer(const Device& device, int size, vk::BufferUsageFlags usage, VmaMemoryUsage memoryUsage, VmaAllocationCreateFlags allocationFlags)
-		: pDevice_(&device), size_(vk::DeviceSize(size)), usage_(usage), memoryUsage_(memoryUsage), allocationFlags_(allocationFlags)
+	Buffer::Buffer(const Device& device, int size, vk::BufferUsageFlags usage, VmaAllocationCreateFlags allocationFlags, VmaMemoryUsage memoryUsage)
+		: pDevice_(&device), size_(vk::DeviceSize(size)), usage_(usage), allocationFlags_(allocationFlags), memoryUsage_(memoryUsage)
 	{
 		vk::BufferCreateInfo bufferCreateInfo{};
 

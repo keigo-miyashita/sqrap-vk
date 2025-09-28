@@ -46,6 +46,7 @@ namespace sqrp
 			poolSizes[index] = vk::DescriptorPoolSize{}
 				.setType(type)
 				.setDescriptorCount(count);
+			index++;
 		};
 
 		cout << "poolSizes.size() = " << poolSizes.size() << endl;
@@ -63,18 +64,18 @@ namespace sqrp
 		).front());
 
 		std::vector<vk::WriteDescriptorSet> writeDescriptorSets(descriptorSetCreateInfos_.size());
+		std::vector<vk::DescriptorBufferInfo> descriptorBufferInfos(descriptorSetCreateInfos_.size());
 		index = 0;
 		for (const auto& descriptorSetCreateInfo : descriptorSetCreateInfos_) {
-			vk::DescriptorBufferInfo bufferInfo = {};
-			bufferInfo.setBuffer(descriptorSetCreateInfo.pBuffer->GetBuffer());
-			bufferInfo.setOffset(0);
-			bufferInfo.setRange(descriptorSetCreateInfo.pBuffer->GetSize());
+			descriptorBufferInfos[index].setBuffer(descriptorSetCreateInfo.pBuffer->GetBuffer());
+			descriptorBufferInfos[index].setOffset(0);
+			descriptorBufferInfos[index].setRange(descriptorSetCreateInfo.pBuffer->GetSize());
 			writeDescriptorSets[index] = vk::WriteDescriptorSet{}
 				.setDstSet(descriptorSets_.get())
 				.setDstBinding(index)
 				.setDescriptorType(descriptorSetCreateInfo.type)
 				.setDescriptorCount(1)
-				.setPBufferInfo(&bufferInfo);
+				.setPBufferInfo(&descriptorBufferInfos[index]);
 			index++;
 		};
 		pDevice_->GetDevice().updateDescriptorSets(static_cast<uint32_t>(writeDescriptorSets.size()), writeDescriptorSets.data(), 0, nullptr);

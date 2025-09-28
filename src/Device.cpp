@@ -62,6 +62,11 @@ namespace sqrp
 		
 	}
 
+	Device::~Device()
+	{
+		vmaDestroyAllocator(allocator_);
+	}
+
 	bool Device::Init(Application application)
 	{
 		// Setup dynamic library loader
@@ -218,10 +223,10 @@ namespace sqrp
 
 	BufferHandle Device::CreateBuffer(int size,
 		vk::BufferUsageFlags usage,
-		VmaMemoryUsage memoryUsage,
-		VmaAllocationCreateFlags allocationFlags) const
+		VmaAllocationCreateFlags allocationFlags,
+		VmaMemoryUsage memoryUsage) const
 	{
-		return std::make_shared<Buffer>(*this, size, usage, memoryUsage, allocationFlags);
+		return std::make_shared<Buffer>(*this, size, usage, allocationFlags, memoryUsage);
 	}
 
 	CommandBufferHandle Device::CreateCommandBuffer(QueueContextType queueType) const

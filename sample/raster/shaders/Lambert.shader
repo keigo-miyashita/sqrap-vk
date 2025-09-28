@@ -1,25 +1,25 @@
 #version 450
 
-layout(set = 0, binding = 0) uniform Camera /*type name*/
+layout(std140, set = 0, binding = 0) uniform Camera /*type name*/
 {
 	mat4 view;
 	mat4 proj;
 } camera;
 
-layout(set = 0, binding = 1) uniform Object /*type name*/
+layout(std140, set = 0, binding = 1) uniform Object /*type name*/
 {
 	// add model uniforms here
 	mat4 model;
 	mat4 ITModel;
 } object;
 
-layout(set = 0, binding = 2) uniform Light /*type name*/
+layout(std140, set = 0, binding = 2) uniform Light /*type name*/
 {
 	vec4 lightPos;
 	vec4 lightColor;
 } light;
 
-layout(set = 0, binding = 3) uniform Color
+layout(std140, set = 0, binding = 3) uniform Color
 {
 	vec4 baseColor;
 } color;

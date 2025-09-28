@@ -149,6 +149,9 @@ namespace sqrp
         glslang::TShader shader(stage);
         const char* sourceCStr = glslSource.c_str();
         shader.setStrings(&sourceCStr, 1);
+		// Disable automatic binding and location assignment
+        shader.setAutoMapBindings(false);
+		shader.setAutoMapLocations(false);
 
         TBuiltInResource resources = DefaultTBuiltInResource();  // デフォルト
         int defaultVersion = 450;

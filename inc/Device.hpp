@@ -58,13 +58,13 @@ namespace sqrp
 
 	public:
 		Device();
-		~Device() = default;
+		~Device();
 		bool Init(Application application);
 		BufferHandle CreateBuffer(
 			int size,
 			vk::BufferUsageFlags usage,
-			VmaMemoryUsage memoryUsage = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE,
-			VmaAllocationCreateFlags allocationFlags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT
+			VmaAllocationCreateFlags allocationFlags,
+			VmaMemoryUsage memoryUsage = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE
 		) const;
 		CommandBufferHandle CreateCommandBuffer(QueueContextType queueType = QueueContextType::General) const;
 		DescriptorSetHandle CreateDescriptorSet(std::vector<DescriptorSetCreateInfo> descriptorSetCreateInfos) const;

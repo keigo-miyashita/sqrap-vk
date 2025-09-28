@@ -86,8 +86,8 @@ namespace sqrp
 		vertexStagingBuffer = pDevice_->CreateBuffer(
 			sizeof(Vertex) * vertices_.size(),
 			vk::BufferUsageFlagBits::eTransferSrc,
-			VmaMemoryUsage::VMA_MEMORY_USAGE_AUTO_PREFER_HOST,
-			VmaAllocationCreateFlagBits::VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT | VmaAllocationCreateFlagBits::VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT
+			VmaAllocationCreateFlagBits::VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT,
+			VmaMemoryUsage::VMA_MEMORY_USAGE_AUTO_PREFER_HOST
 		);
 		void* rawPtr = vertexStagingBuffer->Map();
 		if (rawPtr) {
@@ -99,8 +99,8 @@ namespace sqrp
 		vertexBuffer_ = pDevice_->CreateBuffer(
 			sizeof(Vertex) * vertices_.size(),
 			vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eVertexBuffer,
-			VmaMemoryUsage::VMA_MEMORY_USAGE_GPU_ONLY,
-			VmaAllocationCreateFlagBits::VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT
+			0,
+			VmaMemoryUsage::VMA_MEMORY_USAGE_GPU_ONLY
 		);
 
 		pDevice_->OneTimeSubmit([&](CommandBufferHandle pCommandBuffer) {
@@ -118,8 +118,8 @@ namespace sqrp
 		indexStagingBuffer = pDevice_->CreateBuffer(
 			sizeof(uint32_t) * indices_.size(),
 			vk::BufferUsageFlagBits::eTransferSrc,
-			VmaMemoryUsage::VMA_MEMORY_USAGE_AUTO_PREFER_HOST,
-			VmaAllocationCreateFlagBits::VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT | VmaAllocationCreateFlagBits::VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT
+			VmaAllocationCreateFlagBits::VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT,
+			VmaMemoryUsage::VMA_MEMORY_USAGE_AUTO_PREFER_HOST
 		);
 		void* rawPtr = indexStagingBuffer->Map();
 		if (rawPtr) {
@@ -131,8 +131,8 @@ namespace sqrp
 		indexBuffer_ = pDevice_->CreateBuffer(
 			sizeof(uint32_t) * indices_.size(),
 			vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eIndexBuffer,
-			VmaMemoryUsage::VMA_MEMORY_USAGE_GPU_ONLY,
-			VmaAllocationCreateFlagBits::VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT
+			0,
+			VmaMemoryUsage::VMA_MEMORY_USAGE_GPU_ONLY
 		);
 		pDevice_->OneTimeSubmit([&](CommandBufferHandle pCommandBuffer) {
 			pCommandBuffer->CopyBuffer(indexStagingBuffer, indexBuffer_);
