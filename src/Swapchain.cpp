@@ -3,6 +3,7 @@
 #include "CommandBuffer.hpp"
 #include "Device.hpp"
 #include "Fence.hpp"
+#include "Semaphore.hpp"
 
 using namespace std;
 
@@ -91,29 +92,38 @@ namespace sqrp
 				}
 			}
 		}
+
+		imageAcquireSemaphores_.resize(inflightCount_);
+		renderCompleteSemaphores_.resize(inflightCount_);
+		for (int i = 0; i < inflightCount_; i++) {
+			imageAcquireSemaphores_[i] = pDevice_->CreateSemaphore();
+			renderCompleteSemaphores_[i] = pDevice_->CreateSemaphore();
+		}
 	}
 
-	void Swapchain::BeginRender()
-	{
-		graphicsFences_[inflightIndex_]->Reset();
-
-		auto result = pDevice_->GetDevice().acquireNextImageKHR(swapchain_.get(), std::numeric_limits<uint64_t>::max(), nullptr, graphicsFences_[inflightIndex_]->GetFence());
-
-		imageIndex_ = result.value;
-	}
-
-	const CommandBufferHandle& Swapchain::GetCurrentCommandBuffer()
+	CommandBufferHandle& Swapchain::GetCurrentCommandBuffer()
 	{
 		return graphicsCommandBuffers_[inflightIndex_];
 	}
 
-	void Swapchain::EndRender()
+	void Swapchain::WaitFrame()
 	{
-		graphicsFences_[inflightCount_]->Wait();
+		graphicsFences_[inflightIndex_]->Wait();
 
+		auto result = pDevice_->GetDevice().acquireNextImageKHR(swapchain_.get(), std::numeric_limits<uint64_t>::max(), imageAcquireSemaphores_[inflightIndex_]->GetSemaphore(), graphicsFences_[inflightIndex_]->GetFence());
+
+		imageIndex_ = result.value;
+
+		graphicsFences_[inflightIndex_]->Reset();
+	}
+
+	void Swapchain::Present()
+	{
 		vk::PresentInfoKHR presentInfo;
 		presentInfo.setSwapchains(swapchain_.get());
 		presentInfo.setImageIndices(imageIndex_);
+		vk::Semaphore semaphore = imageAcquireSemaphores_[inflightIndex_]->GetSemaphore();
+		presentInfo.setWaitSemaphores(semaphore);
 		if (pDevice_->GetQueue(QueueContextType::General).presentKHR(presentInfo) != vk::Result::eSuccess) {
 			return;
 		}
@@ -154,6 +164,21 @@ namespace sqrp
 	uint32_t Swapchain::GetImageIndex() const
 	{
 		return imageIndex_;
+	}
+
+	SemaphoreHandle Swapchain::GetImageAcquireSemaphore() const
+	{
+		return imageAcquireSemaphores_[inflightIndex_];
+	}
+
+	SemaphoreHandle Swapchain::GetRenderCompleteSemaphore() const
+	{
+		return renderCompleteSemaphores_[inflightIndex_];
+	}
+
+	FenceHandle Swapchain::GetCurrentFence() const
+	{
+		return graphicsFences_[inflightIndex_];
 	}
 
 }

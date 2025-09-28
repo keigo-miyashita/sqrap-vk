@@ -169,4 +169,9 @@ namespace sqrp
 		return indexBuffer_;
 	}
 
+	int Mesh::GetNumIndices() const
+	{
+		return static_cast<int>(indices_.size());
+	}
+
 }

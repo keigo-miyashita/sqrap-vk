@@ -15,7 +15,7 @@ namespace sqrp
 	}
 
 	vk::Semaphore Semaphore::GetSemaphore() const {
-		return semaphore_.get();
+		return *semaphore_;
 	}
 
 }

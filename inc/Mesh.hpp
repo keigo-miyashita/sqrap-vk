@@ -39,5 +39,6 @@ namespace sqrp
 
 		BufferHandle GetVertexBuffer() const;
 		BufferHandle GetIndexBuffer() const;
+		int GetNumIndices() const;
 	};
 }

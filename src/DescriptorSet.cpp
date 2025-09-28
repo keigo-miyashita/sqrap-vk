@@ -81,6 +81,11 @@ namespace sqrp
 
 	}
 
+	vk::DescriptorSet DescriptorSet::GetDescriptorSet() const
+	{
+		return descriptorSets_.get();
+	}
+
 	vk::DescriptorSetLayout DescriptorSet::GetDescriptorSetLayout() const
 	{
 		return descriptorSetLayout_.get();

@@ -31,5 +31,8 @@ namespace sqrp
 			DescriptorSetHandle pDescriptorSet
 		);
 		~Pipeline() = default;
+
+		vk::Pipeline GetPipeline() const;
+		vk::PipelineLayout GetPipelineLayout() const;
 	};
 }

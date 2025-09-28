@@ -1,8 +1,11 @@
 #include "CommandBuffer.hpp"
 
 #include "Buffer.hpp"
+#include "DescriptorSet.hpp"
 #include "FrameBuffer.hpp"
 #include "Image.hpp"
+#include "Mesh.hpp"
+#include "Pipeline.hpp"
 #include "RenderPass.hpp"
 #include "Swapchain.hpp"
 
@@ -47,6 +50,16 @@ namespace sqrp
 		commandBuffer_->end();
 	}
 
+	void BeginRender(SwapchainHandle pSwapchain)
+	{
+
+	}
+
+	void EndRender(SwapchainHandle pSwapchain)
+	{
+
+	}
+
 	void CommandBuffer::BeginRenderPass(RenderPassHandle pRenderPass, FrameBufferHandle pFrameBuffer)
 	{
 		vk::ClearValue clearColor(std::array<float, 4>{0.5f, 0.5f, 0.5f, 1.0f});
@@ -66,6 +79,28 @@ namespace sqrp
 
 	void CommandBuffer::EndRenderPass() {
 		commandBuffer_->endRenderPass();
+	}
+
+	void CommandBuffer::BindPipeline(PipelineHandle pPipeline, vk::PipelineBindPoint pipelineBindPoint)
+	{
+		commandBuffer_->bindPipeline(pipelineBindPoint, pPipeline->GetPipeline());
+	}
+
+	void CommandBuffer::BindMeshBuffer(MeshHandle pMesh)
+	{
+		commandBuffer_->bindVertexBuffers(0, pMesh->GetVertexBuffer()->GetBuffer(), { 0 });
+		commandBuffer_->bindIndexBuffer(pMesh->GetIndexBuffer()->GetBuffer(), 0, vk::IndexType::eUint32);
+	}
+
+	void CommandBuffer::BindDescriptorSet(PipelineHandle pPipeline, DescriptorSetHandle pDescriptorSet, vk::PipelineBindPoint pipelineBindPoint)
+	{
+		commandBuffer_->bindDescriptorSets(
+			pipelineBindPoint,
+			pPipeline->GetPipelineLayout(),
+			0,
+			pDescriptorSet->GetDescriptorSet(),
+			{}
+		);
 	}
 
 	void CommandBuffer::CopyBuffer(BufferHandle srcBuffer, BufferHandle dstBuffer)
@@ -120,6 +155,11 @@ namespace sqrp
 			{},
 			{ barrier }
 		);
+	}
+
+	void CommandBuffer::DrawMesh(MeshHandle pMesh)
+	{
+		commandBuffer_->drawIndexed(static_cast<uint32_t>(pMesh->GetNumIndices()), 1, 0, 0, 0);
 	}
 
 	vk::CommandBuffer CommandBuffer::GetCommandBuffer() const

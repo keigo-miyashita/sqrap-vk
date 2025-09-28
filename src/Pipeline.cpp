@@ -147,4 +147,14 @@ namespace sqrp
         }
 		pipeline_ = std::move(result.value.front());
     }
+
+    vk::Pipeline Pipeline::GetPipeline() const
+    {
+		return pipeline_.get();
+    }
+
+    vk::PipelineLayout Pipeline::GetPipelineLayout() const
+    {
+		return pipelineLayout_.get();
+    }
 }

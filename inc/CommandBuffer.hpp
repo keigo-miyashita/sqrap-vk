@@ -8,10 +8,14 @@
 
 namespace sqrp
 {
+	class DescriptorSet;
 	class Device;
 	class FrameBuffer;
 	class Image;
+	class Mesh;
+	class Pipeline;
 	class RenderPass;
+	class Swapchain;
 	struct QueueContext;
 
 	class CommandBuffer
@@ -28,13 +32,20 @@ namespace sqrp
 		void Begin();
 		void Begin(vk::CommandBufferUsageFlags flag);
 		void End();
+		void BeginRender(SwapchainHandle pSwapchain);
+		void EndRender(SwapchainHandle pSwapchain);
 		void BeginRenderPass(RenderPassHandle pRenderPass, FrameBufferHandle pFrameBuffer);
 		void EndRenderPass();
+		void BindPipeline(PipelineHandle pPipeline, vk::PipelineBindPoint pipelineBindPoint);
+		void BindMeshBuffer(MeshHandle pMesh);
+		void BindDescriptorSet(PipelineHandle pPipeline, DescriptorSetHandle pDescriptorSet, vk::PipelineBindPoint pipelineBindPoint);
 		void CopyBuffer(BufferHandle srcBuffer, BufferHandle dstBuffer);
 		void CopyBufferRegion(BufferHandle srcBuffer, vk::DeviceSize srcOffset, BufferHandle dstBuffer, vk::DeviceSize dstOffset, vk::DeviceSize size);
 		void SetScissor(uint32_t width, uint32_t height);
 		void SetViewport(uint32_t width, uint32_t height);
 		void TransitionLayout(ImageHandle pImage, vk::ImageLayout newLayout);
+
+		void DrawMesh(MeshHandle pMesh);
 
 		vk::CommandBuffer GetCommandBuffer() const;
 	};

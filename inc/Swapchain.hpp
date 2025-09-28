@@ -9,6 +9,7 @@ namespace sqrp
 	class CommandBuffer;
 	class Device;
 	class Fence;
+	class Semaphore;
 
 	class Swapchain
 	{
@@ -35,14 +36,16 @@ namespace sqrp
 		std::vector<FenceHandle> graphicsFences_;
 		std::vector<CommandBufferHandle> computeCommandBuffers_;
 		std::vector<FenceHandle> computeFences_;
+		std::vector<SemaphoreHandle> imageAcquireSemaphores_;
+		std::vector<SemaphoreHandle> renderCompleteSemaphores_;
 
 	public:
 		Swapchain(const Device& device, uint32_t width, uint32_t height);
 		~Swapchain() = default;
 
-		void BeginRender();
-		const CommandBufferHandle& GetCurrentCommandBuffer();
-		void EndRender();
+		CommandBufferHandle& GetCurrentCommandBuffer();
+		void WaitFrame();
+		void Present();
 
 		const std::vector<vk::Image>& GetSwapchainImages() const;
 		uint32_t GetWidth() const;
@@ -51,5 +54,8 @@ namespace sqrp
 		vk::Format GetSurfaceFormat() const;
 		uint32_t GetInflightCount() const;
 		uint32_t GetImageIndex() const;
+		SemaphoreHandle GetImageAcquireSemaphore() const;
+		SemaphoreHandle GetRenderCompleteSemaphore() const;
+		FenceHandle GetCurrentFence() const;
 	};
 }

@@ -30,6 +30,7 @@ namespace sqrp
 		DescriptorSet(const Device& device, std::vector<DescriptorSetCreateInfo> descriptorSetCreateInfos);
 		~DescriptorSet() = default;
 
+		vk::DescriptorSet GetDescriptorSet() const;
 		vk::DescriptorSetLayout GetDescriptorSetLayout() const;
 	};
 }

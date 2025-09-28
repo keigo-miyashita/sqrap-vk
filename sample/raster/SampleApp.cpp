@@ -64,15 +64,27 @@ void SampleApp::OnStart()
 
 void SampleApp::OnUpdate()
 {
-	swapchain_->BeginRender();
+	swapchain_->WaitFrame();
 
 	auto& commandBuffer = swapchain_->GetCurrentCommandBuffer();
 
 	commandBuffer->Begin();
 
+	commandBuffer->BeginRenderPass(renderPass_, frameBuffer_);
 
+	commandBuffer->BindPipeline(pipeline_, vk::PipelineBindPoint::eGraphics);
+	commandBuffer->BindDescriptorSet(pipeline_, descriptorSet_, vk::PipelineBindPoint::eGraphics);
+	commandBuffer->BindMeshBuffer(mesh_);
+	commandBuffer->DrawMesh(mesh_);
+
+	commandBuffer->EndRenderPass();
 
 	commandBuffer->End();
 
-	swapchain_->EndRender();
+	device_.Submit(
+		QueueContextType::Graphics, commandBuffer, vk::PipelineStageFlagBits::eColorAttachmentOutput,
+		swapchain_->GetImageAcquireSemaphore(), swapchain_->GetRenderCompleteSemaphore(), swapchain_->GetCurrentFence()
+	);
+
+	swapchain_->Present();
 }
