@@ -51,18 +51,6 @@ namespace sqrp
 		vk::UniqueDebugUtilsMessengerEXT debugMessenger_;
 		vk::UniqueSurfaceKHR surface_;
 		std::map<QueueContextType, QueueContext> queueContexts_;
-		/*QueueContext computeQueueContext_;
-		QueueContext graphicsQueueContext_;
-		QueueContext computeQueueContext_;
-		uint32_t computeQueueFamilyIndex_ = -1;
-		uint32_t graphicsQueueFamilyIndex_ = -1;
-		uint32_t presentQueueFamilyIndex_ = -1;
-		vk::Queue computeQueue_;
-		vk::UniqueCommandPool computeCommandPool_;
-		vk::Queue graphicsQueue_;
-		vk::UniqueCommandPool graphicsCommandPool_;
-		vk::Queue presentQueue_;
-		vk::UniqueCommandPool presentCommandPool_;*/
 		VmaAllocator allocator_;
 
 		bool isDeviceExtensionSupport(vk::PhysicalDevice physDev);
@@ -136,6 +124,5 @@ namespace sqrp
 		vk::SurfaceKHR GetSurface() const;
 		const std::map<QueueContextType, QueueContext>& GetQueueContexts() const;
 		vk::Queue GetQueue(QueueContextType type) const;
-		//uint32_t GetPresentQueueFamilyIndex() const;
 	};
 }

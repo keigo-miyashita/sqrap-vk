@@ -66,6 +66,7 @@ namespace sqrp
 
 			if (!prev && rawState) {
 				isLogicalPushKey_[vk].isPushed = true;
+				cout << "Key Pushed: " << vk << endl;
 			}
 			if (prev && !rawState) {
 				isLogicalPushKey_[vk].isPushed = false;
@@ -78,8 +79,6 @@ namespace sqrp
 		deltaMousePos_.y = currentMousePos_.y - prevMousePos_.y;
 
 		prevMousePos_ = currentMousePos_;
-
-		//cout << "Mouse Position: (" << currentMousePos_.x << ", " << currentMousePos_.y << ")\n";
 	}
 
 	void Input::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -228,6 +227,7 @@ namespace sqrp
 			OnUpdate();
 		}
 
+		OnTerminate();
 		glfwDestroyWindow(pWindow_);
 		glfwTerminate();
 	}

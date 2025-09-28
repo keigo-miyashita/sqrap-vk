@@ -148,37 +148,7 @@ namespace sqrp
 					continue;
 				}
 			}
-			
-			/*if (queueFamilies[i].queueFlags & vk::QueueFlagBits::eGraphics) {
-				graphicsQueueFamilyIndex_ = i;
-			}*/
 		}
-		//if (graphicsQueueFamilyIndex_ == -1) {
-		//	throw std::runtime_error("No graphics queue family!");
-		//}
-
-		//for (uint32_t i = 0; i < queueFamilies.size(); i++) {
-		//	// Check selected physical device can handle the surface
-		//	vk::Bool32 presentSupport = physicalDevice_.getSurfaceSupportKHR(i, surface_.get());
-		//	if (presentSupport) {
-		//		presentQueueFamilyIndex_ = i;
-		//	}
-		//}
-		//if (presentQueueFamilyIndex_ == -1) {
-		//	throw std::runtime_error("No present queue family!");
-		//}
-
-		//// NOTE : Fix to turn on compute queue only using async compute
-		//queueFamilies = physicalDevice_.getQueueFamilyProperties();
-		//// Find Queue family index has graphics queue and present queue
-		//for (uint32_t i = 0; i < queueFamilies.size(); i++) {
-		//	if (queueFamilies[i].queueFlags & vk::QueueFlagBits::eCompute) {
-		//		computeQueueFamilyIndex_ = i;
-		//	}
-		//}
-		//if (computeQueueFamilyIndex_ == -1) {
-		//	throw std::runtime_error("No compute queue family!");
-		//}
 
 		// Create logical device
 		vector<vk::DeviceQueueCreateInfo> queueCreateInfos = {};
@@ -232,29 +202,6 @@ namespace sqrp
 				.setQueueFamilyIndex(context.queueFamilyIndex)
 			);
 		}
-		/*for (auto& element : queueContexts_) {
-			auto& type = element.first;
-			auto& context = element.second;
-			context.queue = device_->getQueue(context.queueFamilyIndex, context.queueIndex);
-		}*/
-		/*computeQueue_ = device_->getQueue(computeQueueFamilyIndex_, 0);
-		computeCommandPool_ = device_->createCommandPoolUnique(
-			vk::CommandPoolCreateInfo()
-			.setFlags(vk::CommandPoolCreateFlagBits::eResetCommandBuffer)
-			.setQueueFamilyIndex(computeQueueFamilyIndex_)
-		);
-		graphicsQueue_ = device_->getQueue(graphicsQueueFamilyIndex_, 0);
-		graphicsCommandPool_ = device_->createCommandPoolUnique(
-			vk::CommandPoolCreateInfo()
-			.setFlags(vk::CommandPoolCreateFlagBits::eResetCommandBuffer)
-			.setQueueFamilyIndex(graphicsQueueFamilyIndex_)
-		);
-		presentQueue_ = device_->getQueue(presentQueueFamilyIndex_, 0);
-		presentCommandPool_ = device_->createCommandPoolUnique(
-			vk::CommandPoolCreateInfo()
-			.setFlags(vk::CommandPoolCreateFlagBits::eResetCommandBuffer)
-			.setQueueFamilyIndex(presentQueueFamilyIndex_)
-		);*/
 
 		VmaAllocatorCreateInfo allocatorInfo{};
 		allocatorInfo.physicalDevice = physicalDevice_;

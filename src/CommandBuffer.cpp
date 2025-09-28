@@ -62,7 +62,7 @@ namespace sqrp
 
 	void CommandBuffer::BeginRenderPass(RenderPassHandle pRenderPass, FrameBufferHandle pFrameBuffer)
 	{
-		vk::ClearValue clearColor(std::array<float, 4>{0.5f, 0.5f, 0.5f, 1.0f});
+		vk::ClearValue clearColor(std::array<float, 4>{0.2f, 0.2f, 0.2f, 1.0f});
 		vk::ClearValue clearDepth({ 1.0f, 0 });
 
 		vk::RenderPassBeginInfo renderPassInfo{};

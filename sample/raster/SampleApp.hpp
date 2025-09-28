@@ -34,10 +34,6 @@ private:
 	sqrp::DescriptorSetHandle descriptorSet_;
 	sqrp::PipelineHandle pipeline_;
 
-	/*sqrp::DescriptorSetHandle descriptorSet_;
-	sqrp::PipelineHandle pipeline_;*/
-
-
 
 public:
 	SampleApp(std::string appName = "sample-raster", unsigned int windowWidth = 1280, unsigned int windowHeight = 720);
@@ -45,4 +41,5 @@ public:
 
 	virtual void OnStart() override;
 	virtual void OnUpdate() override;
+	virtual void OnTerminate() override;
 };

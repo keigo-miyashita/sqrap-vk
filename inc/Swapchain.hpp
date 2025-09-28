@@ -31,7 +31,6 @@ namespace sqrp
 		// Swapchain images are managed by the swapchain itself
 		// so are not managed by user and you should not use vk::UniqueImage
 		std::vector<vk::Image> swapchainImages_;
-		//std::vector<vk::UniqueImageView> swapchainImageViews_;
 		std::vector<CommandBufferHandle> graphicsCommandBuffers_;
 		std::vector<FenceHandle> graphicsFences_;
 		std::vector<CommandBufferHandle> computeCommandBuffers_;

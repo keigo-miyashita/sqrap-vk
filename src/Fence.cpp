@@ -34,7 +34,9 @@ namespace sqrp
 
 	void Fence::Wait()
 	{
-		pDevice_->GetDevice().waitForFences(fence_.get(), VK_TRUE, UINT64_MAX);
+		if (pDevice_->GetDevice().waitForFences(fence_.get(), VK_TRUE, UINT64_MAX) != vk::Result::eSuccess) {
+			throw std::runtime_error("Failed to wait for fence");
+		}
 	}
 
 	vk::Fence Fence::GetFence() const

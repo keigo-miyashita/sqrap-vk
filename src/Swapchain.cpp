@@ -61,26 +61,13 @@ namespace sqrp
 
 		swapchainImages_ = pDevice_->GetDevice().getSwapchainImagesKHR(swapchain_.get());
 
-		/*for (auto& swapchainImage : swapchainImages_) {
-			swapchainImageViews_.push_back(
-				pDevice_->GetDevice().createImageViewUnique(
-					vk::ImageViewCreateInfo()
-					.setImage(swapchainImage)
-					.setViewType(vk::ImageViewType::e2D)
-					.setFormat(surfaceFormat_.format)
-					.setComponents({ vk::ComponentSwizzle::eR, vk::ComponentSwizzle::eG,
-								vk::ComponentSwizzle::eB, vk::ComponentSwizzle::eA })
-					.setSubresourceRange({ vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1 }))
-			);
-		}*/
-
 		for (const auto& [flag, context] : pDevice_->GetQueueContexts()) {
 			if (flag == QueueContextType::General || flag == QueueContextType::Graphics) {
 				graphicsCommandBuffers_.resize(inflightCount_);
 				graphicsFences_.resize(inflightCount_);
 				for (int i = 0; i < inflightCount_; i++) {
 					graphicsCommandBuffers_[i] = pDevice_->CreateCommandBuffer(flag);
-					graphicsFences_[i] = pDevice_->CreateFence(false);
+					graphicsFences_[i] = pDevice_->CreateFence();
 				}
 			}
 			else if (flag == QueueContextType::Compute) {
@@ -88,7 +75,7 @@ namespace sqrp
 				computeFences_.resize(inflightCount_);
 				for (int i = 0; i < inflightCount_; i++) {
 					computeCommandBuffers_[i] = pDevice_->CreateCommandBuffer(flag);
-					computeFences_[i] = pDevice_->CreateFence(false);
+					computeFences_[i] = pDevice_->CreateFence();
 				}
 			}
 		}
@@ -110,7 +97,7 @@ namespace sqrp
 	{
 		graphicsFences_[inflightIndex_]->Wait();
 
-		auto result = pDevice_->GetDevice().acquireNextImageKHR(swapchain_.get(), std::numeric_limits<uint64_t>::max(), imageAcquireSemaphores_[inflightIndex_]->GetSemaphore(), graphicsFences_[inflightIndex_]->GetFence());
+		auto result = pDevice_->GetDevice().acquireNextImageKHR(swapchain_.get(), std::numeric_limits<uint64_t>::max(), imageAcquireSemaphores_[inflightIndex_]->GetSemaphore(), nullptr);
 
 		imageIndex_ = result.value;
 
@@ -122,7 +109,7 @@ namespace sqrp
 		vk::PresentInfoKHR presentInfo;
 		presentInfo.setSwapchains(swapchain_.get());
 		presentInfo.setImageIndices(imageIndex_);
-		vk::Semaphore semaphore = imageAcquireSemaphores_[inflightIndex_]->GetSemaphore();
+		vk::Semaphore semaphore = renderCompleteSemaphores_[inflightIndex_]->GetSemaphore();
 		presentInfo.setWaitSemaphores(semaphore);
 		if (pDevice_->GetQueue(QueueContextType::General).presentKHR(presentInfo) != vk::Result::eSuccess) {
 			return;

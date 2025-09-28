@@ -57,13 +57,12 @@ void SampleApp::OnStart()
 	pixelShader_ = device_.CreateShader(compiler_, string(SHADER_DIR) + "Shader.frag", sqrp::ShaderType::Pixel);
 
 	pipeline_ = device_.CreatePipeline(renderPass_, swapchain_, vertShader_, pixelShader_, descriptorSet_);
-
-	//pipeline_
-
 }
 
 void SampleApp::OnUpdate()
 {
+	camera_.Update();
+
 	swapchain_->WaitFrame();
 
 	auto& commandBuffer = swapchain_->GetCurrentCommandBuffer();
@@ -82,9 +81,14 @@ void SampleApp::OnUpdate()
 	commandBuffer->End();
 
 	device_.Submit(
-		QueueContextType::Graphics, commandBuffer, vk::PipelineStageFlagBits::eColorAttachmentOutput,
+		QueueContextType::General, commandBuffer, vk::PipelineStageFlagBits::eColorAttachmentOutput,
 		swapchain_->GetImageAcquireSemaphore(), swapchain_->GetRenderCompleteSemaphore(), swapchain_->GetCurrentFence()
 	);
 
 	swapchain_->Present();
+}
+
+void SampleApp::OnTerminate()
+{
+	device_.WaitIdle(QueueContextType::General);
 }

@@ -130,7 +130,7 @@ namespace sqrp
 
 		indexBuffer_ = pDevice_->CreateBuffer(
 			sizeof(uint32_t) * indices_.size(),
-			vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eVertexBuffer,
+			vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eIndexBuffer,
 			VmaMemoryUsage::VMA_MEMORY_USAGE_GPU_ONLY,
 			VmaAllocationCreateFlagBits::VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT
 		);
