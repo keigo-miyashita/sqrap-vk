@@ -21,7 +21,7 @@ void SampleApp::OnStart()
 	mesh_ = device_.CreateMesh(string(MODEL_DIR) + "Suzanne.gltf");
 
 	// Camera
-	camera_.Init((float)GetWindowWidth() / (float)GetWindowHeight(), glm::vec3(0.0f, 0.0f, -5.0f)); // Note sign
+	camera_.Init((float)GetWindowWidth() / (float)GetWindowHeight(), glm::vec3(0.0f, 0.0f, 5.0f)); // Note sign
 
 	// Light
 	light0_.pos = glm::vec4(10.0f, 10.0f, -5.0f, 1.0f);
@@ -84,8 +84,11 @@ void SampleApp::OnStart()
 void SampleApp::OnUpdate()
 {
 	camera_.Update();
+	cameraBuffer_->Write(CameraMatrix{ camera_.GetView(), camera_.GetProj() });
 
 	swapchain_->WaitFrame();
+
+	//cout << "test" << endl;
 
 	auto& commandBuffer = swapchain_->GetCurrentCommandBuffer();
 
@@ -93,6 +96,8 @@ void SampleApp::OnUpdate()
 
 	commandBuffer->BeginRenderPass(renderPass_, frameBuffer_);
 
+	commandBuffer->SetViewport(swapchain_->GetWidth(), swapchain_->GetHeight());
+	commandBuffer->SetScissor(swapchain_->GetWidth(), swapchain_->GetHeight());
 	commandBuffer->BindPipeline(pipeline_, vk::PipelineBindPoint::eGraphics);
 	commandBuffer->BindDescriptorSet(pipeline_, descriptorSet_, vk::PipelineBindPoint::eGraphics);
 	commandBuffer->BindMeshBuffer(mesh_);

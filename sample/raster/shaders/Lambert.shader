@@ -38,7 +38,7 @@ layout(location = 3) out vec2 fUV;
 
 void main()
 {
-	fWorldPosition = object.model * vPosition;
+	fWorldPosition = vPosition;
 	fNormal = normalize(object.ITModel * vNormal);
 	fTangent = normalize(object.ITModel * vTangent);
 	fUV = vUV;

@@ -130,7 +130,7 @@ namespace sqrp
 
 	void CommandBuffer::SetViewport(uint32_t width, uint32_t height)
 	{
-		commandBuffer_->setViewport(0, vk::Viewport{ 0.0f, 0.0f, static_cast<float>(width), static_cast<float>(height), 0.0f, 1.0f });
+		commandBuffer_->setViewport(0, vk::Viewport{ 0.0f, static_cast<float>(height), static_cast<float>(width), -static_cast<float>(height), 0.0f, 1.0f });
 	}
 
 	void CommandBuffer::TransitionLayout(ImageHandle pImage, vk::ImageLayout newLayout)

@@ -19,8 +19,8 @@ namespace sqrp
 		float fovYAngle_ = 60.0f;
 		float nearZ_ = 0.1f;
 		float farZ_ = 100.0f;
-		float moveScale_ = 0.05f;
-		float rotateScale_ = 0.05f;
+		float moveScale_ = 0.0005f;
+		float rotateScale_ = 0.0005f;
 
 	public:
 		Camera();

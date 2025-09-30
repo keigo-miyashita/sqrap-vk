@@ -89,8 +89,10 @@ namespace sqrp
 	{
 		/*vec4 defaultVec = vec4(0.0f, 0.0f, 1.0f, 0.0f);*/
 		mat4x4 identity = glm::mat4(1.0f);
-		mat4x4 rotationX = glm::rotate(identity, rotation_.x, glm::vec3{ 1, 0, 0 });
-		mat4x4 rotationY = glm::rotate(identity, rotation_.y, glm::vec3{ 0, 1, 0 });
+		// Rotate X + -> counter clockwise -> camera direction turn up
+		mat4x4 rotationX = glm::rotate(identity, -rotation_.x, glm::vec3{ 1, 0, 0 });
+		// Rotate Y + -> counter clockwise -> camera direction turn right
+		mat4x4 rotationY = glm::rotate(identity, -rotation_.y, glm::vec3{ 0, 1, 0 });
 
 		vec4 frontDir = vec4(0.0f, 0.0f, -1.0f, 1.0f);
 

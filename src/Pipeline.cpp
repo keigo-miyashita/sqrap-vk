@@ -71,6 +71,13 @@ namespace sqrp
         vk::PipelineInputAssemblyStateCreateInfo inputAssembly{};
         inputAssembly.topology = vk::PrimitiveTopology::eTriangleList;
 
+        std::array<vk::DynamicState, 2> dynamicStates = {
+            vk::DynamicState::eViewport,
+            vk::DynamicState::eScissor
+		};
+		vk::PipelineDynamicStateCreateInfo dynamicState{};
+		dynamicState.setDynamicStates(dynamicStates);
+
         vk::Viewport viewport{};
         viewport.x = 0.0f;
         viewport.y = 0.0f;
@@ -82,15 +89,13 @@ namespace sqrp
         vk::Rect2D scissor{ {0, 0}, {pSwapchain->GetWidth(), pSwapchain->GetHeight()}};
         vk::PipelineViewportStateCreateInfo viewportState{};
         viewportState.viewportCount = 1;
-        viewportState.pViewports = &viewport;
         viewportState.scissorCount = 1;
-        viewportState.pScissors = &scissor;
 
         vk::PipelineRasterizationStateCreateInfo rasterizer{};
         rasterizer.polygonMode = vk::PolygonMode::eFill;
         rasterizer.lineWidth = 1.0f;
         rasterizer.cullMode = vk::CullModeFlagBits::eBack;
-        rasterizer.frontFace = vk::FrontFace::eClockwise;
+        rasterizer.frontFace = vk::FrontFace::eCounterClockwise;
 
         vk::PipelineMultisampleStateCreateInfo multisampling{};
         multisampling.rasterizationSamples = vk::SampleCountFlagBits::e1;
@@ -119,7 +124,7 @@ namespace sqrp
             .setDepthWriteEnable(vk::True)
             .setDepthCompareOp(vk::CompareOp::eLess)
             .setDepthBoundsTestEnable(vk::False)
-            .setStencilTestEnable(vk::True);
+            .setStencilTestEnable(vk::False);
 
         // 4. パイプライン作成
         vk::GraphicsPipelineCreateInfo pipelineInfo{};
@@ -132,6 +137,7 @@ namespace sqrp
 		pipelineInfo.setPRasterizationState(&rasterizer);
 		pipelineInfo.setPMultisampleState(&multisampling);
 		pipelineInfo.setPColorBlendState(&colorBlending);
+		pipelineInfo.setPDynamicState(&dynamicState);
 		pipelineInfo.setLayout(pipelineLayout_.get());
 		pipelineInfo.setRenderPass(pRenderPass->GetRenderPass());
 		pipelineInfo.setSubpass(0);
