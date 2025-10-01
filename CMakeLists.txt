@@ -35,7 +35,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/inc)
 target_include_directories(${PROJECT_NAME}
     PUBLIC
         ${TINYGLTF_INCLUDE_DIRS}
-        ${VULKAN_INCLUDE}/
+        ${VULKAN_INC}/
         ${VULKAN_SOURCE}/
 )
 
