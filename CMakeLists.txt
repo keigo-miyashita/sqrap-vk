@@ -18,6 +18,8 @@ file(GLOB_RECURSE WRAPPER_HEADERS "inc/*.hpp")
 # hpp, cppファイルのまま扱うためのターゲット設定
 add_library(${PROJECT_NAME} ${WRAPPER_SOURCES})
 
+target_precompile_headers(${PROJECT_NAME} PUBLIC inc/pch.hpp)
+
 find_package(glm CONFIG REQUIRED)
 find_package(glfw3       REQUIRED)
 find_package(imgui CONFIG REQUIRED)
