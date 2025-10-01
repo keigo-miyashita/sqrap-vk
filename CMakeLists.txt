@@ -22,7 +22,7 @@ find_package(glm CONFIG REQUIRED)
 find_package(glfw3       REQUIRED)
 find_package(imgui CONFIG REQUIRED)
 find_path(TINYGLTF_INCLUDE_DIRS "tiny_gltf.h")
-find_package(VulkanHeaders CONFIG)
+#find_package(VulkanHeaders CONFIG REQUIRED)
 find_package(VulkanMemoryAllocator CONFIG REQUIRED)
 find_package(glslang CONFIG REQUIRED)
 
@@ -33,6 +33,8 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/inc)
 target_include_directories(${PROJECT_NAME}
     PUBLIC
         ${TINYGLTF_INCLUDE_DIRS}
+        ${VULKAN_INCLUDE}/
+        ${VULKAN_SOURCE}/
 )
 
 target_link_libraries(
@@ -41,7 +43,7 @@ target_link_libraries(
         glm::glm
         glfw
         imgui::imgui
-        Vulkan::Headers
+        #Vulkan::Headers
         GPUOpen::VulkanMemoryAllocator
         glslang::glslang glslang::glslang-default-resource-limits glslang::SPIRV glslang::SPVRemapper
 )
