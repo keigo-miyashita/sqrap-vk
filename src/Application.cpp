@@ -79,8 +79,6 @@ namespace sqrp
 		deltaMousePos_.y = currentMousePos_.y - prevMousePos_.y;
 
 		prevMousePos_ = currentMousePos_;
-
-		cout << "Current Mouse Position: (" << currentMousePos_.x << ", " << currentMousePos_.y << ")\n";
 	}
 
 	void Input::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)

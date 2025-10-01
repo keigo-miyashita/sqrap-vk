@@ -57,6 +57,35 @@ namespace sqrp
 		return true;
 	}
 
+	bool Device::isDeviceRayTracingSupport(vk::PhysicalDevice physDev)
+	{
+		bool hasAccel = false;
+		bool hasPipeline = false;
+		bool hasBufferAddr = false;
+		bool hasDescriptorIndexing = false;
+		bool hasDeferredHostOps = false;
+		bool hasPipelineLibrary = false;
+
+		for (const auto& extension : physDev.enumerateDeviceExtensionProperties()) {
+			std::string name = extension.extensionName;
+			if (name == VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME) hasAccel = true;
+			if (name == VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME) hasPipeline = true;
+			if (name == VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME) hasBufferAddr = true;
+			if (name == VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME) hasDescriptorIndexing = true;
+			if (name == VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME) hasDeferredHostOps = true;
+			if (name == VK_KHR_PIPELINE_LIBRARY_EXTENSION_NAME) hasPipelineLibrary = true;
+		}
+
+		if (hasAccel && hasPipeline && hasBufferAddr && hasDescriptorIndexing && hasDeferredHostOps && hasPipelineLibrary) {
+			cout << "Device has ray tracing support." << endl;
+			return true;
+		}
+		else {
+			cout << "Device has no ray tracing support." << endl;
+			return false;
+		}
+	}
+
 	Device::Device()
 	{
 		
@@ -185,18 +214,58 @@ namespace sqrp
 				.setPQueuePriorities(queuePriorities.data())
 			);
 		}
+
+		isSupportRayTracing_ = isDeviceRayTracingSupport(physicalDevice_);
+		if (isSupportRayTracing_) {
+
+			requestDeviceExtensions_.push_back(VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME);
+			requestDeviceExtensions_.push_back(VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME);
+			requestDeviceExtensions_.push_back(VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME);
+			requestDeviceExtensions_.push_back(VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME);
+			requestDeviceExtensions_.push_back(VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME);
+			requestDeviceExtensions_.push_back(VK_KHR_PIPELINE_LIBRARY_EXTENSION_NAME);
+		}
 		vk::DeviceCreateInfo deviceCreateInfo{};
 		deviceCreateInfo
 			.setPQueueCreateInfos(queueCreateInfos.data())
 			.setQueueCreateInfoCount(queueCreateInfos.size()) // If you need multi queue when async compute, set multivalue
 			.setPEnabledExtensionNames(requestDeviceExtensions_);
-		// NOTE : FIX!
-		vk::StructureChain<vk::DeviceCreateInfo/*, features*/> createInfoChain{
-			deviceCreateInfo,
-			//vk::PhysicalDevice
-		};
 
-		device_ = physicalDevice_.createDeviceUnique(createInfoChain.get<vk::DeviceCreateInfo>());
+		if (!isSupportRayTracing_) {
+			// NOTE : FIX!
+			vk::StructureChain<vk::DeviceCreateInfo/*, features*/> createInfoChain{
+				deviceCreateInfo,
+				//vk::PhysicalDevice
+			};
+
+			device_ = physicalDevice_.createDeviceUnique(createInfoChain.get<vk::DeviceCreateInfo>());
+		}
+		else {
+			vk::PhysicalDeviceBufferDeviceAddressFeatures bufferAddrFeatures{};
+			bufferAddrFeatures.bufferDeviceAddress = VK_TRUE;
+
+			vk::PhysicalDeviceRayTracingPipelineFeaturesKHR rayTracingPipelineFeatures{};
+			rayTracingPipelineFeatures.rayTracingPipeline = VK_TRUE;
+			rayTracingPipelineFeatures.pNext = &bufferAddrFeatures; // pNextチェーンに接続
+
+			vk::PhysicalDeviceAccelerationStructureFeaturesKHR accelStructFeatures{};
+			accelStructFeatures.accelerationStructure = VK_TRUE;
+			accelStructFeatures.pNext = &rayTracingPipelineFeatures; // pNextチェーンに接続
+
+			// 2. StructureChain に DeviceCreateInfo と機能構造体をまとめる
+			vk::StructureChain<vk::DeviceCreateInfo,
+				vk::PhysicalDeviceAccelerationStructureFeaturesKHR,
+				vk::PhysicalDeviceRayTracingPipelineFeaturesKHR,
+				vk::PhysicalDeviceBufferDeviceAddressFeatures> createInfoChain{
+				 deviceCreateInfo,       // DeviceCreateInfo
+				 accelStructFeatures,    // 最初の機能構造体
+				 rayTracingPipelineFeatures,
+				 bufferAddrFeatures
+			};
+
+			device_ = physicalDevice_.createDeviceUnique(createInfoChain.get<vk::DeviceCreateInfo>());
+		}
+
 		VULKAN_HPP_DEFAULT_DISPATCHER.init(device_.get());
 
 		for (auto& [type, context] : queueContexts_) {

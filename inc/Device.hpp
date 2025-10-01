@@ -46,6 +46,7 @@ namespace sqrp
 		std::vector<const char*> layers_ = {};
 		std::vector<const char*> requestInstanceExtensions_ = {};
 		std::vector<const char*> requestDeviceExtensions_ = {};
+		bool isSupportRayTracing_ = false;
 		vk::PhysicalDevice physicalDevice_;
 		vk::UniqueDevice device_;
 		vk::UniqueDebugUtilsMessengerEXT debugMessenger_;
@@ -55,6 +56,7 @@ namespace sqrp
 
 		bool isDeviceExtensionSupport(vk::PhysicalDevice physDev);
 		bool isDeviceSuitable(vk::PhysicalDevice physDev);
+		bool isDeviceRayTracingSupport(vk::PhysicalDevice physDev);
 
 	public:
 		Device();
