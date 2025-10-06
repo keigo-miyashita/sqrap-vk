@@ -92,7 +92,7 @@ namespace sqrp
 			auto attachmentInfo = attachmentInfos[i];
 			clearValues[i] = vk::ClearValue();
 			if (attachmentInfo.imageLayout == vk::ImageLayout::eColorAttachmentOptimal) {
-				clearValues[i].color = vk::ClearColorValue(std::array<float, 4>{ 0.0f, 0.0f, 0.0f, 1.0f });
+				clearValues[i].color = vk::ClearColorValue(std::array<float, 4>{ 0.2f, 0.2f, 0.2f, 1.0f });
 				cout << "clear color" << endl;
 			}
 			else if (attachmentInfo.imageLayout == vk::ImageLayout::eDepthStencilAttachmentOptimal) {
