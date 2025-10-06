@@ -52,6 +52,7 @@ namespace sqrp
 		vk::Extent2D GetExtent2D() const;
 		vk::Format GetSurfaceFormat() const;
 		uint32_t GetInflightCount() const;
+		uint32_t GetCurrentInflightIndex() const;
 		uint32_t GetImageIndex() const;
 		SemaphoreHandle GetImageAcquireSemaphore() const;
 		SemaphoreHandle GetRenderCompleteSemaphore() const;

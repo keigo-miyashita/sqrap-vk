@@ -63,7 +63,7 @@ namespace sqrp
 	void CommandBuffer::BeginRenderPass(RenderPassHandle pRenderPass, FrameBufferHandle pFrameBuffer)
 	{
 		vk::ClearValue clearColor(std::array<float, 4>{0.2f, 0.2f, 0.2f, 1.0f});
-		vk::ClearValue clearDepth({ 1.0f, 0 });
+		vk::ClearValue clearDepth(vk::ClearDepthStencilValue{ 1.0f, 0 });
 
 		vk::RenderPassBeginInfo renderPassInfo{};
 		renderPassInfo.renderPass = pRenderPass->GetRenderPass();
@@ -71,6 +71,44 @@ namespace sqrp
 		renderPassInfo.renderArea.offset = vk::Offset2D{ 0, 0 };
 		renderPassInfo.renderArea.extent = pFrameBuffer->GetSwapchain()->GetExtent2D();
 		std::array<vk::ClearValue, 2> clearValues = { clearColor, clearDepth };
+		renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+		renderPassInfo.pClearValues = clearValues.data();
+
+		commandBuffer_->beginRenderPass(renderPassInfo, vk::SubpassContents::eInline);
+	}
+
+	void CommandBuffer::BeginRenderPass(RenderPassHandle pRenderPass, FrameBufferHandle pFrameBuffer, SwapchainHandle pSwapchain)
+	{
+		cout << "BeginRenderPass" << endl;
+		vk::RenderPassBeginInfo renderPassInfo{};
+		renderPassInfo.renderPass = pRenderPass->GetRenderPass();
+		renderPassInfo.framebuffer = pFrameBuffer->GetFrameBuffer(pSwapchain->GetImageIndex());
+		renderPassInfo.renderArea.offset = vk::Offset2D{ 0, 0 };
+		renderPassInfo.renderArea.extent = pSwapchain->GetExtent2D();
+		std::vector<vk::ClearValue> clearValues(pRenderPass->GetNumAttachments());
+		auto attachmentInfos = pRenderPass->GetAttachmentInfos();
+		cout << "pRenderPass->GetNumAttachments() = " << pRenderPass->GetNumAttachments() << endl;
+		for (int i = 0; i < pRenderPass->GetNumAttachments(); i++) {
+			auto attachmentInfo = attachmentInfos[i];
+			clearValues[i] = vk::ClearValue();
+			if (attachmentInfo.imageLayout == vk::ImageLayout::eColorAttachmentOptimal) {
+				clearValues[i].color = vk::ClearColorValue(std::array<float, 4>{ 0.0f, 0.0f, 0.0f, 1.0f });
+				cout << "clear color" << endl;
+			}
+			else if (attachmentInfo.imageLayout == vk::ImageLayout::eDepthStencilAttachmentOptimal) {
+				clearValues[i].depthStencil = vk::ClearDepthStencilValue{ 1.0f, 0 };
+				cout << "clear depth" << endl;
+			}
+		}
+		/*for (int i = 0; i < pRenderPass->GetNumAttachments(); i++) {
+			clearValues[i] = vk::ClearValue();
+			if (pRenderPass->GetAttachmentInfo(i).attachmentDesc.format == vk::Format::eD32Sfloat) {
+				clearValues[i].depthStencil = vk::ClearDepthStencilValue{ 1.0f, 0 };
+			}
+			else {
+				clearValues[i].color = vk::ClearColorValue(std::array<float, 4>{ 0.0f, 0.0f, 0.0f, 1.0f });
+			}
+		}*/
 		renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
 		renderPassInfo.pClearValues = clearValues.data();
 
@@ -131,14 +169,32 @@ namespace sqrp
 	void CommandBuffer::SetViewport(uint32_t width, uint32_t height)
 	{
 		commandBuffer_->setViewport(0, vk::Viewport{ 0.0f, static_cast<float>(height), static_cast<float>(width), -static_cast<float>(height), 0.0f, 1.0f });
+		//commandBuffer_->setViewport(0, vk::Viewport{ 0.0f, 0.0f, static_cast<float>(width), static_cast<float>(height), 0.0f, 1.0f });
 	}
 
-	void CommandBuffer::TransitionLayout(ImageHandle pImage, vk::ImageLayout newLayout)
+	void CommandBuffer::TransitionLayout(ImageHandle pImage, vk::ImageLayout oldLayout, vk::ImageLayout newLayout)
 	{
-		if (pImage->GetImageLayout() == newLayout) return;
-		pImage->SetImageLayout(newLayout);
+		if (pImage->GetImageLayout() == vk::ImageLayout::eUndefined) {
+			cout << "old : vk::ImageLayout::eUndefined" << endl;
+		}
+		else if (pImage->GetImageLayout() == vk::ImageLayout::eColorAttachmentOptimal) {
+			cout << "old : vk::ImageLayout::eColorAttachmentOptimal" << endl;
+		}
+		else if (pImage->GetImageLayout() == vk::ImageLayout::eShaderReadOnlyOptimal) {
+			cout << "old : vk::ImageLayout::eShaderReadOnlyOptimal" << endl;
+		}
+		if (newLayout == vk::ImageLayout::eUndefined) {
+			cout << "new : vk::ImageLayout::eUndefined" << endl;
+		}
+		else if (newLayout == vk::ImageLayout::eColorAttachmentOptimal) {
+			cout << "new : vk::ImageLayout::eColorAttachmentOptimal" << endl;
+		}
+		else if (newLayout == vk::ImageLayout::eShaderReadOnlyOptimal) {
+			cout << "new : vk::ImageLayout::eShaderReadOnlyOptimal" << endl;
+		}
+		if (oldLayout == newLayout) return;
 		vk::ImageMemoryBarrier barrier{};
-		barrier.oldLayout = pImage->GetImageLayout();
+		barrier.oldLayout = oldLayout;
 		barrier.newLayout = newLayout;
 		barrier.srcQueueFamilyIndex = vk::QueueFamilyIgnored;
 		barrier.dstQueueFamilyIndex = vk::QueueFamilyIgnored;
@@ -155,11 +211,17 @@ namespace sqrp
 			{},
 			{ barrier }
 		);
+		pImage->SetImageLayout(newLayout);
 	}
 
 	void CommandBuffer::DrawMesh(MeshHandle pMesh)
 	{
 		commandBuffer_->drawIndexed(static_cast<uint32_t>(pMesh->GetNumIndices()), 1, 0, 0, 0);
+	}
+
+	void CommandBuffer::Draw(uint32_t vertexCount, uint32_t instanceCount)
+	{
+		commandBuffer_->draw(vertexCount, instanceCount, 0, 0);
 	}
 
 	vk::CommandBuffer CommandBuffer::GetCommandBuffer() const

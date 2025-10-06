@@ -3,10 +3,8 @@
 #include "CommandBuffer.hpp"
 #include "Buffer.hpp"
 #include "Fence.hpp"
-#include "FrameBuffer.hpp"
 #include "Image.hpp"
 #include "Pipeline.hpp"
-#include "RenderPass.hpp"
 #include "Semaphore.hpp"
 #include "Shader.hpp"
 #include "Swapchain.hpp"
@@ -313,9 +311,14 @@ namespace sqrp
 		return std::make_shared<Fence>(*this, signal);
 	}
 
-	FrameBufferHandle Device::CreateFrameBuffer(SwapchainHandle pSwapchain, RenderPassHandle pRenderPass, int numAttachmentBuffers) const
+	FrameBufferHandle Device::CreateFrameBuffer(RenderPassHandle pRenderPass, SwapchainHandle pSwapchain, bool useDepth) const
 	{
-		return std::make_shared<FrameBuffer>(*this, pSwapchain, pRenderPass, numAttachmentBuffers);
+		return std::make_shared<FrameBuffer>(*this, pRenderPass, pSwapchain, useDepth);
+	}
+	
+	FrameBufferHandle Device::CreateFrameBuffer(RenderPassHandle pRenderPass, std::vector<FrameBufferInfo> frameBufferInfos, uint32_t width, uint32_t height, int infligtCount, SwapchainHandle pSwapchain) const
+	{
+		return std::make_shared<FrameBuffer>(*this, pRenderPass, frameBufferInfos, width, height, infligtCount, pSwapchain);
 	}
 
 	ImageHandle Device::CreateImage(
@@ -333,6 +336,24 @@ namespace sqrp
 	) const
 	{
 		return std::make_shared<Image>(*this, extent3D, imageType, usage, format, imageLayout, aspectFlags, mipLevels, arrayLayers, samples, tiling, samplerCreateInfo);
+	}
+
+	ImageHandle Device::CreateImage(
+		std::string name,
+		vk::Extent3D extent3D,
+		vk::ImageType imageType,
+		vk::ImageUsageFlags usage,
+		vk::Format format,
+		vk::ImageLayout imageLayout,
+		vk::ImageAspectFlags aspectFlags,
+		int mipLevels,
+		int arrayLayers,
+		vk::SampleCountFlagBits samples,
+		vk::ImageTiling tiling,
+		vk::SamplerCreateInfo samplerCreateInfo
+	) const
+	{
+		return std::make_shared<Image>(*this, name, extent3D, imageType, usage, format, imageLayout, aspectFlags, mipLevels, arrayLayers, samples, tiling, samplerCreateInfo);
 	}
 
 	MeshHandle Device::CreateMesh(std::string modelPath) const
@@ -359,6 +380,11 @@ namespace sqrp
 	RenderPassHandle Device::CreateRenderPass(SwapchainHandle pSwapchain) const
 	{
 		return std::make_shared<RenderPass>(*this, pSwapchain);
+	}
+
+	RenderPassHandle Device::CreateRenderPass(std::vector<SubPassInfo> subPassInfos, std::map<string, AttachmentInfo> attachmentNameToInfo) const
+	{
+		return std::make_shared<RenderPass>(*this, subPassInfos, attachmentNameToInfo);
 	}
 
 	SemaphoreHandle Device::CreateSemaphore() const

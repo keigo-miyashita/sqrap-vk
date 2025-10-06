@@ -8,10 +8,11 @@ namespace sqrp
 {
 	class Buffer;
 	class Device;
+	class Image;
 
 	struct DescriptorSetCreateInfo
 	{
-		BufferHandle pBuffer = nullptr;
+		std::variant<BufferHandle, ImageHandle> pResource;
 		vk::DescriptorType type;
 		vk::ShaderStageFlags shaderStageFlags;
 	};

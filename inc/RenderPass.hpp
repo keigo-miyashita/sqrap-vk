@@ -9,12 +9,30 @@ namespace sqrp
 	class Device;
 	class Swapchain;
 
+	struct AttachmentInfo
+	{
+		vk::AttachmentDescription attachmentDesc;
+		vk::ImageLayout imageLayout;
+	};
+
+	struct SubPassInfo
+	{
+		std::vector<std::string> attachmentInfos;
+	};
+
 	class RenderPass
 	{
 	private:
 		const Device* pDevice_ = nullptr;
 
 		vk::UniqueRenderPass renderPass_;
+		std::vector<SubPassInfo> subPassInfos_;
+		std::vector<std::string> uniqueAttachmentNames_;
+		std::vector<AttachmentInfo> attachmentInfos_;
+		//std::map<AttachmentInfo*, int> attachmentInfoToIndex_; // AttachmentInfo pointer to global attachment index
+		//std::map<int, int> attachmentInfoToDescIndex_; // AttachmentInfo ID to global attachment index
+		int numColorAttachments_ = 0;
+		int numDepthAttachments_ = 0;
 
 
 	public:
@@ -22,8 +40,16 @@ namespace sqrp
 			const Device& device,
 			SwapchainHandle pSwapchain
 		);
+		RenderPass(
+			const Device& device,
+			std::vector<SubPassInfo> subPassInfos,
+			std::map<std::string, AttachmentInfo> attachmentNameToInfo
+		);
 		~RenderPass() = default;
 
 		vk::RenderPass GetRenderPass() const;
+		int GetNumColorAttachments() const;
+		int GetNumAttachments() const;
+		std::vector<AttachmentInfo> GetAttachmentInfos() const;
 	};
 }

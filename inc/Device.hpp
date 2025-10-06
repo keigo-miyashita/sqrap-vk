@@ -7,7 +7,9 @@
 #include "Application.hpp"
 #include "Compiler.hpp"
 #include "DescriptorSet.hpp"
+#include "FrameBuffer.hpp"
 #include "Mesh.hpp"
+#include "RenderPass.hpp"
 
 namespace sqrp
 {
@@ -16,13 +18,11 @@ namespace sqrp
 	class CommandBuffer;
 	class DescriptorSet;
 	class Fence;
-	class FrameBuffer;
 	class Image;
 	class Pipeline;
-	class RenderPass;
 	class Semaphore;
 	class Shader;
-	class Swawpchain;
+	class Swapchain;
 
 	struct Vertex;
 
@@ -71,8 +71,23 @@ namespace sqrp
 		CommandBufferHandle CreateCommandBuffer(QueueContextType queueType = QueueContextType::General) const;
 		DescriptorSetHandle CreateDescriptorSet(std::vector<DescriptorSetCreateInfo> descriptorSetCreateInfos) const;
 		FenceHandle CreateFence(bool signal = true) const;
-		FrameBufferHandle CreateFrameBuffer(SwapchainHandle pSwapchain, RenderPassHandle pRenderPass, int numAttachmentBuffers = 0) const;
+		FrameBufferHandle CreateFrameBuffer(RenderPassHandle pRenderPass, SwapchainHandle pSwapchain, bool useDepth = true) const;
+		FrameBufferHandle CreateFrameBuffer(RenderPassHandle pRenderPass, std::vector<FrameBufferInfo> frameBufferInfos, uint32_t width, uint32_t height, int infligtCount, SwapchainHandle pSwapchain = nullptr) const;
 		ImageHandle CreateImage(
+			vk::Extent3D extent3D = vk::Extent3D{ 512, 512, 1 },
+			vk::ImageType imageType = vk::ImageType::e2D,
+			vk::ImageUsageFlags usage = vk::ImageUsageFlagBits::eSampled,
+			vk::Format format = vk::Format::eR8G8B8A8Srgb,
+			vk::ImageLayout imageLayout = vk::ImageLayout::eUndefined,
+			vk::ImageAspectFlags aspectFlags = vk::ImageAspectFlagBits::eColor,
+			int mipLevels = 1,
+			int arrayLayers = 1,
+			vk::SampleCountFlagBits samples = vk::SampleCountFlagBits::e1,
+			vk::ImageTiling tiling = vk::ImageTiling::eOptimal,
+			vk::SamplerCreateInfo samplerCreateInfo = {}
+		)  const;
+		ImageHandle CreateImage(
+			std::string name = "Image",
 			vk::Extent3D extent3D = vk::Extent3D{ 512, 512, 1 },
 			vk::ImageType imageType = vk::ImageType::e2D,
 			vk::ImageUsageFlags usage = vk::ImageUsageFlagBits::eSampled,
@@ -95,6 +110,7 @@ namespace sqrp
 			DescriptorSetHandle pDescriptorSet
 		) const;
 		RenderPassHandle CreateRenderPass(SwapchainHandle pSwapchain) const;
+		RenderPassHandle CreateRenderPass(std::vector<SubPassInfo> subPassInfos, std::map<std::string, AttachmentInfo> attachmentNameToInfo) const;
 		SemaphoreHandle CreateSemaphore() const;
 		ShaderHandle CreateShader(const Compiler& compiler, const std::string& fileName, ShaderType shaderType) const;
 		SwapchainHandle CreateSwapchain(uint32_t width, uint32_t height) const;

@@ -13,6 +13,9 @@ namespace sqrp
 	)
 		: pDevice_(&device)
 	{
+        numColorAttachments_ = 1;
+		numDepthAttachments_ = 1;
+
         // カラーアタッチメント
         vk::AttachmentDescription colorAttachment{};
         colorAttachment.format = pSwapchain->GetSurfaceFormat();
@@ -59,11 +62,106 @@ namespace sqrp
         renderPassInfo.subpassCount = 1;
         renderPassInfo.pSubpasses = &subpass;
 
+        attachmentInfos_.push_back(
+            AttachmentInfo{
+                colorAttachment, vk::ImageLayout::eColorAttachmentOptimal
+            }
+        );
+        attachmentInfos_.push_back(
+            AttachmentInfo{
+                depthAttachment, vk::ImageLayout::eDepthStencilAttachmentOptimal
+            }
+        );
+
         renderPass_ = pDevice_->GetDevice().createRenderPassUnique(renderPassInfo);
 	}
+
+    RenderPass::RenderPass(
+        const Device& device,
+        std::vector<SubPassInfo> subPassInfos,
+        std::map<string, AttachmentInfo> attachmentNameToInfo
+	) : pDevice_(&device), subPassInfos_(subPassInfos)
+    {
+		vector<vk::SubpassDescription> subPassDescs;
+        subPassDescs.resize(subPassInfos.size());
+
+        vector<vk::AttachmentDescription> attachmentsDescs;
+		std::map<string, int> attachmentNameToDescID;
+        for (int i = 0; i < subPassInfos.size(); i++) {
+            for (int j = 0; j < subPassInfos[i].attachmentInfos.size(); j++) {
+				string attachmentName = subPassInfos[i].attachmentInfos[j];
+                if (std::find(uniqueAttachmentNames_.begin(), uniqueAttachmentNames_.end(), attachmentName) == uniqueAttachmentNames_.end()) {
+					int uniqueID = static_cast<int>(uniqueAttachmentNames_.size());
+					uniqueAttachmentNames_.push_back(attachmentName);
+                    attachmentsDescs.push_back(attachmentNameToInfo[attachmentName].attachmentDesc);
+                    attachmentNameToDescID[attachmentName] = uniqueID;
+                    if (attachmentNameToInfo[attachmentName].imageLayout == vk::ImageLayout::eColorAttachmentOptimal) {
+                        numColorAttachments_++;
+                    }
+                    else if (attachmentNameToInfo[attachmentName].imageLayout == vk::ImageLayout::eDepthStencilAttachmentOptimal) {
+                        numDepthAttachments_++;
+                    }
+                    attachmentInfos_.push_back(attachmentNameToInfo[attachmentName]);
+                }
+            }
+        }
+
+        vector<vector<vk::AttachmentReference>> allColorRefs(subPassInfos.size());
+        vector<optional<vk::AttachmentReference>> allDepthRefs(subPassInfos.size());
+
+        for (int i = 0; i < subPassInfos.size(); i++) {
+            for (int j = 0; j < subPassInfos[i].attachmentInfos.size(); j++) {
+                string attachmentName = subPassInfos[i].attachmentInfos[j];
+                if (attachmentNameToInfo[attachmentName].imageLayout == vk::ImageLayout::eColorAttachmentOptimal) {
+                    allColorRefs[i].push_back(
+                        vk::AttachmentReference{}
+                        .setAttachment(attachmentNameToDescID[attachmentName])
+                        .setLayout(vk::ImageLayout::eColorAttachmentOptimal)
+					);
+					//cout << "colorRef: " << globalIndex << endl;
+                }
+                else if (attachmentNameToInfo[attachmentName].imageLayout == vk::ImageLayout::eDepthStencilAttachmentOptimal) {
+                    allDepthRefs[i] = vk::AttachmentReference{}
+                        .setAttachment(attachmentNameToDescID[attachmentName])
+                        .setLayout(vk::ImageLayout::eDepthStencilAttachmentOptimal);
+					//cout << "depthRef: " << globalIndex << endl;
+                }
+			}
+
+			subPassDescs[i] = vk::SubpassDescription{}
+				.setPipelineBindPoint(vk::PipelineBindPoint::eGraphics)
+				.setColorAttachmentCount(static_cast<uint32_t>(allColorRefs[i].size()))
+				.setPColorAttachments(allColorRefs[i].data())
+				.setPDepthStencilAttachment(allDepthRefs[i] ? &(*allDepthRefs[i]) : nullptr);
+        }
+
+        vk::RenderPassCreateInfo renderPassInfo{};
+        renderPassInfo
+            .setAttachmentCount(attachmentsDescs.size())
+            .setPAttachments(attachmentsDescs.data())
+            .setSubpassCount(subPassDescs.size())
+            .setPSubpasses(subPassDescs.data());
+
+		renderPass_ = pDevice_->GetDevice().createRenderPassUnique(renderPassInfo);
+    }
 
     vk::RenderPass RenderPass::GetRenderPass() const
     {
         return renderPass_.get();
+    }
+
+    int RenderPass::GetNumColorAttachments() const
+    {
+		return numColorAttachments_;
+    }
+
+    int RenderPass::GetNumAttachments() const
+    {
+        return numColorAttachments_ + numDepthAttachments_;
+	}
+
+    vector<AttachmentInfo> RenderPass::GetAttachmentInfos() const
+    {
+		return attachmentInfos_;
     }
 }

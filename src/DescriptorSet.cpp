@@ -1,7 +1,9 @@
 #include "DescriptorSet.hpp"
 
 #include "Buffer.hpp"
+#include "CommandBuffer.hpp"
 #include "Device.hpp"
+#include "Image.hpp"
 
 using namespace std;
 
@@ -65,17 +67,43 @@ namespace sqrp
 
 		std::vector<vk::WriteDescriptorSet> writeDescriptorSets(descriptorSetCreateInfos_.size());
 		std::vector<vk::DescriptorBufferInfo> descriptorBufferInfos(descriptorSetCreateInfos_.size());
+		std::vector<vk::DescriptorImageInfo> descriptorImageInfos(descriptorSetCreateInfos_.size());
 		index = 0;
 		for (const auto& descriptorSetCreateInfo : descriptorSetCreateInfos_) {
-			descriptorBufferInfos[index].setBuffer(descriptorSetCreateInfo.pBuffer->GetBuffer());
+			/*descriptorBufferInfos[index].setBuffer(descriptorSetCreateInfo.pBuffer->GetBuffer());
 			descriptorBufferInfos[index].setOffset(0);
-			descriptorBufferInfos[index].setRange(descriptorSetCreateInfo.pBuffer->GetSize());
-			writeDescriptorSets[index] = vk::WriteDescriptorSet{}
-				.setDstSet(descriptorSets_.get())
-				.setDstBinding(index)
-				.setDescriptorType(descriptorSetCreateInfo.type)
-				.setDescriptorCount(1)
-				.setPBufferInfo(&descriptorBufferInfos[index]);
+			descriptorBufferInfos[index].setRange(descriptorSetCreateInfo.pBuffer->GetSize());*/
+			if (std::holds_alternative<BufferHandle>(descriptorSetCreateInfo.pResource)) {
+				auto buffer = std::get<BufferHandle>(descriptorSetCreateInfo.pResource);
+				descriptorBufferInfos[index].setBuffer(buffer->GetBuffer());
+				descriptorBufferInfos[index].setOffset(0);
+				descriptorBufferInfos[index].setRange(buffer->GetSize());
+
+				writeDescriptorSets[index] = vk::WriteDescriptorSet{}
+					.setDstSet(descriptorSets_.get())
+					.setDstBinding(index)
+					.setDescriptorType(descriptorSetCreateInfo.type)
+					.setDescriptorCount(1)
+					.setPBufferInfo(&descriptorBufferInfos[index]);
+			}
+			else if (std::holds_alternative<ImageHandle>(descriptorSetCreateInfo.pResource)) {
+				auto image = std::get<ImageHandle>(descriptorSetCreateInfo.pResource);
+
+				//descriptorImageInfos[index].setImageLayout(image->GetImageLayout());
+				descriptorImageInfos[index].setImageLayout(vk::ImageLayout::eShaderReadOnlyOptimal);
+				descriptorImageInfos[index].setImageView(image->GetImageView());
+				descriptorImageInfos[index].setSampler(image->GetSampler());
+
+				writeDescriptorSets[index] = vk::WriteDescriptorSet{}
+					.setDstSet(descriptorSets_.get())
+					.setDstBinding(index)
+					.setDescriptorType(descriptorSetCreateInfo.type)
+					.setDescriptorCount(1)
+					.setPImageInfo(&descriptorImageInfos[index]);
+			}
+			else {
+				throw std::runtime_error("Invalid resource type in DescriptorSetCreateInfo");
+			}
 			index++;
 		};
 		pDevice_->GetDevice().updateDescriptorSets(static_cast<uint32_t>(writeDescriptorSets.size()), writeDescriptorSets.data(), 0, nullptr);

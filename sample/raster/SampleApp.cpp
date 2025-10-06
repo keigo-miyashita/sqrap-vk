@@ -16,7 +16,7 @@ void SampleApp::OnStart()
 	swapchain_ = device_.CreateSwapchain(windowWidth_, windowHeight_);
 
 	renderPass_ = device_.CreateRenderPass(swapchain_);
-	frameBuffer_ = device_.CreateFrameBuffer(swapchain_, renderPass_, 1);
+	frameBuffer_ = device_.CreateFrameBuffer(renderPass_, swapchain_);
 
 	mesh_ = device_.CreateMesh(string(MODEL_DIR) + "Suzanne.gltf");
 
@@ -36,36 +36,14 @@ void SampleApp::OnStart()
 	cameraBuffer_ = device_.CreateBuffer(sizeof(CameraMatrix), vk::BufferUsageFlagBits::eUniformBuffer, VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_HOST);
 	cameraBuffer_->Write(CameraMatrix{ camera_.GetView(), camera_.GetProj() });
 	
-	CameraMatrix* data = (CameraMatrix*)cameraBuffer_->Map();
-	cout << data->view[0][0] << ", " << data->view[0][1] << ", " << data->view[0][2] << ", " << data->view[0][3] << endl;
-	cout << data->view[1][0] << ", " << data->view[1][1] << ", " << data->view[1][2] << ", " << data->view[1][3] << endl;
-	cout << data->view[2][0] << ", " << data->view[2][1] << ", " << data->view[2][2] << ", " << data->view[2][3] << endl;
-	cout << data->view[3][0] << ", " << data->view[3][1] << ", " << data->view[3][2] << ", " << data->view[3][3] << endl;
-	cameraBuffer_->Unmap();
-
 	objectBuffer_ = device_.CreateBuffer(sizeof(TransformMatrix), vk::BufferUsageFlagBits::eUniformBuffer, VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_HOST);
 	objectBuffer_->Write(object_);
 
-	TransformMatrix* objectData = (TransformMatrix*)objectBuffer_->Map();
-	cout << objectData->model[0][0] << ", " << objectData->model[0][1] << ", " << objectData->model[0][2] << ", " << objectData->model[0][3] << endl;
-	cout << objectData->model[1][0] << ", " << objectData->model[1][1] << ", " << objectData->model[1][2] << ", " << objectData->model[1][3] << endl;
-	cout << objectData->model[2][0] << ", " << objectData->model[2][1] << ", " << objectData->model[2][2] << ", " << objectData->model[2][3] << endl;
-	cout << objectData->model[3][0] << ", " << objectData->model[3][1] << ", " << objectData->model[3][2] << ", " << objectData->model[3][3] << endl;
-	objectBuffer_->Unmap();
-
 	lightBuffer_ = device_.CreateBuffer(sizeof(Light), vk::BufferUsageFlagBits::eUniformBuffer, VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_HOST);
 	lightBuffer_->Write(light0_);
-	Light* lightData = (Light*)lightBuffer_->Map();
-	cout << lightData->pos.x << ", " << lightData->pos.y << ", " << lightData->pos.z << ", " << lightData->pos.w << endl;
-	lightBuffer_->Unmap();
-	cout << "lightBuffer_->GetSize() = " << lightBuffer_->GetSize() << endl;
 
 	colorBuffer_ = device_.CreateBuffer(sizeof(glm::vec4), vk::BufferUsageFlagBits::eUniformBuffer, VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_HOST);
 	colorBuffer_->Write(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
-	glm::vec4* colorData = (glm::vec4*)colorBuffer_->Map();
-	cout << colorData->x << ", " << colorData->y << ", " << colorData->z << ", " << colorData->w << endl;
-	colorBuffer_->Unmap();
-	cout << "colorBuffer_->GetSize() = " << colorBuffer_->GetSize() << endl;
 
 	descriptorSet_ = device_.CreateDescriptorSet({
 		{ cameraBuffer_, vk::DescriptorType::eUniformBuffer, vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment },

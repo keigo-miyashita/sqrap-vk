@@ -90,6 +90,15 @@ namespace sqrp
         res.maxTransformFeedbackInterleavedComponents = 64;
         res.maxCullDistances = 8;
         res.maxCombinedClipAndCullDistances = 8;
+        res.limits.nonInductiveForLoops = true;
+        res.limits.whileLoops = true;
+        res.limits.doWhileLoops = true;
+        res.limits.generalSamplerIndexing = true;
+        res.limits.generalUniformIndexing = true;
+        res.limits.generalVariableIndexing = true;
+        res.limits.generalAttributeMatrixVectorIndexing = true;
+        res.limits.generalConstantMatrixVectorIndexing = true;
+
         return res;
     }
 
@@ -152,6 +161,9 @@ namespace sqrp
 		// Disable automatic binding and location assignment
         shader.setAutoMapBindings(false);
 		shader.setAutoMapLocations(false);
+        shader.setEnvInput(glslang::EShSourceGlsl, stage, glslang::EShClientVulkan, 450);
+        shader.setEnvClient(glslang::EShClientVulkan, glslang::EShTargetVulkan_1_3); // For vulkan 1.3s
+		shader.setEnvTarget(glslang::EShTargetSpv, glslang::EShTargetSpv_1_6); // Set 1.6 For vulkan 1.3
 
         TBuiltInResource resources = DefaultTBuiltInResource();  // デフォルト
         int defaultVersion = 450;

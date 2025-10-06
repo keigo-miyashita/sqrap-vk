@@ -148,6 +148,11 @@ namespace sqrp
 		return inflightCount_;
 	}
 
+	uint32_t Swapchain::GetCurrentInflightIndex() const
+	{
+		return inflightIndex_;
+	}
+
 	uint32_t Swapchain::GetImageIndex() const
 	{
 		return imageIndex_;

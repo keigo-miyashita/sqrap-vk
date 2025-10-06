@@ -35,6 +35,7 @@ namespace sqrp
 		void BeginRender(SwapchainHandle pSwapchain);
 		void EndRender(SwapchainHandle pSwapchain);
 		void BeginRenderPass(RenderPassHandle pRenderPass, FrameBufferHandle pFrameBuffer);
+		void BeginRenderPass(RenderPassHandle pRenderPass, FrameBufferHandle pFrameBuffer, SwapchainHandle pSwapchain);
 		void EndRenderPass();
 		void BindPipeline(PipelineHandle pPipeline, vk::PipelineBindPoint pipelineBindPoint);
 		void BindMeshBuffer(MeshHandle pMesh);
@@ -43,9 +44,10 @@ namespace sqrp
 		void CopyBufferRegion(BufferHandle srcBuffer, vk::DeviceSize srcOffset, BufferHandle dstBuffer, vk::DeviceSize dstOffset, vk::DeviceSize size);
 		void SetScissor(uint32_t width, uint32_t height);
 		void SetViewport(uint32_t width, uint32_t height);
-		void TransitionLayout(ImageHandle pImage, vk::ImageLayout newLayout);
+		void TransitionLayout(ImageHandle pImage, vk::ImageLayout oldLayout, vk::ImageLayout newLayout);
 
 		void DrawMesh(MeshHandle pMesh);
+		void Draw(uint32_t vertexCount, uint32_t instanceCount);
 
 		vk::CommandBuffer GetCommandBuffer() const;
 	};
