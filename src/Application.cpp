@@ -184,17 +184,27 @@ namespace sqrp
 		return isPushedRButton_;
 	}
 
+	void Application::WindowSizeCallback(GLFWwindow* window, int width, int height)
+	{
+		Application* app = reinterpret_cast<Application*>(glfwGetWindowUserPointer(window));
+		app->SetWindowWidth(width);
+		app->SetWindowHeight(height);
+		app->OnResize(width, height);
+	}
 
 	void Application::CreateGLFWWindow()
 	{
 		glfwInit();
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-		glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+		glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 		pWindow_ = glfwCreateWindow(windowWidth_, windowHeight_, appName_.c_str(), nullptr, nullptr);
+
+		glfwSetWindowUserPointer(pWindow_, this);
 
 		glfwSetKeyCallback(pWindow_, Input::KeyCallback);
 		glfwSetMouseButtonCallback(pWindow_, Input::MouseButtonCallback);
 		glfwSetWindowFocusCallback(pWindow_, Input::WindowFocusCallback);
+		glfwSetWindowSizeCallback(pWindow_, WindowSizeCallback);
 	}
 
 	Application::Application()
@@ -242,6 +252,11 @@ namespace sqrp
 
 	}
 
+	void Application::OnResize(unsigned int width, unsigned int height)
+	{
+		
+	}
+
 	void Application::OnTerminate()
 	{
 
@@ -265,5 +280,15 @@ namespace sqrp
 	unsigned int Application::GetWindowHeight()
 	{
 		return windowHeight_;
+	}
+
+	void Application::SetWindowWidth(unsigned int width)
+	{
+		windowWidth_ = width;
+	}
+
+	void Application::SetWindowHeight(unsigned int height)
+	{
+		windowHeight_ = height;
 	}
 }

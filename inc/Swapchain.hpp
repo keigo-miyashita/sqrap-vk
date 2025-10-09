@@ -25,9 +25,10 @@ namespace sqrp
 		vk::SurfaceCapabilitiesKHR capabilities_;
 		vk::SurfaceFormatKHR surfaceFormat_;
 		vk::PresentModeKHR presentMode_;
-		vk::UniqueSwapchainKHR swapchain_;
 		uint32_t width_;
 		uint32_t height_;
+
+		vk::UniqueSwapchainKHR swapchain_;
 		// Swapchain images are managed by the swapchain itself
 		// so are not managed by user and you should not use vk::UniqueImage
 		std::vector<vk::Image> swapchainImages_;
@@ -42,6 +43,7 @@ namespace sqrp
 		Swapchain(const Device& device, uint32_t width, uint32_t height);
 		~Swapchain() = default;
 
+		void Recreate(uint32_t width, uint32_t height);
 		CommandBufferHandle& GetCurrentCommandBuffer();
 		void WaitFrame();
 		void Present();

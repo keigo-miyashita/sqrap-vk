@@ -35,7 +35,7 @@ namespace sqrp
 			float farZ = 100.0f
 		);
 
-		void Update();
+		void Update(uint32_t width, uint32_t height);
 		glm::vec4 GetPos();
 		glm::vec3 GetFront();
 		glm::vec3 GetUp();

@@ -106,8 +106,6 @@ namespace sqrp
 		pDevice_->OneTimeSubmit([&](CommandBufferHandle pCommandBuffer) {
 			pCommandBuffer->CopyBuffer(vertexStagingBuffer, vertexBuffer_);
 		});
-		/*command_->CopyBuffer(vertexUploadBuffer, vertexBuffer_);
-		command_->WaitCommand();*/
 
 		return true;
 	}
@@ -137,8 +135,6 @@ namespace sqrp
 		pDevice_->OneTimeSubmit([&](CommandBufferHandle pCommandBuffer) {
 			pCommandBuffer->CopyBuffer(indexStagingBuffer, indexBuffer_);
 		});
-		/*command_->CopyBuffer(indexUploadBuffer, indexBuffer_);
-		command_->WaitCommand();*/
 
 		return true;
 	}

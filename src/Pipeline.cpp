@@ -102,32 +102,12 @@ namespace sqrp
 
         std::vector<vk::PipelineColorBlendAttachmentState> colorBlendAttachments(pRenderPass->GetNumColorAttachments());
         for (int i = 0; i < pRenderPass->GetNumColorAttachments(); i++) {
-            //const auto& pAttachmentInfo = pRenderPass->GetPAttachmentInfos()[i];
-            //if (pAttachmentInfo->imageLayout == vk::ImageLayout::eColorAttachmentOptimal) {
-            //    colorBlendAttachments[i].blendEnable = VK_FALSE;
-            //    colorBlendAttachments[i].srcColorBlendFactor = vk::BlendFactor::eOne; // Optional
-            //    colorBlendAttachments[i].dstColorBlendFactor = vk::BlendFactor::eZero; // Optional
-            //    colorBlendAttachments[i].colorBlendOp = vk::BlendOp::eAdd; // Optional
-            //    colorBlendAttachments[i].srcAlphaBlendFactor = vk::BlendFactor::eOne; // Optional
-            //    colorBlendAttachments[i].dstAlphaBlendFactor = vk::BlendFactor::eZero; // Optional
-            //    colorBlendAttachments[i].alphaBlendOp = vk::BlendOp::eAdd; // Optional
-            //    colorBlendAttachments[i].colorWriteMask =
-            //        vk::ColorComponentFlagBits::eR |
-            //        vk::ColorComponentFlagBits::eG |
-            //        vk::ColorComponentFlagBits::eB |
-            //        vk::ColorComponentFlagBits::eA;
-            //}
             colorBlendAttachments[i].colorWriteMask =
                 vk::ColorComponentFlagBits::eR |
                 vk::ColorComponentFlagBits::eG |
                 vk::ColorComponentFlagBits::eB |
 				vk::ColorComponentFlagBits::eA;
 		}
-        /*colorBlendAttachment.colorWriteMask =
-            vk::ColorComponentFlagBits::eR |
-            vk::ColorComponentFlagBits::eG |
-            vk::ColorComponentFlagBits::eB |
-            vk::ColorComponentFlagBits::eA;*/
 
         vk::PipelineColorBlendStateCreateInfo colorBlending{};
         colorBlending.attachmentCount = colorBlendAttachments.size();
@@ -164,11 +144,6 @@ namespace sqrp
 		pipelineInfo.setRenderPass(pRenderPass->GetRenderPass());
 		pipelineInfo.setSubpass(0);
 
-       /*auto result = pDevice_->GetDevice().createGraphicsPipeline(nullptr, pipelineInfo);
-        if (result.result != vk::Result::eSuccess) {
-            throw std::runtime_error("failed to create graphics pipeline!");
-        }
-        pipeline_ = vk::UniquePipeline(result.value); */
         auto result = pDevice_->GetDevice().createGraphicsPipelinesUnique(nullptr, pipelineInfo);
         if (result.result != vk::Result::eSuccess) {
             throw std::runtime_error("failed to create graphics pipeline!");

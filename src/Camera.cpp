@@ -32,7 +32,7 @@ namespace sqrp
 		return true;
 	}
 
-	void Camera::Update()
+	void Camera::Update(uint32_t width, uint32_t height)
 	{
 		vec3 front = GetFront();
 		vec3 right = GetRight();
@@ -73,11 +73,11 @@ namespace sqrp
 			auto prevMousePos = Input::GetPrevPos();
 			auto currentMousePos = Input::GetPos();
 
-			/*rotation_.x += (currentMousePos.y - prevMousePos.y) * moveScale;
-			rotation_.y += (currentMousePos.x - prevMousePos.x) * moveScale;*/
 			rotation_.x += Input::GetDeltaPos().y * rotateScale_;
 			rotation_.y += Input::GetDeltaPos().x * rotateScale_;
 		}
+
+		aspectRatio_ = (float)(width) / (float)(height);
 	}
 
 	vec4 Camera::GetPos()
@@ -87,7 +87,6 @@ namespace sqrp
 
 	vec3 Camera::GetFront()
 	{
-		/*vec4 defaultVec = vec4(0.0f, 0.0f, 1.0f, 0.0f);*/
 		mat4x4 identity = glm::mat4(1.0f);
 		// Rotate X + -> counter clockwise -> camera direction turn up
 		mat4x4 rotationX = glm::rotate(identity, -rotation_.x, glm::vec3{ 1, 0, 0 });

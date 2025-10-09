@@ -61,12 +61,10 @@ void SampleApp::OnStart()
 
 void SampleApp::OnUpdate()
 {
-	camera_.Update();
+	camera_.Update(windowWidth_, windowHeight_);
 	cameraBuffer_->Write(CameraMatrix{ camera_.GetView(), camera_.GetProj() });
 
 	swapchain_->WaitFrame();
-
-	//cout << "test" << endl;
 
 	auto& commandBuffer = swapchain_->GetCurrentCommandBuffer();
 
@@ -91,6 +89,14 @@ void SampleApp::OnUpdate()
 	);
 
 	swapchain_->Present();
+}
+
+void SampleApp::OnResize(unsigned int width, unsigned int height)
+{
+	if (width == 0 || height == 0) return;
+	device_.WaitIdle(QueueContextType::General);
+	swapchain_->Recreate(width, height);
+	frameBuffer_->Recreate(width, height);
 }
 
 void SampleApp::OnTerminate()

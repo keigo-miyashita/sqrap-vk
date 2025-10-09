@@ -29,8 +29,6 @@ namespace sqrp
 		std::vector<SubPassInfo> subPassInfos_;
 		std::vector<std::string> uniqueAttachmentNames_;
 		std::vector<AttachmentInfo> attachmentInfos_;
-		//std::map<AttachmentInfo*, int> attachmentInfoToIndex_; // AttachmentInfo pointer to global attachment index
-		//std::map<int, int> attachmentInfoToDescIndex_; // AttachmentInfo ID to global attachment index
 		int numColorAttachments_ = 0;
 		int numDepthAttachments_ = 0;
 

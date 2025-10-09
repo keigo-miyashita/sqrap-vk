@@ -79,7 +79,7 @@ namespace sqrp
 
 	void CommandBuffer::BeginRenderPass(RenderPassHandle pRenderPass, FrameBufferHandle pFrameBuffer, SwapchainHandle pSwapchain)
 	{
-		cout << "BeginRenderPass" << endl;
+		//cout << "BeginRenderPass" << endl;
 		vk::RenderPassBeginInfo renderPassInfo{};
 		renderPassInfo.renderPass = pRenderPass->GetRenderPass();
 		renderPassInfo.framebuffer = pFrameBuffer->GetFrameBuffer(pSwapchain->GetImageIndex());
@@ -87,28 +87,19 @@ namespace sqrp
 		renderPassInfo.renderArea.extent = pSwapchain->GetExtent2D();
 		std::vector<vk::ClearValue> clearValues(pRenderPass->GetNumAttachments());
 		auto attachmentInfos = pRenderPass->GetAttachmentInfos();
-		cout << "pRenderPass->GetNumAttachments() = " << pRenderPass->GetNumAttachments() << endl;
+		//cout << "pRenderPass->GetNumAttachments() = " << pRenderPass->GetNumAttachments() << endl;
 		for (int i = 0; i < pRenderPass->GetNumAttachments(); i++) {
 			auto attachmentInfo = attachmentInfos[i];
 			clearValues[i] = vk::ClearValue();
 			if (attachmentInfo.imageLayout == vk::ImageLayout::eColorAttachmentOptimal) {
 				clearValues[i].color = vk::ClearColorValue(std::array<float, 4>{ 0.2f, 0.2f, 0.2f, 1.0f });
-				cout << "clear color" << endl;
+				//cout << "clear color" << endl;
 			}
 			else if (attachmentInfo.imageLayout == vk::ImageLayout::eDepthStencilAttachmentOptimal) {
 				clearValues[i].depthStencil = vk::ClearDepthStencilValue{ 1.0f, 0 };
-				cout << "clear depth" << endl;
+				//cout << "clear depth" << endl;
 			}
 		}
-		/*for (int i = 0; i < pRenderPass->GetNumAttachments(); i++) {
-			clearValues[i] = vk::ClearValue();
-			if (pRenderPass->GetAttachmentInfo(i).attachmentDesc.format == vk::Format::eD32Sfloat) {
-				clearValues[i].depthStencil = vk::ClearDepthStencilValue{ 1.0f, 0 };
-			}
-			else {
-				clearValues[i].color = vk::ClearColorValue(std::array<float, 4>{ 0.0f, 0.0f, 0.0f, 1.0f });
-			}
-		}*/
 		renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
 		renderPassInfo.pClearValues = clearValues.data();
 
@@ -212,6 +203,41 @@ namespace sqrp
 			{ barrier }
 		);
 		pImage->SetImageLayout(newLayout);
+	}
+
+	void CommandBuffer::ImageBarrier(
+		ImageHandle pImage,
+		vk::ImageLayout oldLayout,
+		vk::ImageLayout newLayout,
+		vk::PipelineStageFlags srcStageMask,
+		vk::PipelineStageFlags dstStageMask,
+		vk::AccessFlags srcAccessMask,
+		vk::AccessFlags dstAccessMask
+	)
+	{
+		vk::ImageMemoryBarrier barrier{};
+		barrier.setOldLayout(oldLayout);
+		barrier.setNewLayout(newLayout);
+		barrier.setSrcQueueFamilyIndex(VK_QUEUE_FAMILY_IGNORED);
+		barrier.setDstQueueFamilyIndex(VK_QUEUE_FAMILY_IGNORED);
+		barrier.setImage(pImage->GetImage());
+		barrier.setSubresourceRange(
+			vk::ImageSubresourceRange()
+			.setAspectMask(pImage->GetAspectFlags())
+			.setBaseMipLevel(0)
+			.setLevelCount(1) // TODO: mipLevels
+			.setBaseArrayLayer(0)
+			.setLayerCount(1) // TODO: arrayLayers
+		);
+		barrier.setSrcAccessMask(srcAccessMask);
+		barrier.setDstAccessMask(dstAccessMask);
+		commandBuffer_->pipelineBarrier(
+			srcStageMask, dstStageMask,
+			{},
+			{},
+			{},
+			{ barrier }
+		);
 	}
 
 	void CommandBuffer::DrawMesh(MeshHandle pMesh)

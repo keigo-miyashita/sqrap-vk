@@ -45,6 +45,15 @@ namespace sqrp
 		void SetScissor(uint32_t width, uint32_t height);
 		void SetViewport(uint32_t width, uint32_t height);
 		void TransitionLayout(ImageHandle pImage, vk::ImageLayout oldLayout, vk::ImageLayout newLayout);
+		void ImageBarrier(
+			ImageHandle pImage,
+			vk::ImageLayout oldLayout,
+			vk::ImageLayout newLayout,
+			vk::PipelineStageFlags srcStageMask = vk::PipelineStageFlagBits::eAllCommands,
+			vk::PipelineStageFlags dstStageMask = vk::PipelineStageFlagBits::eAllCommands,
+			vk::AccessFlags srcAccessMask = {},
+			vk::AccessFlags dstAccessMask = {}
+		);
 
 		void DrawMesh(MeshHandle pMesh);
 		void Draw(uint32_t vertexCount, uint32_t instanceCount);

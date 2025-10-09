@@ -114,6 +114,8 @@ namespace sqrp
 		unsigned int windowWidth_;
 		unsigned int windowHeight_;
 
+		static void WindowSizeCallback(GLFWwindow* window, int width, int height);
+
 		void CreateGLFWWindow();
 
 	public:
@@ -125,10 +127,14 @@ namespace sqrp
 		void Run();
 		virtual void OnStart();
 		virtual void OnUpdate();
+		virtual void OnResize(unsigned int width, unsigned int height);
 		virtual void OnTerminate();
 		std::string GetAppName();
 		GLFWwindow* GetPWindow();
 		unsigned int GetWindowWidth();
 		unsigned int GetWindowHeight();
+
+		void SetWindowWidth(unsigned int width);
+		void SetWindowHeight(unsigned int height);
 	};
 }
