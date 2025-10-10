@@ -4,61 +4,7 @@ using namespace std;
 
 namespace sqrp
 {
-	//void Input::GetRawState(UINT msg, WPARAM wparam, LPARAM lparam)
-	//{
-	//	if (ImGui::GetCurrentContext() != nullptr) {
-	//		ImGuiIO& io = ImGui::GetIO();
-	//		if (io.WantCaptureMouse) {
-	//			isPushedLButton_ = false;
-	//			isPushedRButton_ = false;
-	//			for (auto& [vk, rawState] : isPushKey_) {
-	//				rawState = false;
-	//			}
-	//			return;
-	//		}
-	//	}
-
-	//	switch (msg) {
-	//	case WM_KILLFOCUS:
-	//		isPushedLButton_ = false;
-	//		isPushedRButton_ = false;
-	//		for (auto& [vk, rawState] : isPushKey_) {
-	//			rawState = false;
-	//		}
-	//		//isPushKey_[vkCode] = false;
-	//		break;
-	//	case WM_KEYDOWN:
-	//		isPushKey_[vkCode] = true;
-	//		break;
-	//	case WM_KEYUP:
-	//		isPushKey_[vkCode] = false;
-	//		break;
-	//	case WM_MOUSEMOVE:
-	//	case WM_LBUTTONDOWN:
-	//	case WM_LBUTTONUP:
-	//	case WM_MOUSEWHEEL:
-	//	{
-	//		int xPos = GET_X_LPARAM(lparam);
-	//		int yPos = GET_Y_LPARAM(lparam);
-	//		currentMousePos_ = { xPos, yPos };
-
-	//		if (msg == WM_LBUTTONDOWN) {
-	//			isPushedLButton_ = true;
-	//			pushedMousePos_ = { xPos, yPos };
-	//		}
-	//		else if (msg == WM_LBUTTONUP) {
-	//			isPushedLButton_ = false;
-	//		}
-	//		else if (msg == WM_MOUSEWHEEL) {
-	//			short wheelDelta = GET_WHEEL_DELTA_WPARAM(wparam);
-	//			wheel_ = wheelDelta;
-	//		}
-	//		break;
-	//	}
-	//	}
-	//}
-
-	void Input::Update(double x, double y)
+	void Input::Update(double x, double y, bool isCatchInput)
 	{
 		for (auto& [vk, rawState] : isPushKey_) {
 			bool prev = isLogicalPushKey_[vk].isRawPushed;
@@ -78,12 +24,14 @@ namespace sqrp
 		deltaMousePos_.x = currentMousePos_.x - prevMousePos_.x;
 		deltaMousePos_.y = currentMousePos_.y - prevMousePos_.y;
 
+		cout << "Mouse Delta Position: (" << deltaMousePos_.x << ", " << deltaMousePos_.y << ")\n";
+
 		prevMousePos_ = currentMousePos_;
 	}
 
 	void Input::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 	{
-		if (ImGui::GetCurrentContext() != nullptr) {
+		/*if (ImGui::GetCurrentContext() != nullptr) {
 			ImGuiIO& io = ImGui::GetIO();
 			if (io.WantCaptureKeyboard) {
 				isPushedLButton_ = false;
@@ -93,7 +41,7 @@ namespace sqrp
 				}
 				return;
 			}
-		}
+		}*/
 		switch (action) {
 			case GLFW_PRESS:
 				isPushKey_[key] = true;
@@ -106,7 +54,7 @@ namespace sqrp
 
 	void Input::MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
 	{
-		if (ImGui::GetCurrentContext() != nullptr) {
+		/*if (ImGui::GetCurrentContext() != nullptr) {
 			ImGuiIO& io = ImGui::GetIO();
 			if (io.WantCaptureMouse) {
 				isPushedLButton_ = false;
@@ -116,7 +64,7 @@ namespace sqrp
 				}
 				return;
 			}
-		}
+		}*/
 		if (button == GLFW_MOUSE_BUTTON_LEFT) {
 			if (action == GLFW_PRESS) {
 				isPushedLButton_ = true;
@@ -125,12 +73,6 @@ namespace sqrp
 				isPushedLButton_ = false;
 			}
 		}
-		/*deltaMousePos_.x = currentMousePos_.x - prevMousePos_.x;
-		deltaMousePos_.y = currentMousePos_.y - prevMousePos_.y;
-
-		prevMousePos_ = currentMousePos_;*/
-
-		//cout << "Mouse Position: (" << currentMousePos_.x << ", " << currentMousePos_.y << ")\n";
 	}
 
 	void Input::WindowFocusCallback(GLFWwindow* window, int focused)
@@ -146,11 +88,17 @@ namespace sqrp
 
 	bool Input::IsPushKey(int key)
 	{
+		if (!isCatch_) {
+			return false;
+		}
 		return isLogicalPushKey_[key].isPushed;
 	}
 
 	int Input::GetWheel()
 	{
+		if (!isCatch_) {
+			return 0;
+		}
 		return wheel_;
 	}
 
@@ -166,6 +114,9 @@ namespace sqrp
 
 	MousePosition Input::GetDeltaPos()
 	{
+		if (!isCatch_) {
+			return { 0, 0 };
+		}
 		return deltaMousePos_;
 	}
 
@@ -184,6 +135,11 @@ namespace sqrp
 		return isPushedRButton_;
 	}
 
+	void Input::SetCatchInput(bool isCatch)
+	{
+		isCatch_ = isCatch;
+	}
+
 	void Application::WindowSizeCallback(GLFWwindow* window, int width, int height)
 	{
 		Application* app = reinterpret_cast<Application*>(glfwGetWindowUserPointer(window));
@@ -198,6 +154,13 @@ namespace sqrp
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 		glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 		pWindow_ = glfwCreateWindow(windowWidth_, windowHeight_, appName_.c_str(), nullptr, nullptr);
+
+		int fbWidth, fbHeight;
+		glfwGetFramebufferSize(pWindow_, &fbWidth, &fbHeight);
+		std::cout << "Before Adjusted framebuffer size: " << fbWidth << " x " << fbHeight << std::endl;
+
+		windowWidth_ = fbWidth;
+		windowHeight_ = fbHeight;
 
 		glfwSetWindowUserPointer(pWindow_, this);
 

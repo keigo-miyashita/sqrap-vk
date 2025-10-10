@@ -56,6 +56,7 @@ namespace sqrp
 		uint32_t GetInflightCount() const;
 		uint32_t GetCurrentInflightIndex() const;
 		uint32_t GetImageIndex() const;
+		uint32_t GetMinImageCount() const;
 		SemaphoreHandle GetImageAcquireSemaphore() const;
 		SemaphoreHandle GetRenderCompleteSemaphore() const;
 		FenceHandle GetCurrentFence() const;

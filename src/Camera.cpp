@@ -73,8 +73,10 @@ namespace sqrp
 			auto prevMousePos = Input::GetPrevPos();
 			auto currentMousePos = Input::GetPos();
 
-			rotation_.x += Input::GetDeltaPos().y * rotateScale_;
-			rotation_.y += Input::GetDeltaPos().x * rotateScale_;
+			if (Input::GetDeltaPos().y != 0 && Input::GetDeltaPos().x != 0 ) {
+				rotation_.x += Input::GetDeltaPos().y * rotateScale_;
+				rotation_.y += Input::GetDeltaPos().x * rotateScale_;
+			}
 		}
 
 		aspectRatio_ = (float)(width) / (float)(height);

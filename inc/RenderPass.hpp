@@ -26,7 +26,6 @@ namespace sqrp
 		const Device* pDevice_ = nullptr;
 
 		vk::UniqueRenderPass renderPass_;
-		std::vector<SubPassInfo> subPassInfos_;
 		std::vector<std::string> uniqueAttachmentNames_;
 		std::vector<AttachmentInfo> attachmentInfos_;
 		int numColorAttachments_ = 0;

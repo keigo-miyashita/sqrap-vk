@@ -251,6 +251,11 @@ namespace sqrp
 		return imageIndex_;
 	}
 
+	uint32_t Swapchain::GetMinImageCount() const
+	{
+		return minImageCount_;
+	}
+
 	SemaphoreHandle Swapchain::GetImageAcquireSemaphore() const
 	{
 		return imageAcquireSemaphores_[inflightIndex_];

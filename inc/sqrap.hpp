@@ -9,6 +9,7 @@
 #include <DescriptorSet.hpp>
 #include <Fence.hpp>
 #include <FrameBuffer.hpp>
+#include <Gui.hpp>
 #include <Image.hpp>
 #include <Mesh.hpp>
 #include <Object.hpp>

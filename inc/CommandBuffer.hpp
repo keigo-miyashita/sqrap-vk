@@ -11,6 +11,7 @@ namespace sqrp
 	class DescriptorSet;
 	class Device;
 	class FrameBuffer;
+	class GUI;
 	class Image;
 	class Mesh;
 	class Pipeline;
@@ -34,8 +35,7 @@ namespace sqrp
 		void End();
 		void BeginRender(SwapchainHandle pSwapchain);
 		void EndRender(SwapchainHandle pSwapchain);
-		void BeginRenderPass(RenderPassHandle pRenderPass, FrameBufferHandle pFrameBuffer);
-		void BeginRenderPass(RenderPassHandle pRenderPass, FrameBufferHandle pFrameBuffer, SwapchainHandle pSwapchain);
+		void BeginRenderPass(RenderPassHandle pRenderPass, FrameBufferHandle pFrameBuffer, uint32_t imageIndex);
 		void EndRenderPass();
 		void BindPipeline(PipelineHandle pPipeline, vk::PipelineBindPoint pipelineBindPoint);
 		void BindMeshBuffer(MeshHandle pMesh);
@@ -57,6 +57,8 @@ namespace sqrp
 
 		void DrawMesh(MeshHandle pMesh);
 		void Draw(uint32_t vertexCount, uint32_t instanceCount);
+
+		void DrawGui(GUI& gui);
 
 		vk::CommandBuffer GetCommandBuffer() const;
 	};

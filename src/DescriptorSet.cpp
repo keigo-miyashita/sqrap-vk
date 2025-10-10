@@ -12,6 +12,7 @@ namespace sqrp
 	DescriptorSet::DescriptorSet(const Device& device, std::vector<DescriptorSetCreateInfo> descriptorSetCreateInfos)
 		: pDevice_(&device), descriptorSetCreateInfos_(descriptorSetCreateInfos)
 	{
+		// Create Descriptor Set Layout
 		vector<vk::DescriptorSetLayoutBinding> layoutBindings(descriptorSetCreateInfos_.size());
 		map<vk::DescriptorType, uint32_t> descriptorTypeCounts;
 		int index = 0;
@@ -42,6 +43,8 @@ namespace sqrp
 		else {
 			cout << "Successed to create descriptor set layout" << endl;
 		}
+
+		// Create Descriptor Pool
 		vector<vk::DescriptorPoolSize> poolSizes(descriptorTypeCounts.size());
 		index = 0;
 		for (const auto& [type, count] : descriptorTypeCounts) {
@@ -59,6 +62,7 @@ namespace sqrp
 			.setPPoolSizes(poolSizes.data())
 		);
 
+		// Create Descriptor Sets
 		descriptorSets_ = std::move(pDevice_->GetDevice().allocateDescriptorSetsUnique(vk::DescriptorSetAllocateInfo{}
 			.setDescriptorPool(descriptorPool_.get())
 			.setDescriptorSetCount(1)
@@ -70,9 +74,6 @@ namespace sqrp
 		std::vector<vk::DescriptorImageInfo> descriptorImageInfos(descriptorSetCreateInfos_.size());
 		index = 0;
 		for (const auto& descriptorSetCreateInfo : descriptorSetCreateInfos_) {
-			/*descriptorBufferInfos[index].setBuffer(descriptorSetCreateInfo.pBuffer->GetBuffer());
-			descriptorBufferInfos[index].setOffset(0);
-			descriptorBufferInfos[index].setRange(descriptorSetCreateInfo.pBuffer->GetSize());*/
 			if (std::holds_alternative<BufferHandle>(descriptorSetCreateInfo.pResource)) {
 				auto buffer = std::get<BufferHandle>(descriptorSetCreateInfo.pResource);
 				descriptorBufferInfos[index].setBuffer(buffer->GetBuffer());
@@ -88,9 +89,7 @@ namespace sqrp
 			}
 			else if (std::holds_alternative<ImageHandle>(descriptorSetCreateInfo.pResource)) {
 				auto image = std::get<ImageHandle>(descriptorSetCreateInfo.pResource);
-
-				//descriptorImageInfos[index].setImageLayout(image->GetImageLayout());
-				descriptorImageInfos[index].setImageLayout(vk::ImageLayout::eShaderReadOnlyOptimal);
+				descriptorImageInfos[index].setImageLayout(vk::ImageLayout::eShaderReadOnlyOptimal); // Set expected layout
 				descriptorImageInfos[index].setImageView(image->GetImageView());
 				descriptorImageInfos[index].setSampler(image->GetSampler());
 

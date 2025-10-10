@@ -67,10 +67,11 @@ void SampleApp::OnUpdate()
 	swapchain_->WaitFrame();
 
 	auto& commandBuffer = swapchain_->GetCurrentCommandBuffer();
+	uint32_t infligtIndex = swapchain_->GetCurrentInflightIndex();
 
 	commandBuffer->Begin();
 
-	commandBuffer->BeginRenderPass(renderPass_, frameBuffer_);
+	commandBuffer->BeginRenderPass(renderPass_, frameBuffer_, infligtIndex);
 
 	commandBuffer->SetViewport(swapchain_->GetWidth(), swapchain_->GetHeight());
 	commandBuffer->SetScissor(swapchain_->GetWidth(), swapchain_->GetHeight());

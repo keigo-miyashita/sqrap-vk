@@ -80,11 +80,8 @@ namespace sqrp
         const Device& device,
         std::vector<SubPassInfo> subPassInfos,
         std::map<string, AttachmentInfo> attachmentNameToInfo
-	) : pDevice_(&device), subPassInfos_(subPassInfos)
+	) : pDevice_(&device)
     {
-		vector<vk::SubpassDescription> subPassDescs;
-        subPassDescs.resize(subPassInfos.size());
-
         vector<vk::AttachmentDescription> attachmentsDescs;
 		std::map<string, int> attachmentNameToDescID;
         for (int i = 0; i < subPassInfos.size(); i++) {
@@ -106,9 +103,10 @@ namespace sqrp
             }
         }
 
+        vector<vk::SubpassDescription> subPassDescs;
+        subPassDescs.resize(subPassInfos.size());
         vector<vector<vk::AttachmentReference>> allColorRefs(subPassInfos.size());
         vector<optional<vk::AttachmentReference>> allDepthRefs(subPassInfos.size());
-
         for (int i = 0; i < subPassInfos.size(); i++) {
             for (int j = 0; j < subPassInfos[i].attachmentInfos.size(); j++) {
                 string attachmentName = subPassInfos[i].attachmentInfos[j];

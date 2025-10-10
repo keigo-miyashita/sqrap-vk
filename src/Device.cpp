@@ -3,6 +3,7 @@
 #include "CommandBuffer.hpp"
 #include "Buffer.hpp"
 #include "Fence.hpp"
+#include "Gui.hpp"
 #include "Image.hpp"
 #include "Pipeline.hpp"
 #include "Semaphore.hpp"
@@ -321,21 +322,9 @@ namespace sqrp
 		return std::make_shared<FrameBuffer>(*this, pRenderPass, frameBufferInfos, width, height, infligtCount, pSwapchain);
 	}
 
-	ImageHandle Device::CreateImage(
-		vk::Extent3D extent3D,
-		vk::ImageType imageType,
-		vk::ImageUsageFlags usage,
-		vk::Format format,
-		vk::ImageLayout imageLayout,
-		vk::ImageAspectFlags aspectFlags,
-		int mipLevels,
-		int arrayLayers,
-		vk::SampleCountFlagBits samples,
-		vk::ImageTiling tiling,
-		vk::SamplerCreateInfo samplerCreateInfo
-	) const
+	GUIHandle Device::CreateGUI(GLFWwindow* window, SwapchainHandle pSwapchain, RenderPassHandle pRenderPass) const
 	{
-		return std::make_shared<Image>(*this, extent3D, imageType, usage, format, imageLayout, aspectFlags, mipLevels, arrayLayers, samples, tiling, samplerCreateInfo);
+		return std::make_shared<GUI>(*this, window, pSwapchain, pRenderPass);
 	}
 
 	ImageHandle Device::CreateImage(
@@ -520,6 +509,11 @@ namespace sqrp
 	vk::Device Device::GetDevice() const
 	{
 		return device_.get();
+	}
+
+	vk::Instance Device::GetInstance() const
+	{
+		return instance_.get();
 	}
 
 	vk::SurfaceKHR Device::GetSurface() const

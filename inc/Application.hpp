@@ -87,10 +87,11 @@ namespace sqrp
 		static inline MousePosition prevMousePos_;
 		static inline MousePosition currentMousePos_;
 		static inline MousePosition deltaMousePos_;
+		static inline bool isCatch_ = true;
 
 	public:
 		//static void GetRawState(UINT msg, WPARAM wparam, LPARAM lparam);
-		static void Update(double x, double y);
+		static void Update(double x, double y, bool isCatchInput = true);
 		static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 		static void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
 		static void WindowFocusCallback(GLFWwindow* window, int focused);
@@ -102,6 +103,7 @@ namespace sqrp
 		static MousePosition GetPos();
 		static bool IsPushedLButton();
 		static bool IsPushedRButton();
+		static void SetCatchInput(bool isCatch);
 	};
 
 	class Application

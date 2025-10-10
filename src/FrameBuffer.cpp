@@ -15,6 +15,10 @@ namespace sqrp
 		pSwapchain_ = pSwapchain;
 		inflightCount_ = pSwapchain->GetInflightCount();
 		swapchainImageViews_ = vector<vk::UniqueImageView>();
+		width_ = pSwapchain->GetWidth();
+		height_ = pSwapchain->GetHeight();
+
+		// Create swapchain image views
 		for (const auto& swapchainImage : pSwapchain->GetSwapchainImages()) {
 			swapchainImageViews_->push_back(
 				pDevice_->GetDevice().createImageViewUnique(
@@ -33,6 +37,7 @@ namespace sqrp
 			for (size_t j = 0; j < pSwapchain->GetInflightCount(); j++) {
 				attachmentImages_[0].push_back(
 					pDevice_->CreateImage(
+						"Depth",
 						vk::Extent3D{ pSwapchain->GetWidth(), pSwapchain->GetHeight(), 1 },
 						vk::ImageType::e2D,
 						vk::ImageUsageFlagBits::eDepthStencilAttachment | vk::ImageUsageFlagBits::eSampled,
@@ -50,7 +55,6 @@ namespace sqrp
 			vector<vk::ImageView> attachments;
 			if (pSwapchain_.has_value()) {
 				attachments.push_back(swapchainImageViews_.value()[i].get());
-				//frameBufferInfos_.push_back({ pSwapchain->GetSurfaceFormat(), vk::ImageUsageFlagBits::eColorAttachment, "SwapchainColorAttachment" });
 			}
 			if (useDepth) {
 				attachments.push_back(attachmentImages_[0][i]->GetImageView());
@@ -67,8 +71,8 @@ namespace sqrp
 		}
 	}
 
-	FrameBuffer::FrameBuffer(const Device& device, RenderPassHandle pRenderPass, std::vector<FrameBufferInfo> frameBufferInfos, uint32_t width, uint32_t height, int infligtCount, SwapchainHandle pSwapchain)
-		: pDevice_(&device), pRenderPass_(pRenderPass), frameBufferInfos_(frameBufferInfos), inflightCount_(infligtCount)
+	FrameBuffer::FrameBuffer(const Device& device, RenderPassHandle pRenderPass, std::vector<FrameBufferInfo> frameBufferInfos, uint32_t width, uint32_t height, int inflightCount, SwapchainHandle pSwapchain)
+		: pDevice_(&device), pRenderPass_(pRenderPass), frameBufferInfos_(frameBufferInfos), inflightCount_(inflightCount), width_(width), height_(height)
 	{
 		if (pSwapchain != nullptr) {
 			pSwapchain_ = pSwapchain;
@@ -87,76 +91,65 @@ namespace sqrp
 			}
 		}
 	
-		for (int i = 0; i < frameBufferInfos.size(); i++) {
+		for (int i = 0; i < frameBufferInfos_.size(); i++) {
 			attachmentImages_[i] = vector<ImageHandle>();
-			for (size_t j = 0; j < infligtCount; j++) {
-				if (frameBufferInfos_[i].imageUsage & vk::ImageUsageFlagBits::eDepthStencilAttachment) {
-					cout << "Creating depth attachment image: " << frameBufferInfos_[i].debugName << endl;
-					attachmentImages_[i].push_back(
-						pDevice_->CreateImage(
-							frameBufferInfos[i].debugName + to_string(j),
-							vk::Extent3D{ width, height, 1 },
-							vk::ImageType::e2D,
-							frameBufferInfos[i].imageUsage,
-							frameBufferInfos[i].format,
-							vk::ImageLayout::eUndefined,
-							(frameBufferInfos[i].imageUsage & vk::ImageUsageFlagBits::eDepthStencilAttachment) ? vk::ImageAspectFlagBits::eDepth : vk::ImageAspectFlagBits::eColor
-						)
-					);
-				}
-				else if (frameBufferInfos_[i].imageUsage & vk::ImageUsageFlagBits::eColorAttachment) {
+			for (size_t j = 0; j < inflightCount_; j++) {
+				if (frameBufferInfos_[i].imageUsage & vk::ImageUsageFlagBits::eColorAttachment) {
 					cout << "Creating color attachment image: " << frameBufferInfos_[i].debugName << endl;
 					attachmentImages_[i].push_back(
 						pDevice_->CreateImage(
-							frameBufferInfos[i].debugName + to_string(j),
-							vk::Extent3D{ width, height, 1 },
+							frameBufferInfos_[i].debugName + to_string(j),
+							vk::Extent3D{ width_, height_, 1 },
 							vk::ImageType::e2D,
-							frameBufferInfos[i].imageUsage,
-							frameBufferInfos[i].format,
+							frameBufferInfos_[i].imageUsage,
+							frameBufferInfos_[i].format,
 							vk::ImageLayout::eUndefined,
-							(frameBufferInfos[i].imageUsage & vk::ImageUsageFlagBits::eDepthStencilAttachment) ? vk::ImageAspectFlagBits::eDepth : vk::ImageAspectFlagBits::eColor,
+							vk::ImageAspectFlagBits::eColor,
 							1,
 							1,
 							vk::SampleCountFlagBits::e1, vk::ImageTiling::eOptimal,
 							vk::SamplerCreateInfo{}
-								.setMagFilter(vk::Filter::eLinear)
-								.setMinFilter(vk::Filter::eLinear)
-								.setMipmapMode(vk::SamplerMipmapMode::eNearest)
-								.setAddressModeU(vk::SamplerAddressMode::eClampToEdge)
-								.setAddressModeV(vk::SamplerAddressMode::eClampToEdge)
-								.setAddressModeW(vk::SamplerAddressMode::eClampToEdge)
-								.setMipLodBias(0.0f)
-								.setAnisotropyEnable(VK_FALSE)
-								.setMaxAnisotropy(1.0f)
-								.setCompareEnable(VK_FALSE)
-								.setCompareOp(vk::CompareOp::eAlways)
-								.setMinLod(0.0f)
-								.setMaxLod(0.0f)
-								.setBorderColor(vk::BorderColor::eIntOpaqueWhite)
-								.setUnnormalizedCoordinates(VK_FALSE)
+							.setMagFilter(vk::Filter::eLinear)
+							.setMinFilter(vk::Filter::eLinear)
+							.setMipmapMode(vk::SamplerMipmapMode::eNearest)
+							.setAddressModeU(vk::SamplerAddressMode::eClampToEdge)
+							.setAddressModeV(vk::SamplerAddressMode::eClampToEdge)
+							.setAddressModeW(vk::SamplerAddressMode::eClampToEdge)
+							.setMipLodBias(0.0f)
+							.setAnisotropyEnable(VK_FALSE)
+							.setMaxAnisotropy(1.0f)
+							.setCompareEnable(VK_FALSE)
+							.setCompareOp(vk::CompareOp::eAlways)
+							.setMinLod(0.0f)
+							.setMaxLod(0.0f)
+							.setBorderColor(vk::BorderColor::eIntOpaqueWhite)
+							.setUnnormalizedCoordinates(VK_FALSE)
 						));
 				}
-				/*attachmentImages_[i].push_back(
-					pDevice_->CreateImage(
-						frameBufferInfos[i].debugName + to_string(j),
-						vk::Extent3D{ width, height, 1 },
-						vk::ImageType::e2D,
-						frameBufferInfos[i].imageUsage,
-						frameBufferInfos[i].format,
-						vk::ImageLayout::eUndefined,
-						(frameBufferInfos[i].imageUsage & vk::ImageUsageFlagBits::eDepthStencilAttachment) ? vk::ImageAspectFlagBits::eDepth : vk::ImageAspectFlagBits::eColor
-					)
-				);*/
+				else if (frameBufferInfos_[i].imageUsage & vk::ImageUsageFlagBits::eDepthStencilAttachment) {
+					cout << "Creating depth attachment image: " << frameBufferInfos_[i].debugName << endl;
+					attachmentImages_[i].push_back(
+						pDevice_->CreateImage(
+							frameBufferInfos_[i].debugName + to_string(j),
+							vk::Extent3D{ width_, height_, 1 },
+							vk::ImageType::e2D,
+							frameBufferInfos_[i].imageUsage,
+							frameBufferInfos_[i].format,
+							vk::ImageLayout::eUndefined,
+							vk::ImageAspectFlagBits::eDepth
+						)
+					);
+				}
 			}
 		}
 
-		framebuffers_.resize(infligtCount);
-		for (int i = 0; i < infligtCount; i++) {
+		framebuffers_.resize(inflightCount_);
+		for (int i = 0; i < inflightCount_; i++) {
 			vector<vk::ImageView> attachments;
 			if (pSwapchain_.has_value()) {
 				attachments.push_back(swapchainImageViews_.value()[i].get());
 			}
-			for (int j = 0; j < frameBufferInfos.size(); j++) {
+			for (int j = 0; j < frameBufferInfos_.size(); j++) {
 				attachments.push_back(attachmentImages_[j][i]->GetImageView());
 			}
 			cout << "Framebuffer attachments: " << attachments.size() << endl;
@@ -165,8 +158,8 @@ namespace sqrp
 				.setRenderPass(pRenderPass_->GetRenderPass())
 				.setAttachmentCount(static_cast<uint32_t>(attachments.size()))
 				.setPAttachments(attachments.data())
-				.setWidth(width)
-				.setHeight(height)
+				.setWidth(width_)
+				.setHeight(height_)
 				.setLayers(1);
 			framebuffers_[i] = pDevice_->GetDevice().createFramebufferUnique(framebufferInfo);
 		}
@@ -174,6 +167,9 @@ namespace sqrp
 
 	void FrameBuffer::Recreate(uint32_t width, uint32_t height)
 	{
+		width_ = width;
+		height_ = height;
+
 		framebuffers_.clear();
 		framebuffers_.resize(inflightCount_);
 
@@ -181,7 +177,6 @@ namespace sqrp
 		attachmentImages_.clear();
 
 		if (pSwapchain_.has_value()) {
-			//pSwapchain_ = pSwapchain;
 			swapchainImageViews_ = vector<vk::UniqueImageView>();
 			for (const auto& swapchainImage : pSwapchain_.value()->GetSwapchainImages()) {
 				swapchainImageViews_->push_back(
@@ -200,21 +195,55 @@ namespace sqrp
 		for (int i = 0; i < frameBufferInfos_.size(); i++) {
 			attachmentImages_[i] = vector<ImageHandle>();
 			for (size_t j = 0; j < inflightCount_; j++) {
-				attachmentImages_[i].push_back(
-					pDevice_->CreateImage(
-						frameBufferInfos_[i].debugName + to_string(j),
-						vk::Extent3D{ width, height, 1 },
-						vk::ImageType::e2D,
-						frameBufferInfos_[i].imageUsage,
-						frameBufferInfos_[i].format,
-						vk::ImageLayout::eUndefined,
-						(frameBufferInfos_[i].imageUsage & vk::ImageUsageFlagBits::eDepthStencilAttachment) ? vk::ImageAspectFlagBits::eDepth : vk::ImageAspectFlagBits::eColor
-					)
-				);
+				if (frameBufferInfos_[i].imageUsage & vk::ImageUsageFlagBits::eColorAttachment) {
+					cout << "Creating color attachment image: " << frameBufferInfos_[i].debugName << endl;
+					attachmentImages_[i].push_back(
+						pDevice_->CreateImage(
+							frameBufferInfos_[i].debugName + to_string(j),
+							vk::Extent3D{ width_, height_, 1 },
+							vk::ImageType::e2D,
+							frameBufferInfos_[i].imageUsage,
+							frameBufferInfos_[i].format,
+							vk::ImageLayout::eUndefined,
+							vk::ImageAspectFlagBits::eColor,
+							1,
+							1,
+							vk::SampleCountFlagBits::e1, vk::ImageTiling::eOptimal,
+							vk::SamplerCreateInfo{}
+							.setMagFilter(vk::Filter::eLinear)
+							.setMinFilter(vk::Filter::eLinear)
+							.setMipmapMode(vk::SamplerMipmapMode::eNearest)
+							.setAddressModeU(vk::SamplerAddressMode::eClampToEdge)
+							.setAddressModeV(vk::SamplerAddressMode::eClampToEdge)
+							.setAddressModeW(vk::SamplerAddressMode::eClampToEdge)
+							.setMipLodBias(0.0f)
+							.setAnisotropyEnable(VK_FALSE)
+							.setMaxAnisotropy(1.0f)
+							.setCompareEnable(VK_FALSE)
+							.setCompareOp(vk::CompareOp::eAlways)
+							.setMinLod(0.0f)
+							.setMaxLod(0.0f)
+							.setBorderColor(vk::BorderColor::eIntOpaqueWhite)
+							.setUnnormalizedCoordinates(VK_FALSE)
+						));
+				}
+				else if (frameBufferInfos_[i].imageUsage & vk::ImageUsageFlagBits::eDepthStencilAttachment) {
+					cout << "Creating depth attachment image: " << frameBufferInfos_[i].debugName << endl;
+					attachmentImages_[i].push_back(
+						pDevice_->CreateImage(
+							frameBufferInfos_[i].debugName + to_string(j),
+							vk::Extent3D{ width_, height_, 1 },
+							vk::ImageType::e2D,
+							frameBufferInfos_[i].imageUsage,
+							frameBufferInfos_[i].format,
+							vk::ImageLayout::eUndefined,
+							vk::ImageAspectFlagBits::eDepth
+						)
+					);
+				}
 			}
 		}
 
-		/*framebuffers_.resize(inflightCount_);*/
 		for (int i = 0; i < inflightCount_; i++) {
 			vector<vk::ImageView> attachments;
 			if (pSwapchain_.has_value()) {
@@ -263,5 +292,15 @@ namespace sqrp
 			throw std::runtime_error("Inflight index out of bounds");
 		}
 		return it->second[inflightIndex]; // check bounds
+	}
+
+	uint32_t FrameBuffer::GetWidth() const
+	{
+		return width_;
+	}
+
+	uint32_t FrameBuffer::GetHeight() const
+	{
+		return height_;
 	}
 }

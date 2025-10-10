@@ -8,6 +8,7 @@ namespace sqrp
 	class Device;
 	class Fence;
 	class FrameBuffer;
+	class GUI;
 	class Image;
 	class Mesh;
 	class Pipeline;
@@ -21,6 +22,7 @@ namespace sqrp
 	using DescriptorSetHandle = std::shared_ptr<DescriptorSet>;
 	using FenceHandle = std::shared_ptr<Fence>;
 	using FrameBufferHandle = std::shared_ptr<FrameBuffer>;
+	using GUIHandle = std::shared_ptr<GUI>;
 	using ImageHandle = std::shared_ptr<Image>;
 	using MeshHandle = std::shared_ptr<Mesh>;
 	using PipelineHandle = std::shared_ptr<Pipeline>;

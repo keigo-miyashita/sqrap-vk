@@ -32,14 +32,19 @@ namespace sqrp
 		std::unordered_map<int, std::vector<ImageHandle>> attachmentImages_; // key is type of buffer
 		std::vector<vk::UniqueFramebuffer> framebuffers_;
 
+		uint32_t width_ = 0;
+		uint32_t height_ = 0;
+
 	public:
 		FrameBuffer(const Device& device, RenderPassHandle pRenderPass, SwapchainHandle pSwapchain, bool useDepth = true);
-		FrameBuffer(const Device& device, RenderPassHandle pRenderPass, std::vector<FrameBufferInfo> frameBufferInfos, uint32_t width, uint32_t height, int infligtCount, SwapchainHandle pSwapchain = nullptr);
+		FrameBuffer(const Device& device, RenderPassHandle pRenderPass, std::vector<FrameBufferInfo> frameBufferInfos, uint32_t width, uint32_t height, int inflightCount, SwapchainHandle pSwapchain = nullptr);
 		~FrameBuffer() = default;
 
 		void Recreate(uint32_t width, uint32_t height);
 		vk::Framebuffer GetFrameBuffer(int index) const;
 		SwapchainHandle GetSwapchain() const;
 		ImageHandle GetAttachmentImage(int index, int inflightIndex) const;
+		uint32_t GetWidth() const;
+		uint32_t GetHeight() const;
 	};
 }

@@ -73,19 +73,7 @@ namespace sqrp
 		FenceHandle CreateFence(bool signal = true) const;
 		FrameBufferHandle CreateFrameBuffer(RenderPassHandle pRenderPass, SwapchainHandle pSwapchain, bool useDepth = true) const;
 		FrameBufferHandle CreateFrameBuffer(RenderPassHandle pRenderPass, std::vector<FrameBufferInfo> frameBufferInfos, uint32_t width, uint32_t height, int infligtCount, SwapchainHandle pSwapchain = nullptr) const;
-		ImageHandle CreateImage(
-			vk::Extent3D extent3D = vk::Extent3D{ 512, 512, 1 },
-			vk::ImageType imageType = vk::ImageType::e2D,
-			vk::ImageUsageFlags usage = vk::ImageUsageFlagBits::eSampled,
-			vk::Format format = vk::Format::eR8G8B8A8Srgb,
-			vk::ImageLayout imageLayout = vk::ImageLayout::eUndefined,
-			vk::ImageAspectFlags aspectFlags = vk::ImageAspectFlagBits::eColor,
-			int mipLevels = 1,
-			int arrayLayers = 1,
-			vk::SampleCountFlagBits samples = vk::SampleCountFlagBits::e1,
-			vk::ImageTiling tiling = vk::ImageTiling::eOptimal,
-			vk::SamplerCreateInfo samplerCreateInfo = {}
-		)  const;
+		GUIHandle CreateGUI(GLFWwindow* window, SwapchainHandle pSwapchain, RenderPassHandle pRenderPass) const;
 		ImageHandle CreateImage(
 			std::string name = "Image",
 			vk::Extent3D extent3D = vk::Extent3D{ 512, 512, 1 },
@@ -139,6 +127,7 @@ namespace sqrp
 		VmaAllocator GetAllocator() const;
 		vk::PhysicalDevice GetPhysicalDevice() const;
 		vk::Device GetDevice() const;
+		vk::Instance GetInstance() const;
 		vk::SurfaceKHR GetSurface() const;
 		const std::map<QueueContextType, QueueContext>& GetQueueContexts() const;
 		vk::Queue GetQueue(QueueContextType type) const;
