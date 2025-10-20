@@ -15,6 +15,8 @@ namespace sqrp
 		std::variant<BufferHandle, ImageHandle> pResource;
 		vk::DescriptorType type;
 		vk::ShaderStageFlags shaderStageFlags;
+		//int binding = -1; // Optional: If -1, it will be set automatically based on the order in the vector
+		int mipLevel = -1;
 	};
 
 	class DescriptorSet

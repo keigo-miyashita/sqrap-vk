@@ -12,14 +12,34 @@ using namespace std;
 namespace sqrp
 {
     Pipeline::Pipeline(
+        const Device& device
+    )
+		: pDevice_(&device)
+    {
+
+    }
+
+    vk::Pipeline Pipeline::GetPipeline() const
+    {
+        return pipeline_.get();
+    }
+
+    vk::PipelineLayout Pipeline::GetPipelineLayout() const
+    {
+        return pipelineLayout_.get();
+    }
+
+    GraphicsPipeline::GraphicsPipeline(
         const Device& device,
         RenderPassHandle pRenderPass,
         SwapchainHandle pSwapchain,
         ShaderHandle pVertexShader,
         ShaderHandle pPixelShader,
-        DescriptorSetHandle pDescriptorSet
+        DescriptorSetHandle pDescriptorSet,
+        vk::PushConstantRange pushConstantRange,
+        bool enableDepthWrite
     )
-        : pDevice_(&device)
+        : Pipeline(device)
     {
         vk::PipelineShaderStageCreateInfo vertStage{};
         vertStage.stage = pVertexShader->GetShaderStage();
@@ -118,13 +138,15 @@ namespace sqrp
 		auto descriptorSetLayout = pDescriptorSet->GetDescriptorSetLayout();
         layoutInfo.setLayoutCount = 1;
         layoutInfo.pSetLayouts = &descriptorSetLayout;
+		layoutInfo.setPushConstantRangeCount(pushConstantRange.size > 0 ? 1 : 0);
+		layoutInfo.pPushConstantRanges = pushConstantRange.size > 0 ? &pushConstantRange : nullptr;
         pipelineLayout_ = pDevice_->GetDevice().createPipelineLayoutUnique(layoutInfo);
 
         vk::PipelineDepthStencilStateCreateInfo depthStencilState{};
         depthStencilState
             .setDepthTestEnable(vk::True)
-            .setDepthWriteEnable(vk::True)
-            .setDepthCompareOp(vk::CompareOp::eLess)
+            .setDepthWriteEnable(enableDepthWrite ? vk::True : vk::False)
+            .setDepthCompareOp(vk::CompareOp::eLessOrEqual)
             .setDepthBoundsTestEnable(vk::False)
             .setStencilTestEnable(vk::False);
 
@@ -151,13 +173,36 @@ namespace sqrp
 		pipeline_ = std::move(result.value.front());
     }
 
-    vk::Pipeline Pipeline::GetPipeline() const
+    ComputePipeline::ComputePipeline(
+        const Device& device,
+        ShaderHandle pComputeShader,
+        DescriptorSetHandle pDescriptorSet,
+        vk::PushConstantRange pushConstantRange
+	) : Pipeline(device)
     {
-		return pipeline_.get();
-    }
+        vk::PipelineShaderStageCreateInfo computeStage{};
+        computeStage.stage = pComputeShader->GetShaderStage();
+        computeStage.module = pComputeShader->GetShaderModule();
+        computeStage.pName = "main";
 
-    vk::PipelineLayout Pipeline::GetPipelineLayout() const
-    {
-		return pipelineLayout_.get();
+        // 3. パイプラインレイアウト
+        vk::PipelineLayoutCreateInfo layoutInfo{};
+        auto descriptorSetLayout = pDescriptorSet->GetDescriptorSetLayout();
+        layoutInfo.setLayoutCount = 1;
+        layoutInfo.pSetLayouts = &descriptorSetLayout;
+        layoutInfo.setPushConstantRangeCount(pushConstantRange.size > 0 ? 1 : 0);
+        layoutInfo.pPushConstantRanges = pushConstantRange.size > 0 ? &pushConstantRange : nullptr;
+        pipelineLayout_ = pDevice_->GetDevice().createPipelineLayoutUnique(layoutInfo);
+
+        // 4. パイプライン作成
+        vk::ComputePipelineCreateInfo pipelineInfo{};
+		pipelineInfo.setStage(computeStage);
+		pipelineInfo.setLayout(pipelineLayout_.get());
+
+        auto result = pDevice_->GetDevice().createComputePipelinesUnique(nullptr, pipelineInfo);
+        if (result.result != vk::Result::eSuccess) {
+            throw std::runtime_error("failed to create compute pipeline!");
+        }
+        pipeline_ = std::move(result.value.front());
     }
 }

@@ -138,9 +138,19 @@ namespace sqrp
 		return glm::inverse(GetView());
 	}
 
+	glm::mat4x4 Camera::GetInvProj()
+	{
+		return glm::inverse(GetProj());
+	}
+
 	float Camera::GetMoveScale()
 	{
 		return moveScale_;
+	}
+
+	void Camera::SetRotation(glm::vec3 rotation)
+	{
+		rotation_ = rotation;
 	}
 
 	float Camera::GetRotateScale()
@@ -156,6 +166,16 @@ namespace sqrp
 	float* Camera::GetRotateScalePtr()
 	{
 		return &rotateScale_;
+	}
+
+	float Camera::GetNearClip()
+	{
+		return nearZ_;
+	}
+
+	float Camera::GetFarClip()
+	{
+		return farZ_;
 	}
 
 	void Camera::SetMoveScale(float scale)

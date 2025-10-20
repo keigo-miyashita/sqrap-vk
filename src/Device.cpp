@@ -312,14 +312,14 @@ namespace sqrp
 		return std::make_shared<Fence>(*this, signal);
 	}
 
-	FrameBufferHandle Device::CreateFrameBuffer(RenderPassHandle pRenderPass, SwapchainHandle pSwapchain, bool useDepth) const
+	FrameBufferHandle Device::CreateFrameBuffer(RenderPassHandle pRenderPass, SwapchainHandle pSwapchain, std::vector<ImageHandle> depthImages) const
 	{
-		return std::make_shared<FrameBuffer>(*this, pRenderPass, pSwapchain, useDepth);
+		return std::make_shared<FrameBuffer>(*this, pRenderPass, pSwapchain, depthImages);
 	}
 	
-	FrameBufferHandle Device::CreateFrameBuffer(RenderPassHandle pRenderPass, std::vector<FrameBufferInfo> frameBufferInfos, uint32_t width, uint32_t height, int infligtCount, SwapchainHandle pSwapchain) const
+	FrameBufferHandle Device::CreateFrameBuffer(RenderPassHandle pRenderPass, std::vector<std::vector<ImageHandle>> attachmentImages, uint32_t width, uint32_t height, int inflightCount, SwapchainHandle pSwapchain) const
 	{
-		return std::make_shared<FrameBuffer>(*this, pRenderPass, frameBufferInfos, width, height, infligtCount, pSwapchain);
+		return std::make_shared<FrameBuffer>(*this, pRenderPass, attachmentImages, width, height, inflightCount, pSwapchain);
 	}
 
 	GUIHandle Device::CreateGUI(GLFWwindow* window, SwapchainHandle pSwapchain, RenderPassHandle pRenderPass) const
@@ -345,6 +345,15 @@ namespace sqrp
 		return std::make_shared<Image>(*this, name, extent3D, imageType, usage, format, imageLayout, aspectFlags, mipLevels, arrayLayers, samples, tiling, samplerCreateInfo);
 	}
 
+	ImageHandle Device::CreateImage(
+		std::string name,
+		vk::ImageCreateInfo imageCreateInfo,
+		vk::ImageAspectFlags aspectFlags,
+		vk::SamplerCreateInfo samplerCreateInfo) const
+	{
+		return std::make_shared<Image>(*this, name, imageCreateInfo, aspectFlags, samplerCreateInfo);
+	}
+
 	MeshHandle Device::CreateMesh(std::string modelPath) const
 	{
 		return std::make_shared<Mesh>(*this, modelPath);
@@ -355,20 +364,31 @@ namespace sqrp
 		return std::make_shared<Mesh>(*this, vertices, indices);
 	}
 
-	PipelineHandle Device::CreatePipeline(
+	GraphicsPipelineHandle Device::CreateGraphicsPipeline(
 		RenderPassHandle pRenderPass,
 		SwapchainHandle pSwapchain,
 		ShaderHandle pVertexShader,
 		ShaderHandle pPixelShader,
-		DescriptorSetHandle pDescriptorSet
+		DescriptorSetHandle pDescriptorSet,
+		vk::PushConstantRange pushConstantRange,
+		bool enableDepthWrite
 	) const
 	{
-		return std::make_shared<Pipeline>(*this, pRenderPass, pSwapchain, pVertexShader, pPixelShader, pDescriptorSet);
+		return std::make_shared<GraphicsPipeline>(*this, pRenderPass, pSwapchain, pVertexShader, pPixelShader, pDescriptorSet, pushConstantRange, enableDepthWrite);
 	}
 
-	RenderPassHandle Device::CreateRenderPass(SwapchainHandle pSwapchain) const
+	ComputePipelineHandle Device::CreateComputePipeline(
+		ShaderHandle pComputeShader,
+		DescriptorSetHandle pDescriptorSet,
+		vk::PushConstantRange pushConstantRange
+	) const
 	{
-		return std::make_shared<RenderPass>(*this, pSwapchain);
+		return make_shared<ComputePipeline>(*this, pComputeShader, pDescriptorSet, pushConstantRange);
+	}
+
+	RenderPassHandle Device::CreateRenderPass(SwapchainHandle pSwapchain, bool depth) const
+	{
+		return std::make_shared<RenderPass>(*this, pSwapchain, depth);
 	}
 
 	RenderPassHandle Device::CreateRenderPass(std::vector<SubPassInfo> subPassInfos, std::map<string, AttachmentInfo> attachmentNameToInfo) const

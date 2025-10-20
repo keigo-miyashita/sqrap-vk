@@ -35,7 +35,8 @@ namespace sqrp
 	public:
 		RenderPass(
 			const Device& device,
-			SwapchainHandle pSwapchain
+			SwapchainHandle pSwapchain,
+			bool depth = true
 		);
 		RenderPass(
 			const Device& device,

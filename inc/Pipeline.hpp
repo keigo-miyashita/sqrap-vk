@@ -14,7 +14,7 @@ namespace sqrp
 
 	class Pipeline
 	{
-	private:
+	protected:
 		const Device* pDevice_ = nullptr;
 
 		vk::UniquePipeline pipeline_;
@@ -23,16 +23,39 @@ namespace sqrp
 
 	public:
 		Pipeline(
-			const Device& device,
-			RenderPassHandle pRenderPass,
-			SwapchainHandle pSwapchain,
-			ShaderHandle pVertexShader,
-			ShaderHandle pPixelShader,
-			DescriptorSetHandle pDescriptorSet
+			const Device& device
 		);
 		~Pipeline() = default;
 
 		vk::Pipeline GetPipeline() const;
 		vk::PipelineLayout GetPipelineLayout() const;
+	};
+
+	class GraphicsPipeline : public Pipeline
+	{
+	public:
+		GraphicsPipeline(
+			const Device& device,
+			RenderPassHandle pRenderPass,
+			SwapchainHandle pSwapchain,
+			ShaderHandle pVertexShader,
+			ShaderHandle pPixelShader,
+			DescriptorSetHandle pDescriptorSet,
+			vk::PushConstantRange pushConstantRange = vk::PushConstantRange{},
+			bool enableDepthWrite = true
+		);
+		~GraphicsPipeline() = default;
+	};
+
+	class ComputePipeline : public Pipeline
+	{
+	public:
+		ComputePipeline(
+			const Device& device,
+			ShaderHandle pComputeShader,
+			DescriptorSetHandle pDescriptorSet,
+			vk::PushConstantRange pushConstantRange = vk::PushConstantRange{}
+		);
+		~ComputePipeline() = default;
 	};
 }

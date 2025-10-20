@@ -40,8 +40,10 @@ namespace sqrp
 		void BindPipeline(PipelineHandle pPipeline, vk::PipelineBindPoint pipelineBindPoint);
 		void BindMeshBuffer(MeshHandle pMesh);
 		void BindDescriptorSet(PipelineHandle pPipeline, DescriptorSetHandle pDescriptorSet, vk::PipelineBindPoint pipelineBindPoint);
+		void PushConstants(PipelineHandle pPipeline, vk::ShaderStageFlags stageFlags, uint32_t size, const void* pValues);
 		void CopyBuffer(BufferHandle srcBuffer, BufferHandle dstBuffer);
 		void CopyBufferRegion(BufferHandle srcBuffer, vk::DeviceSize srcOffset, BufferHandle dstBuffer, vk::DeviceSize dstOffset, vk::DeviceSize size);
+		void CopyBufferToImage(BufferHandle srcBuffer, ImageHandle dstImage);
 		void SetScissor(uint32_t width, uint32_t height);
 		void SetViewport(uint32_t width, uint32_t height);
 		void TransitionLayout(ImageHandle pImage, vk::ImageLayout oldLayout, vk::ImageLayout newLayout);
@@ -57,6 +59,7 @@ namespace sqrp
 
 		void DrawMesh(MeshHandle pMesh);
 		void Draw(uint32_t vertexCount, uint32_t instanceCount);
+		void Dispatch(uint32_t groupCountX, uint32_t groupCountY, uint32_t groupCountZ);
 
 		void DrawGui(GUI& gui);
 

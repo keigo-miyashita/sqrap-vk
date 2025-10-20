@@ -36,6 +36,7 @@ namespace sqrp
 
 			Unmap();
 		}
+		void Write(const void* src, size_t size);
 
 		vk::Buffer GetBuffer() const;
 		vk::DeviceSize GetSize() const;

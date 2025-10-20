@@ -19,6 +19,7 @@ namespace sqrp
 		for (const auto& descriptorSetCreateInfo : descriptorSetCreateInfos_) {
 			auto type = descriptorSetCreateInfo.type;
 			layoutBindings[index] = vk::DescriptorSetLayoutBinding{}
+				//.setBinding((descriptorSetCreateInfo.binding == -1) ? index : descriptorSetCreateInfo.binding)
 				.setBinding(index)
 				.setDescriptorType(type)
 				.setDescriptorCount(1)
@@ -82,6 +83,7 @@ namespace sqrp
 
 				writeDescriptorSets[index] = vk::WriteDescriptorSet{}
 					.setDstSet(descriptorSets_.get())
+					//.setDstBinding((descriptorSetCreateInfo.binding == -1) ? index : descriptorSetCreateInfo.binding)
 					.setDstBinding(index)
 					.setDescriptorType(descriptorSetCreateInfo.type)
 					.setDescriptorCount(1)
@@ -89,12 +91,23 @@ namespace sqrp
 			}
 			else if (std::holds_alternative<ImageHandle>(descriptorSetCreateInfo.pResource)) {
 				auto image = std::get<ImageHandle>(descriptorSetCreateInfo.pResource);
-				descriptorImageInfos[index].setImageLayout(vk::ImageLayout::eShaderReadOnlyOptimal); // Set expected layout
-				descriptorImageInfos[index].setImageView(image->GetImageView());
+				if (descriptorSetCreateInfo.type == vk::DescriptorType::eCombinedImageSampler) {
+					descriptorImageInfos[index].setImageLayout(vk::ImageLayout::eShaderReadOnlyOptimal); // Set expected layout
+				}
+				else if (descriptorSetCreateInfo.type == vk::DescriptorType::eStorageImage) {
+					descriptorImageInfos[index].setImageLayout(vk::ImageLayout::eGeneral); // Set expected layout
+				}
+				if (descriptorSetCreateInfo.mipLevel == -1) {
+					descriptorImageInfos[index].setImageView(image->GetImageView());
+				}
+				else {
+					descriptorImageInfos[index].setImageView(image->GetMipImageView(descriptorSetCreateInfo.mipLevel));
+				}
 				descriptorImageInfos[index].setSampler(image->GetSampler());
 
 				writeDescriptorSets[index] = vk::WriteDescriptorSet{}
 					.setDstSet(descriptorSets_.get())
+					//.setDstBinding((descriptorSetCreateInfo.binding == -1) ? index : descriptorSetCreateInfo.binding)
 					.setDstBinding(index)
 					.setDescriptorType(descriptorSetCreateInfo.type)
 					.setDescriptorCount(1)

@@ -47,6 +47,13 @@ namespace sqrp
 		vmaUnmapMemory(pDevice_->GetAllocator(), allocation_);
 	}
 
+	void Buffer::Write(const void* src, size_t size)
+	{
+		void* rawPtr = Map();
+		std::memcpy(rawPtr, src, size);
+		Unmap();
+	}
+
 	vk::Buffer Buffer::GetBuffer() const
 	{
 		return buffer_;

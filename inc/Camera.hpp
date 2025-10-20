@@ -19,8 +19,8 @@ namespace sqrp
 		float fovYAngle_ = 60.0f;
 		float nearZ_ = 0.1f;
 		float farZ_ = 100.0f;
-		float moveScale_ = 0.0005f;
-		float rotateScale_ = 0.0005f;
+		float moveScale_ = 0.0015f;
+		float rotateScale_ = 0.0015f;
 
 	public:
 		Camera();
@@ -44,12 +44,16 @@ namespace sqrp
 		glm::mat4x4 GetProj();
 		glm::mat4x4 GetInvViewProj();
 		glm::mat4x4 GetInvView();
+		glm::mat4x4 GetInvProj();
 		float GetMoveScale();
 		float GetRotateScale();
+		float GetNearClip();
+		float GetFarClip();
 		float* GetMoveScalePtr();
 		float* GetRotateScalePtr();
 
 		void SetMoveScale(float scale);
+		void SetRotation(glm::vec3 rotation);
 		void GetRotateScale(float scale);
 	};
 }

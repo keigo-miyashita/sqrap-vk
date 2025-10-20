@@ -19,7 +19,8 @@ namespace sqrp
 	class DescriptorSet;
 	class Fence;
 	class Image;
-	class Pipeline;
+	class GraphicsPipeline;
+	class ComputePipeline;
 	class Semaphore;
 	class Shader;
 	class Swapchain;
@@ -71,8 +72,8 @@ namespace sqrp
 		CommandBufferHandle CreateCommandBuffer(QueueContextType queueType = QueueContextType::General) const;
 		DescriptorSetHandle CreateDescriptorSet(std::vector<DescriptorSetCreateInfo> descriptorSetCreateInfos) const;
 		FenceHandle CreateFence(bool signal = true) const;
-		FrameBufferHandle CreateFrameBuffer(RenderPassHandle pRenderPass, SwapchainHandle pSwapchain, bool useDepth = true) const;
-		FrameBufferHandle CreateFrameBuffer(RenderPassHandle pRenderPass, std::vector<FrameBufferInfo> frameBufferInfos, uint32_t width, uint32_t height, int infligtCount, SwapchainHandle pSwapchain = nullptr) const;
+		FrameBufferHandle CreateFrameBuffer(RenderPassHandle pRenderPass, SwapchainHandle pSwapchain, std::vector<ImageHandle> depthImages = {}) const;
+		FrameBufferHandle CreateFrameBuffer(RenderPassHandle pRenderPass, std::vector<std::vector<ImageHandle>> attachmentImages, uint32_t width, uint32_t height, int inflightCount, SwapchainHandle pSwapchain = nullptr) const;
 		GUIHandle CreateGUI(GLFWwindow* window, SwapchainHandle pSwapchain, RenderPassHandle pRenderPass) const;
 		ImageHandle CreateImage(
 			std::string name = "Image",
@@ -88,16 +89,28 @@ namespace sqrp
 			vk::ImageTiling tiling = vk::ImageTiling::eOptimal,
 			vk::SamplerCreateInfo samplerCreateInfo = {}
 		)  const;
+		ImageHandle CreateImage(
+			std::string name = "Image",
+			vk::ImageCreateInfo imageCreateInfo = {},
+			vk::ImageAspectFlags aspectFlags = vk::ImageAspectFlagBits::eColor,
+			vk::SamplerCreateInfo samplerCreateInfo = {}) const;
 		MeshHandle CreateMesh(std::string modelPath) const;
 		MeshHandle CreateMesh(const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices) const;
-		PipelineHandle CreatePipeline(
+		GraphicsPipelineHandle CreateGraphicsPipeline(
 			RenderPassHandle pRenderPass,
 			SwapchainHandle pSwapchain,
 			ShaderHandle pVertexShader,
 			ShaderHandle pPixelShader,
-			DescriptorSetHandle pDescriptorSet
+			DescriptorSetHandle pDescriptorSet,
+			vk::PushConstantRange pushConstantRange = vk::PushConstantRange{},
+			bool enableDepthWrite = true
 		) const;
-		RenderPassHandle CreateRenderPass(SwapchainHandle pSwapchain) const;
+		ComputePipelineHandle CreateComputePipeline(
+			ShaderHandle pComputeShader,
+			DescriptorSetHandle pDescriptorSet,
+			vk::PushConstantRange pushConstantRange = vk::PushConstantRange{}
+		) const;
+		RenderPassHandle CreateRenderPass(SwapchainHandle pSwapchain, bool depth = true) const;
 		RenderPassHandle CreateRenderPass(std::vector<SubPassInfo> subPassInfos, std::map<std::string, AttachmentInfo> attachmentNameToInfo) const;
 		SemaphoreHandle CreateSemaphore() const;
 		ShaderHandle CreateShader(const Compiler& compiler, const std::string& fileName, ShaderType shaderType) const;

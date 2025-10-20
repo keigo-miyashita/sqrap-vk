@@ -24,8 +24,6 @@ namespace sqrp
 		deltaMousePos_.x = currentMousePos_.x - prevMousePos_.x;
 		deltaMousePos_.y = currentMousePos_.y - prevMousePos_.y;
 
-		cout << "Mouse Delta Position: (" << deltaMousePos_.x << ", " << deltaMousePos_.y << ")\n";
-
 		prevMousePos_ = currentMousePos_;
 	}
 

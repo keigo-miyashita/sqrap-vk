@@ -9,7 +9,8 @@ namespace sqrp
 {
 	RenderPass::RenderPass(
         const Device& device,
-        SwapchainHandle pSwapchain
+        SwapchainHandle pSwapchain,
+        bool depth
 	)
 		: pDevice_(&device)
 	{
@@ -27,35 +28,43 @@ namespace sqrp
         colorAttachment.initialLayout = vk::ImageLayout::eUndefined;
         colorAttachment.finalLayout = vk::ImageLayout::ePresentSrcKHR;
 
-        // 深度アタッチメント
-        vk::AttachmentDescription depthAttachment{};
-        depthAttachment.format = vk::Format::eD32Sfloat;
-        depthAttachment.samples = vk::SampleCountFlagBits::e1;
-        depthAttachment.loadOp = vk::AttachmentLoadOp::eClear;
-        depthAttachment.storeOp = vk::AttachmentStoreOp::eDontCare;
-        depthAttachment.stencilLoadOp = vk::AttachmentLoadOp::eDontCare;
-        depthAttachment.stencilStoreOp = vk::AttachmentStoreOp::eDontCare;
-        depthAttachment.initialLayout = vk::ImageLayout::eUndefined;
-        depthAttachment.finalLayout = vk::ImageLayout::eDepthStencilAttachmentOptimal;
-
         // アタッチメント参照
         vk::AttachmentReference colorRef{};
         colorRef.attachment = 0;
         colorRef.layout = vk::ImageLayout::eColorAttachmentOptimal;
 
         vk::AttachmentReference depthRef{};
-        depthRef.attachment = 1;
-        depthRef.layout = vk::ImageLayout::eDepthStencilAttachmentOptimal;
+        vk::AttachmentDescription depthAttachment{};
+        if (depth) {
+            // 深度アタッチメント
+            depthAttachment.format = vk::Format::eD32Sfloat;
+            depthAttachment.samples = vk::SampleCountFlagBits::e1;
+            depthAttachment.loadOp = vk::AttachmentLoadOp::eClear;
+            depthAttachment.storeOp = vk::AttachmentStoreOp::eDontCare;
+            depthAttachment.stencilLoadOp = vk::AttachmentLoadOp::eDontCare;
+            depthAttachment.stencilStoreOp = vk::AttachmentStoreOp::eDontCare;
+            depthAttachment.initialLayout = vk::ImageLayout::eUndefined;
+            depthAttachment.finalLayout = vk::ImageLayout::eDepthStencilAttachmentOptimal;
+
+            depthRef.attachment = 1;
+            depthRef.layout = vk::ImageLayout::eDepthStencilAttachmentOptimal;
+        }
 
         // サブパス
         vk::SubpassDescription subpass{};
         subpass.pipelineBindPoint = vk::PipelineBindPoint::eGraphics;
         subpass.colorAttachmentCount = 1;
         subpass.pColorAttachments = &colorRef;
-        subpass.pDepthStencilAttachment = &depthRef;
+        subpass.pDepthStencilAttachment = (depth) ? &depthRef : nullptr;
 
         // RenderPass 作成
-        std::array<vk::AttachmentDescription, 2> attachments = { colorAttachment, depthAttachment };
+        //std::array<vk::AttachmentDescription, 2> attachments = { colorAttachment, depthAttachment };
+		std::vector<vk::AttachmentDescription> attachments;
+		attachments.push_back(colorAttachment);
+        if (depth) {
+            attachments.push_back(depthAttachment);
+        }
+
         vk::RenderPassCreateInfo renderPassInfo{};
         renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
         renderPassInfo.pAttachments = attachments.data();
@@ -133,12 +142,24 @@ namespace sqrp
 				.setPDepthStencilAttachment(allDepthRefs[i] ? &(*allDepthRefs[i]) : nullptr);
         }
 
+		// NOTE : multi subpass synchronization is not supported yet.
+        vk::SubpassDependency dependency{};
+        dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+        dependency.dstSubpass = 0;
+        dependency.srcStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput | vk::PipelineStageFlagBits::eEarlyFragmentTests;
+        dependency.dstStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput | vk::PipelineStageFlagBits::eEarlyFragmentTests;
+        dependency.srcAccessMask = {};
+        dependency.dstAccessMask = vk::AccessFlagBits::eColorAttachmentWrite | vk::AccessFlagBits::eDepthStencilAttachmentWrite;
+        dependency.dependencyFlags = vk::DependencyFlagBits::eByRegion; // タイル単位の同期（最適化付き）
+
         vk::RenderPassCreateInfo renderPassInfo{};
         renderPassInfo
             .setAttachmentCount(attachmentsDescs.size())
             .setPAttachments(attachmentsDescs.data())
             .setSubpassCount(subPassDescs.size())
-            .setPSubpasses(subPassDescs.data());
+            .setPSubpasses(subPassDescs.data())
+            .setDependencyCount(1)
+            .setPDependencies(&dependency);
 
 		renderPass_ = pDevice_->GetDevice().createRenderPassUnique(renderPassInfo);
     }

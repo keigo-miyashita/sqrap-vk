@@ -12,6 +12,8 @@ namespace sqrp
 	class Image;
 	class Mesh;
 	class Pipeline;
+	class GraphicsPipeline;
+	class ComputePipeline;
 	class RenderPass;
 	class Semaphore;
 	class Shader;
@@ -25,6 +27,8 @@ namespace sqrp
 	using GUIHandle = std::shared_ptr<GUI>;
 	using ImageHandle = std::shared_ptr<Image>;
 	using MeshHandle = std::shared_ptr<Mesh>;
+	using GraphicsPipelineHandle = std::shared_ptr<GraphicsPipeline>;
+	using ComputePipelineHandle = std::shared_ptr<ComputePipeline>;
 	using PipelineHandle = std::shared_ptr<Pipeline>;
 	using RenderPassHandle = std::shared_ptr<RenderPass>;
 	using SemaphoreHandle = std::shared_ptr<Semaphore>;

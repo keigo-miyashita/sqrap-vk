@@ -16,6 +16,7 @@
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include <vk_mem_alloc.h>
 
@@ -29,6 +30,7 @@
 #include <imgui.h>
 #include <imgui_impl_vulkan.h>
 #include <imgui_impl_glfw.h>
+#include <ImGuizmo.h>
 
 #include <algorithm>
 #include <array>

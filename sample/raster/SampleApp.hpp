@@ -32,7 +32,7 @@ private:
 	sqrp::ShaderHandle pixelShader_;
 
 	sqrp::DescriptorSetHandle descriptorSet_;
-	sqrp::PipelineHandle pipeline_;
+	sqrp::GraphicsPipelineHandle pipeline_;
 
 
 public:

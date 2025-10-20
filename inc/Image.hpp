@@ -12,17 +12,24 @@ namespace sqrp
 	{
 	private:
 		const Device* pDevice_ = nullptr;
+		
+		static int imageIdCounter_;
 
+		int imageId_ = -1;
 		vk::Image image_;
 		vk::Extent3D extent3D_;
 		vk::ImageType imageType_;
 		vk::Format format_;
 		vk::ImageLayout imageLayout_;
 		vk::ImageAspectFlags aspectFlags_;
+		vk::ImageUsageFlags usage_;
+		uint32_t mipLevels_ = 1;
+		uint32_t arrayLayers_ = 1;
 		VmaAllocation allocation_;
 		VmaAllocationInfo allocationInfo_;
 
 		vk::ImageView imageView_;
+		std::vector<vk::ImageView> mipImageView_;
 		vk::Sampler sampler_;
 
 	public:
@@ -41,13 +48,29 @@ namespace sqrp
 			vk::ImageTiling tiling = vk::ImageTiling::eOptimal,
 			vk::SamplerCreateInfo samplerCreateInfo = {}
 		);
+		Image(
+			const Device& device,
+			std::string name = "Image",
+			vk::ImageCreateInfo imageCreateInfo = {},
+			vk::ImageAspectFlags aspectFlags = vk::ImageAspectFlagBits::eColor,
+			vk::SamplerCreateInfo samplerCreateInfo = {}
+		);
 		~Image();
+
+		/*void Recreate(uint32_t width, uint32_t height);*/
 
 		vk::Image GetImage() const;
 		vk::ImageView GetImageView() const;
 		vk::ImageLayout GetImageLayout() const;
 		vk::ImageAspectFlags GetAspectFlags() const;
 		vk::Sampler GetSampler() const;
+		vk::Extent3D GetExtent3D() const;
+		uint32_t GetMipLevels() const;
+		uint32_t GetArrayLayers() const;
+		int GetImageId() const;
+		vk::Format GetFormat() const;
+		vk::ImageUsageFlags GetUsage() const;
+		vk::ImageView GetMipImageView(uint32_t mipLevel) const;
 
 		void SetImageLayout(vk::ImageLayout imageLayout);
 

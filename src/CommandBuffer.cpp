@@ -112,6 +112,17 @@ namespace sqrp
 		);
 	}
 
+	void CommandBuffer::PushConstants(PipelineHandle pPipeline, vk::ShaderStageFlags stageFlags, uint32_t size, const void* pValues)
+	{
+		commandBuffer_->pushConstants(
+			pPipeline->GetPipelineLayout(),
+			stageFlags,
+			0,
+			size,
+			pValues
+		);
+	}
+
 	void CommandBuffer::CopyBuffer(BufferHandle srcBuffer, BufferHandle dstBuffer)
 	{
 		commandBuffer_->copyBuffer(
@@ -129,6 +140,32 @@ namespace sqrp
 				.setSrcOffset(srcOffset)
 				.setDstOffset(dstOffset)
 				.setSize(size)
+		);
+	}
+
+	void CommandBuffer::CopyBufferToImage(BufferHandle srcBuffer, ImageHandle dstImage)
+	{
+		vk::BufferImageCopy region{};
+		region.setBufferOffset(0);
+		region.setBufferRowLength(0);
+		region.setBufferImageHeight(0);
+
+		region.setImageSubresource(
+			vk::ImageSubresourceLayers()
+			.setAspectMask(dstImage->GetAspectFlags())
+			.setMipLevel(0)
+			.setBaseArrayLayer(0)
+			.setLayerCount(1) // TODO: arrayLayers
+		);
+
+		region.setImageOffset(vk::Offset3D{ 0, 0, 0 });
+		region.setImageExtent(dstImage->GetExtent3D());
+
+		commandBuffer_->copyBufferToImage(
+			srcBuffer->GetBuffer(),
+			dstImage->GetImage(),
+			vk::ImageLayout::eTransferDstOptimal,
+			{ region }
 		);
 	}
 
@@ -171,8 +208,8 @@ namespace sqrp
 		barrier.image = pImage->GetImage();
 		barrier.subresourceRange = {
 			pImage->GetAspectFlags(),
-			0, 1,  // mipLevels
-			0, 1   // arrayLayers
+			0, pImage->GetMipLevels(),  // mipLevels
+			0, pImage->GetArrayLayers()   // arrayLayers
 		};
 		commandBuffer_->pipelineBarrier(
 			vk::PipelineStageFlagBits::eAllCommands, vk::PipelineStageFlagBits::eAllCommands,
@@ -204,9 +241,9 @@ namespace sqrp
 			vk::ImageSubresourceRange()
 			.setAspectMask(pImage->GetAspectFlags())
 			.setBaseMipLevel(0)
-			.setLevelCount(1) // TODO: mipLevels
+			.setLevelCount(pImage->GetMipLevels())
 			.setBaseArrayLayer(0)
-			.setLayerCount(1) // TODO: arrayLayers
+			.setLayerCount(pImage->GetArrayLayers())
 		);
 		barrier.setSrcAccessMask(srcAccessMask);
 		barrier.setDstAccessMask(dstAccessMask);
@@ -227,6 +264,11 @@ namespace sqrp
 	void CommandBuffer::Draw(uint32_t vertexCount, uint32_t instanceCount)
 	{
 		commandBuffer_->draw(vertexCount, instanceCount, 0, 0);
+	}
+
+	void CommandBuffer::Dispatch(uint32_t groupCountX, uint32_t groupCountY, uint32_t groupCountZ)
+	{
+		commandBuffer_->dispatch(groupCountX, groupCountY, groupCountZ);
 	}
 
 	void CommandBuffer::DrawGui(GUI& gui)
