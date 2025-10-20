@@ -23,7 +23,7 @@ namespace sqrp
 		vk::ImageTiling tiling,
 		vk::SamplerCreateInfo samplerCreateInfo
 	)
-		: pDevice_(&device), extent3D_(extent3D), imageType_(imageType), format_(format), imageLayout_(imageLayout), aspectFlags_(aspectFlags), usage_(usage), mipLevels_(mipLevels), arrayLayers_(arrayLayers)
+		: pDevice_(&device), name_(name), extent3D_(extent3D), imageType_(imageType), format_(format), imageLayout_(imageLayout), aspectFlags_(aspectFlags), usage_(usage), mipLevels_(mipLevels), arrayLayers_(arrayLayers)
 	{
 		imageId_ = imageIdCounter_;
 		imageIdCounter_++;
@@ -45,6 +45,7 @@ namespace sqrp
 		VmaAllocationCreateInfo allocCreateInfo{};
 		allocCreateInfo.usage = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE;
 
+		imageCreateInfo_ = imageCreateInfo;
 		VkImage image;
 		if (vmaCreateImage(pDevice_->GetAllocator(), reinterpret_cast<VkImageCreateInfo*>(&imageCreateInfo), &allocCreateInfo, &image, &allocation_, &allocationInfo_) != VK_SUCCESS) {
 			throw std::runtime_error("Failed to create image!");
@@ -77,9 +78,11 @@ namespace sqrp
 			.setLayerCount(arrayLayers)
 		);
 
+		imageViewCreateInfo_ = imageViewCreateInfo;
 		imageView_ = pDevice_->GetDevice().createImageView(imageViewCreateInfo);
 		pDevice_->SetObjectName((uint64_t)(VkImageView)imageView_, vk::ObjectType::eImageView, name + "ImageView");
 
+		samplerCreateInfo_ = samplerCreateInfo;
 		sampler_ = pDevice_->GetDevice().createSampler(samplerCreateInfo);
 		pDevice_->SetObjectName((uint64_t)(VkSampler)sampler_, vk::ObjectType::eSampler, name + "Sampler");
 	}
@@ -91,7 +94,7 @@ namespace sqrp
 		vk::ImageAspectFlags aspectFlags,
 		vk::SamplerCreateInfo samplerCreateInfo
 	)
-		: pDevice_(&device)
+		: pDevice_(&device), name_(name)
 	{
 		imageId_ = imageIdCounter_;
 		imageIdCounter_++;
@@ -107,6 +110,7 @@ namespace sqrp
 		VmaAllocationCreateInfo allocCreateInfo{};
 		allocCreateInfo.usage = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE;
 
+		imageCreateInfo_ = imageCreateInfo;
 		VkImage image;
 		if (vmaCreateImage(pDevice_->GetAllocator(), reinterpret_cast<VkImageCreateInfo*>(&imageCreateInfo), &allocCreateInfo, &image, &allocation_, &allocationInfo_) != VK_SUCCESS) {
 			throw std::runtime_error("Failed to create image!");
@@ -139,10 +143,12 @@ namespace sqrp
 			.setLayerCount(imageCreateInfo.arrayLayers)
 		);
 
+		imageCreateInfo_ = imageCreateInfo;
 		imageView_ = pDevice_->GetDevice().createImageView(imageViewCreateInfo);
 		pDevice_->SetObjectName((uint64_t)(VkImageView)imageView_, vk::ObjectType::eImageView, name + "ImageView");
 
 		if (mipLevels_ > 1) {
+			mipImageViewCreateInfos_.resize(mipLevels_);
 			mipImageView_.resize(mipLevels_);
 			for (uint32_t i = 0; i < mipLevels_; i++) {
 				vk::ImageViewCreateInfo mipViewCreateInfo{};
@@ -168,11 +174,13 @@ namespace sqrp
 					.setBaseArrayLayer(0)
 					.setLayerCount(imageCreateInfo.arrayLayers)
 				);
+				mipImageViewCreateInfos_[i] = mipViewCreateInfo;
 				mipImageView_[i] = pDevice_->GetDevice().createImageView(mipViewCreateInfo);
 				pDevice_->SetObjectName((uint64_t)(VkImageView)mipImageView_[i], vk::ObjectType::eImageView, name + "MipImageView_" + to_string(i));
 			}
 		}
 
+		samplerCreateInfo_ = samplerCreateInfo;
 		sampler_ = pDevice_->GetDevice().createSampler(samplerCreateInfo);
 		pDevice_->SetObjectName((uint64_t)(VkSampler)sampler_, vk::ObjectType::eSampler, name + "Sampler");
 	}
@@ -194,7 +202,7 @@ namespace sqrp
 		vmaDestroyImage(pDevice_->GetAllocator(), image_, allocation_);
 	}
 
-	/*void Image::Recreate(uint32_t width, uint32_t height)
+	void Image::Recreate(uint32_t width, uint32_t height)
 	{
 		if (imageView_) {
 			pDevice_->GetDevice().destroyImageView(imageView_);
@@ -204,7 +212,87 @@ namespace sqrp
 		}
 
 		vmaDestroyImage(pDevice_->GetAllocator(), image_, allocation_);
-	}*/
+
+		imageCreateInfo_.setExtent(
+			vk::Extent3D{
+				width,
+				height,
+				extent3D_.depth
+			}
+		);
+
+		VmaAllocationCreateInfo allocCreateInfo{};
+		allocCreateInfo.usage = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE;
+
+		VkImage image;
+		if (vmaCreateImage(pDevice_->GetAllocator(), reinterpret_cast<VkImageCreateInfo*>(&imageCreateInfo_), &allocCreateInfo, &image, &allocation_, &allocationInfo_) != VK_SUCCESS) {
+			throw std::runtime_error("Failed to create image!");
+		}
+		image_ = vk::Image(image);
+
+		pDevice_->SetObjectName((uint64_t)(VkImage)image_, vk::ObjectType::eImage, name_ + "Image");
+
+		vk::ImageViewCreateInfo imageViewCreateInfo{};
+		imageViewCreateInfo.setImage(image_);
+		imageViewCreateInfo.setFormat(format_);
+		if (imageType_ == vk::ImageType::e2D) {
+			imageViewCreateInfo.setViewType(vk::ImageViewType::e2D);
+			if (imageCreateInfo_.flags & vk::ImageCreateFlagBits::eCubeCompatible) {
+				imageViewCreateInfo.setViewType(vk::ImageViewType::eCube);
+			}
+		}
+		else if (imageType_ == vk::ImageType::e3D) {
+			imageViewCreateInfo.setViewType(vk::ImageViewType::e3D);
+		}
+		else if (imageType_ == vk::ImageType::e1D) {
+			imageViewCreateInfo.setViewType(vk::ImageViewType::e1D);
+		}
+		imageViewCreateInfo.setSubresourceRange(
+			vk::ImageSubresourceRange()
+			.setAspectMask(aspectFlags_)
+			.setBaseMipLevel(0)
+			.setLevelCount(imageCreateInfo_.mipLevels)
+			.setBaseArrayLayer(0)
+			.setLayerCount(imageCreateInfo_.arrayLayers)
+		);
+
+		imageView_ = pDevice_->GetDevice().createImageView(imageViewCreateInfo);
+		pDevice_->SetObjectName((uint64_t)(VkImageView)imageView_, vk::ObjectType::eImageView, name_ + "ImageView");
+
+		if (mipLevels_ > 1) {
+			mipImageView_.resize(mipLevels_);
+			for (uint32_t i = 0; i < mipLevels_; i++) {
+				vk::ImageViewCreateInfo mipViewCreateInfo{};
+				mipViewCreateInfo.setImage(image_);
+				mipViewCreateInfo.setFormat(format_);
+				if (imageType_ == vk::ImageType::e2D) {
+					mipViewCreateInfo.setViewType(vk::ImageViewType::e2D);
+					if (imageCreateInfo_.flags & vk::ImageCreateFlagBits::eCubeCompatible) {
+						mipViewCreateInfo.setViewType(vk::ImageViewType::eCube);
+					}
+				}
+				else if (imageType_ == vk::ImageType::e3D) {
+					mipViewCreateInfo.setViewType(vk::ImageViewType::e3D);
+				}
+				else if (imageType_ == vk::ImageType::e1D) {
+					mipViewCreateInfo.setViewType(vk::ImageViewType::e1D);
+				}
+				mipViewCreateInfo.setSubresourceRange(
+					vk::ImageSubresourceRange()
+					.setAspectMask(aspectFlags_)
+					.setBaseMipLevel(i)
+					.setLevelCount(1)
+					.setBaseArrayLayer(0)
+					.setLayerCount(imageCreateInfo_.arrayLayers)
+				);
+				mipImageView_[i] = pDevice_->GetDevice().createImageView(mipViewCreateInfo);
+				pDevice_->SetObjectName((uint64_t)(VkImageView)mipImageView_[i], vk::ObjectType::eImageView, name_ + "MipImageView_" + to_string(i));
+			}
+		}
+
+		sampler_ = pDevice_->GetDevice().createSampler(samplerCreateInfo_);
+		pDevice_->SetObjectName((uint64_t)(VkSampler)sampler_, vk::ObjectType::eSampler, name_ + "Sampler");
+	}
 
 	vk::Image Image::GetImage() const
 	{

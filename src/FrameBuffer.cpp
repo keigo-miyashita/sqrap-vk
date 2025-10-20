@@ -186,7 +186,7 @@ namespace sqrp
 		framebuffers_.resize(inflightCount_);
 
 		swapchainImageViews_.reset();
-		attachmentImages_.clear();
+		//attachmentImages_.clear();
 
 		if (pSwapchain_.has_value()) {
 			swapchainImageViews_ = vector<vk::UniqueImageView>();

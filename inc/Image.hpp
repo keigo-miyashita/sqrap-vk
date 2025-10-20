@@ -15,6 +15,8 @@ namespace sqrp
 		
 		static int imageIdCounter_;
 
+		std::string name_ = "Image";
+		vk::ImageCreateInfo imageCreateInfo_;
 		int imageId_ = -1;
 		vk::Image image_;
 		vk::Extent3D extent3D_;
@@ -28,8 +30,11 @@ namespace sqrp
 		VmaAllocation allocation_;
 		VmaAllocationInfo allocationInfo_;
 
+		vk::ImageViewCreateInfo imageViewCreateInfo_;
 		vk::ImageView imageView_;
+		std::vector<vk::ImageViewCreateInfo> mipImageViewCreateInfos_;
 		std::vector<vk::ImageView> mipImageView_;
+		vk::SamplerCreateInfo samplerCreateInfo_;
 		vk::Sampler sampler_;
 
 	public:
@@ -57,7 +62,7 @@ namespace sqrp
 		);
 		~Image();
 
-		/*void Recreate(uint32_t width, uint32_t height);*/
+		void Recreate(uint32_t width, uint32_t height);
 
 		vk::Image GetImage() const;
 		vk::ImageView GetImageView() const;
