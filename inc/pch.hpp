@@ -31,6 +31,8 @@
 #include <imgui_impl_vulkan.h>
 #include <imgui_impl_glfw.h>
 #include <ImGuizmo.h>
+// NOTE : using internal ImGui API
+#include <imgui_internal.h>
 
 #include <algorithm>
 #include <array>

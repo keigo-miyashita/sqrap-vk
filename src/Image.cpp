@@ -23,63 +23,60 @@ namespace sqrp
 		vk::ImageTiling tiling,
 		vk::SamplerCreateInfo samplerCreateInfo
 	)
-		: pDevice_(&device), name_(name), extent3D_(extent3D), imageType_(imageType), format_(format), imageLayout_(imageLayout), aspectFlags_(aspectFlags), usage_(usage), mipLevels_(mipLevels), arrayLayers_(arrayLayers)
+		: pDevice_(&device), name_(name), aspectFlags_(aspectFlags)/*, extent3D_(extent3D), imageType_(imageType), format_(format), imageLayout_(imageLayout), aspectFlags_(aspectFlags), usage_(usage), mipLevels_(mipLevels), arrayLayers_(arrayLayers)*/
 	{
 		imageId_ = imageIdCounter_;
 		imageIdCounter_++;
 
-		vk::ImageCreateInfo imageCreateInfo{};
-		
-		imageCreateInfo
-			.setExtent(extent3D_)
-			.setImageType(imageType_)
+		imageCreateInfo_
+			.setExtent(extent3D)
+			.setImageType(imageType)
 			.setUsage(usage)
-			.setFormat(format_)
+			.setFormat(format)
 			.setMipLevels(mipLevels)
 			.setArrayLayers(arrayLayers)
 			.setSamples(samples)
 			.setTiling(tiling)
 			.setSharingMode(vk::SharingMode::eExclusive)
-			.setInitialLayout(imageLayout_);
+			.setInitialLayout(imageLayout);
 
 		VmaAllocationCreateInfo allocCreateInfo{};
 		allocCreateInfo.usage = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE;
 
-		imageCreateInfo_ = imageCreateInfo;
+		//imageCreateInfo_ = imageCreateInfo;
 		VkImage image;
-		if (vmaCreateImage(pDevice_->GetAllocator(), reinterpret_cast<VkImageCreateInfo*>(&imageCreateInfo), &allocCreateInfo, &image, &allocation_, &allocationInfo_) != VK_SUCCESS) {
+		if (vmaCreateImage(pDevice_->GetAllocator(), reinterpret_cast<VkImageCreateInfo*>(&imageCreateInfo_), &allocCreateInfo, &image, &allocation_, &allocationInfo_) != VK_SUCCESS) {
 			throw std::runtime_error("Failed to create image!");
 		}
 		image_ = vk::Image(image);
 
 		pDevice_->SetObjectName((uint64_t)(VkImage)image_, vk::ObjectType::eImage, name + "Image");
 
-		vk::ImageViewCreateInfo imageViewCreateInfo{};
-		imageViewCreateInfo.setImage(image_);
-		imageViewCreateInfo.setFormat(format_);
-		if (imageType_ == vk::ImageType::e2D) {
-			imageViewCreateInfo.setViewType(vk::ImageViewType::e2D);
-			if (imageCreateInfo.flags & vk::ImageCreateFlagBits::eCubeCompatible) {
-				imageViewCreateInfo.setViewType(vk::ImageViewType::eCube);
+		imageViewCreateInfo_.setImage(image_);
+		imageViewCreateInfo_.setFormat(format);
+		if (imageType == vk::ImageType::e2D) {
+			imageViewCreateInfo_.setViewType(vk::ImageViewType::e2D);
+			if (imageCreateInfo_.flags & vk::ImageCreateFlagBits::eCubeCompatible) {
+				imageViewCreateInfo_.setViewType(vk::ImageViewType::eCube);
 			}
 		}
-		else if (imageType_ == vk::ImageType::e3D) {
-			imageViewCreateInfo.setViewType(vk::ImageViewType::e3D);
+		else if (imageType == vk::ImageType::e3D) {
+			imageViewCreateInfo_.setViewType(vk::ImageViewType::e3D);
 		}
-		else if (imageType_ == vk::ImageType::e1D) {
-			imageViewCreateInfo.setViewType(vk::ImageViewType::e1D);
+		else if (imageType == vk::ImageType::e1D) {
+			imageViewCreateInfo_.setViewType(vk::ImageViewType::e1D);
 		}
-		imageViewCreateInfo.setSubresourceRange(
+		imageViewCreateInfo_.setSubresourceRange(
 			vk::ImageSubresourceRange()
-			.setAspectMask(aspectFlags_)
+			.setAspectMask(aspectFlags)
 			.setBaseMipLevel(0)
 			.setLevelCount(mipLevels)
 			.setBaseArrayLayer(0)
 			.setLayerCount(arrayLayers)
 		);
 
-		imageViewCreateInfo_ = imageViewCreateInfo;
-		imageView_ = pDevice_->GetDevice().createImageView(imageViewCreateInfo);
+		//imageViewCreateInfo_ = imageViewCreateInfo;
+		imageView_ = pDevice_->GetDevice().createImageView(imageViewCreateInfo_);
 		pDevice_->SetObjectName((uint64_t)(VkImageView)imageView_, vk::ObjectType::eImageView, name + "ImageView");
 
 		samplerCreateInfo_ = samplerCreateInfo;
@@ -94,81 +91,73 @@ namespace sqrp
 		vk::ImageAspectFlags aspectFlags,
 		vk::SamplerCreateInfo samplerCreateInfo
 	)
-		: pDevice_(&device), name_(name)
+		: pDevice_(&device), name_(name), aspectFlags_(aspectFlags)
 	{
 		imageId_ = imageIdCounter_;
 		imageIdCounter_++;
 
-		extent3D_ = imageCreateInfo.extent;
-		imageType_ = imageCreateInfo.imageType;
-		format_ = imageCreateInfo.format;
 		imageLayout_ = imageCreateInfo.initialLayout;
-		aspectFlags_ = aspectFlags;
-		mipLevels_ = imageCreateInfo.mipLevels;
-		arrayLayers_ = imageCreateInfo.arrayLayers;
 
 		VmaAllocationCreateInfo allocCreateInfo{};
 		allocCreateInfo.usage = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE;
 
 		imageCreateInfo_ = imageCreateInfo;
 		VkImage image;
-		if (vmaCreateImage(pDevice_->GetAllocator(), reinterpret_cast<VkImageCreateInfo*>(&imageCreateInfo), &allocCreateInfo, &image, &allocation_, &allocationInfo_) != VK_SUCCESS) {
+		if (vmaCreateImage(pDevice_->GetAllocator(), reinterpret_cast<VkImageCreateInfo*>(&imageCreateInfo_), &allocCreateInfo, &image, &allocation_, &allocationInfo_) != VK_SUCCESS) {
 			throw std::runtime_error("Failed to create image!");
 		}
 		image_ = vk::Image(image);
 
 		pDevice_->SetObjectName((uint64_t)(VkImage)image_, vk::ObjectType::eImage, name + "Image");
 
-		vk::ImageViewCreateInfo imageViewCreateInfo{};
-		imageViewCreateInfo.setImage(image_);
-		imageViewCreateInfo.setFormat(format_);
-		if (imageType_ == vk::ImageType::e2D) {
-			imageViewCreateInfo.setViewType(vk::ImageViewType::e2D);
-			if (imageCreateInfo.flags & vk::ImageCreateFlagBits::eCubeCompatible) {
-				imageViewCreateInfo.setViewType(vk::ImageViewType::eCube);
+		imageViewCreateInfo_.setImage(image_);
+		imageViewCreateInfo_.setFormat(imageCreateInfo_.format);
+		if (imageCreateInfo_.imageType == vk::ImageType::e2D) {
+			imageViewCreateInfo_.setViewType(vk::ImageViewType::e2D);
+			if (imageCreateInfo_.flags & vk::ImageCreateFlagBits::eCubeCompatible) {
+				imageViewCreateInfo_.setViewType(vk::ImageViewType::eCube);
 			}
 		}
-		else if (imageType_ == vk::ImageType::e3D) {
-			imageViewCreateInfo.setViewType(vk::ImageViewType::e3D);
+		else if (imageCreateInfo_.imageType == vk::ImageType::e3D) {
+			imageViewCreateInfo_.setViewType(vk::ImageViewType::e3D);
 		}
-		else if (imageType_ == vk::ImageType::e1D) {
-			imageViewCreateInfo.setViewType(vk::ImageViewType::e1D);
+		else if (imageCreateInfo_.imageType == vk::ImageType::e1D) {
+			imageViewCreateInfo_.setViewType(vk::ImageViewType::e1D);
 		}
-		imageViewCreateInfo.setSubresourceRange(
+		imageViewCreateInfo_.setSubresourceRange(
 			vk::ImageSubresourceRange()
-			.setAspectMask(aspectFlags_)
+			.setAspectMask(aspectFlags)
 			.setBaseMipLevel(0)
-			.setLevelCount(imageCreateInfo.mipLevels)
+			.setLevelCount(imageCreateInfo_.mipLevels)
 			.setBaseArrayLayer(0)
-			.setLayerCount(imageCreateInfo.arrayLayers)
+			.setLayerCount(imageCreateInfo_.arrayLayers)
 		);
 
-		imageCreateInfo_ = imageCreateInfo;
-		imageView_ = pDevice_->GetDevice().createImageView(imageViewCreateInfo);
+		imageView_ = pDevice_->GetDevice().createImageView(imageViewCreateInfo_);
 		pDevice_->SetObjectName((uint64_t)(VkImageView)imageView_, vk::ObjectType::eImageView, name + "ImageView");
 
-		if (mipLevels_ > 1) {
-			mipImageViewCreateInfos_.resize(mipLevels_);
-			mipImageView_.resize(mipLevels_);
-			for (uint32_t i = 0; i < mipLevels_; i++) {
+		if (imageCreateInfo_.mipLevels > 1) {
+			mipImageViewCreateInfos_.resize(imageCreateInfo_.mipLevels);
+			mipImageView_.resize(imageCreateInfo_.mipLevels);
+			for (uint32_t i = 0; i < imageCreateInfo_.mipLevels; i++) {
 				vk::ImageViewCreateInfo mipViewCreateInfo{};
 				mipViewCreateInfo.setImage(image_);
-				mipViewCreateInfo.setFormat(format_);
-				if (imageType_ == vk::ImageType::e2D) {
+				mipViewCreateInfo.setFormat(imageCreateInfo_.format);
+				if (imageCreateInfo_.imageType == vk::ImageType::e2D) {
 					mipViewCreateInfo.setViewType(vk::ImageViewType::e2D);
 					if (imageCreateInfo.flags & vk::ImageCreateFlagBits::eCubeCompatible) {
 						mipViewCreateInfo.setViewType(vk::ImageViewType::eCube);
 					}
 				}
-				else if (imageType_ == vk::ImageType::e3D) {
+				else if (imageCreateInfo_.imageType == vk::ImageType::e3D) {
 					mipViewCreateInfo.setViewType(vk::ImageViewType::e3D);
 				}
-				else if (imageType_ == vk::ImageType::e1D) {
+				else if (imageCreateInfo_.imageType == vk::ImageType::e1D) {
 					mipViewCreateInfo.setViewType(vk::ImageViewType::e1D);
 				}
 				mipViewCreateInfo.setSubresourceRange(
 					vk::ImageSubresourceRange()
-					.setAspectMask(aspectFlags_)
+					.setAspectMask(aspectFlags)
 					.setBaseMipLevel(i)
 					.setLevelCount(1)
 					.setBaseArrayLayer(0)
@@ -187,6 +176,11 @@ namespace sqrp
 
 	Image::~Image()
 	{
+		Destroy();
+	}
+
+	void Image::Destroy()
+	{
 		if (imageView_) {
 			pDevice_->GetDevice().destroyImageView(imageView_);
 		}
@@ -204,20 +198,13 @@ namespace sqrp
 
 	void Image::Recreate(uint32_t width, uint32_t height)
 	{
-		if (imageView_) {
-			pDevice_->GetDevice().destroyImageView(imageView_);
-		}
-		if (sampler_) {
-			pDevice_->GetDevice().destroySampler(sampler_);
-		}
-
-		vmaDestroyImage(pDevice_->GetAllocator(), image_, allocation_);
+		Destroy();
 
 		imageCreateInfo_.setExtent(
 			vk::Extent3D{
 				width,
 				height,
-				extent3D_.depth
+				imageCreateInfo_.extent.depth
 			}
 		);
 
@@ -232,59 +219,17 @@ namespace sqrp
 
 		pDevice_->SetObjectName((uint64_t)(VkImage)image_, vk::ObjectType::eImage, name_ + "Image");
 
-		vk::ImageViewCreateInfo imageViewCreateInfo{};
-		imageViewCreateInfo.setImage(image_);
-		imageViewCreateInfo.setFormat(format_);
-		if (imageType_ == vk::ImageType::e2D) {
-			imageViewCreateInfo.setViewType(vk::ImageViewType::e2D);
-			if (imageCreateInfo_.flags & vk::ImageCreateFlagBits::eCubeCompatible) {
-				imageViewCreateInfo.setViewType(vk::ImageViewType::eCube);
-			}
-		}
-		else if (imageType_ == vk::ImageType::e3D) {
-			imageViewCreateInfo.setViewType(vk::ImageViewType::e3D);
-		}
-		else if (imageType_ == vk::ImageType::e1D) {
-			imageViewCreateInfo.setViewType(vk::ImageViewType::e1D);
-		}
-		imageViewCreateInfo.setSubresourceRange(
-			vk::ImageSubresourceRange()
-			.setAspectMask(aspectFlags_)
-			.setBaseMipLevel(0)
-			.setLevelCount(imageCreateInfo_.mipLevels)
-			.setBaseArrayLayer(0)
-			.setLayerCount(imageCreateInfo_.arrayLayers)
-		);
+		//vk::ImageViewCreateInfo imageViewCreateInfo{};
+		imageViewCreateInfo_.setImage(image_);
 
-		imageView_ = pDevice_->GetDevice().createImageView(imageViewCreateInfo);
+		imageView_ = pDevice_->GetDevice().createImageView(imageViewCreateInfo_);
 		pDevice_->SetObjectName((uint64_t)(VkImageView)imageView_, vk::ObjectType::eImageView, name_ + "ImageView");
 
-		if (mipLevels_ > 1) {
-			mipImageView_.resize(mipLevels_);
-			for (uint32_t i = 0; i < mipLevels_; i++) {
+		if (imageCreateInfo_.mipLevels > 1) {
+			mipImageView_.resize(imageCreateInfo_.mipLevels);
+			for (uint32_t i = 0; i < imageCreateInfo_.mipLevels; i++) {
 				vk::ImageViewCreateInfo mipViewCreateInfo{};
 				mipViewCreateInfo.setImage(image_);
-				mipViewCreateInfo.setFormat(format_);
-				if (imageType_ == vk::ImageType::e2D) {
-					mipViewCreateInfo.setViewType(vk::ImageViewType::e2D);
-					if (imageCreateInfo_.flags & vk::ImageCreateFlagBits::eCubeCompatible) {
-						mipViewCreateInfo.setViewType(vk::ImageViewType::eCube);
-					}
-				}
-				else if (imageType_ == vk::ImageType::e3D) {
-					mipViewCreateInfo.setViewType(vk::ImageViewType::e3D);
-				}
-				else if (imageType_ == vk::ImageType::e1D) {
-					mipViewCreateInfo.setViewType(vk::ImageViewType::e1D);
-				}
-				mipViewCreateInfo.setSubresourceRange(
-					vk::ImageSubresourceRange()
-					.setAspectMask(aspectFlags_)
-					.setBaseMipLevel(i)
-					.setLevelCount(1)
-					.setBaseArrayLayer(0)
-					.setLayerCount(imageCreateInfo_.arrayLayers)
-				);
 				mipImageView_[i] = pDevice_->GetDevice().createImageView(mipViewCreateInfo);
 				pDevice_->SetObjectName((uint64_t)(VkImageView)mipImageView_[i], vk::ObjectType::eImageView, name_ + "MipImageView_" + to_string(i));
 			}
@@ -321,17 +266,17 @@ namespace sqrp
 
 	vk::Extent3D Image::GetExtent3D() const
 	{
-		return extent3D_;
+		return imageCreateInfo_.extent;
 	}
 
 	uint32_t Image::GetMipLevels() const
 	{
-		return mipLevels_;
+		return imageCreateInfo_.mipLevels;
 	}
 
 	uint32_t Image::GetArrayLayers() const
 	{
-		return arrayLayers_;
+		return imageCreateInfo_.arrayLayers;
 	}
 
 	int Image::GetImageId() const
@@ -341,12 +286,12 @@ namespace sqrp
 
 	vk::Format Image::GetFormat() const
 	{
-		return format_;
+		return imageCreateInfo_.format;
 	}
 
 	vk::ImageUsageFlags Image::GetUsage() const
 	{
-		return usage_;
+		return imageCreateInfo_.usage;
 	}
 
 	vk::ImageView Image::GetMipImageView(uint32_t mipLevel) const
