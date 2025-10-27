@@ -29,11 +29,16 @@ namespace sqrp
 		);
 		~Object() = default;
 
-		glm::mat4x4 GetModelMat();
-		glm::mat4x4 GetInvTransMat();
+		void UpdateTransform(glm::mat4 model);
+		glm::mat4x4 GetModel();
+		glm::mat4x4 GetInvTransModel();
+		TransformMatrix GetTransform();
+		glm::vec3 GetPosition();
+		glm::vec3 GetRotation();
+		glm::vec3 GetScale();
 
-		void SetPosition(glm::vec4 position);
+		void SetPosition(glm::vec3 position);
 		void SetRotation(glm::quat quatRotation);
-		void SetScale(float scale);
+		void SetScale(glm::vec3 scale);
 	};
 }
