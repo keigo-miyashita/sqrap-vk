@@ -143,6 +143,10 @@ namespace sqrp
 		: pDevice_(&device)
 	{
 		LoadModel(modelPath, vertices_, indices_);
+		std::filesystem::path fullPath = modelPath;
+
+		name_ = fullPath.stem().string();
+
 		CreateVertexBuffer();
 		CreateIndexBuffer();
 	}
@@ -154,6 +158,10 @@ namespace sqrp
 		CreateIndexBuffer();
 	}
 
+	std::string Mesh::GetName() const
+	{
+		return name_;
+	}
 
 	BufferHandle Mesh::GetVertexBuffer() const
 	{

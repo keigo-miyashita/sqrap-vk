@@ -36,6 +36,7 @@
 #include <algorithm>
 #include <array>
 #include <cstdlib>
+#include <filesystem>
 #include <fstream>
 #include <functional>
 #include <initializer_list>

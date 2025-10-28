@@ -22,6 +22,8 @@ namespace sqrp
 	protected:
 		const Device* pDevice_ = nullptr;
 
+		std::string name_ = "Mesh";
+
 		std::vector<Vertex> vertices_;
 		BufferHandle vertexBuffer_ = nullptr;
 		std::vector<uint32_t> indices_;
@@ -37,6 +39,7 @@ namespace sqrp
 		Mesh(const Device& device, const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices);
 		~Mesh() = default;
 
+		std::string GetName() const;
 		BufferHandle GetVertexBuffer() const;
 		BufferHandle GetIndexBuffer() const;
 		int GetNumIndices() const;
