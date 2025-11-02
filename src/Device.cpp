@@ -371,10 +371,11 @@ namespace sqrp
 		ShaderHandle pPixelShader,
 		DescriptorSetHandle pDescriptorSet,
 		vk::PushConstantRange pushConstantRange,
-		bool enableDepthWrite
+		bool enableDepthWrite,
+		bool needVertexBuffer
 	) const
 	{
-		return std::make_shared<GraphicsPipeline>(*this, pRenderPass, pSwapchain, pVertexShader, pPixelShader, pDescriptorSet, pushConstantRange, enableDepthWrite);
+		return std::make_shared<GraphicsPipeline>(*this, pRenderPass, pSwapchain, pVertexShader, pPixelShader, pDescriptorSet, pushConstantRange, enableDepthWrite, needVertexBuffer);
 	}
 
 	ComputePipelineHandle Device::CreateComputePipeline(

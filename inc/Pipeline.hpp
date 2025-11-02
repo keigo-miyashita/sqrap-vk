@@ -42,7 +42,8 @@ namespace sqrp
 			ShaderHandle pPixelShader,
 			DescriptorSetHandle pDescriptorSet,
 			vk::PushConstantRange pushConstantRange = vk::PushConstantRange{},
-			bool enableDepthWrite = true
+			bool enableDepthWrite = true,
+			bool needVertexBuffer = true
 		);
 		~GraphicsPipeline() = default;
 	};

@@ -37,7 +37,8 @@ namespace sqrp
         ShaderHandle pPixelShader,
         DescriptorSetHandle pDescriptorSet,
         vk::PushConstantRange pushConstantRange,
-        bool enableDepthWrite
+        bool enableDepthWrite,
+        bool needVertexBuffer
     )
         : Pipeline(device)
     {
@@ -82,10 +83,16 @@ namespace sqrp
         attributeDescriptions[3].offset = offsetof(Vertex, uv);
 
         vk::PipelineVertexInputStateCreateInfo vertexInput{};
-        vertexInput.setVertexBindingDescriptionCount(1);
-		vertexInput.setPVertexBindingDescriptions(&bindingDescription);
-		vertexInput.setVertexAttributeDescriptionCount(static_cast<uint32_t>(attributeDescriptions.size()));
-		vertexInput.setPVertexAttributeDescriptions(attributeDescriptions.data());
+        if (needVertexBuffer) {
+            vertexInput.setVertexBindingDescriptionCount(1);
+            vertexInput.setPVertexBindingDescriptions(&bindingDescription);
+            vertexInput.setVertexAttributeDescriptionCount(static_cast<uint32_t>(attributeDescriptions.size()));
+            vertexInput.setPVertexAttributeDescriptions(attributeDescriptions.data());
+        }
+        else {
+            vertexInput.setVertexBindingDescriptionCount(0);
+            vertexInput.setVertexAttributeDescriptionCount(0);
+        }
         // 頂点レイアウトは必要に応じて設定
 
         vk::PipelineInputAssemblyStateCreateInfo inputAssembly{};

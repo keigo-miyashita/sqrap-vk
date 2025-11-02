@@ -66,6 +66,7 @@ namespace sqrp
 		if (button == GLFW_MOUSE_BUTTON_LEFT) {
 			if (action == GLFW_PRESS) {
 				isPushedLButton_ = true;
+				pushedMousePos_ = currentMousePos_;
 			}
 			else if (action == GLFW_RELEASE) {
 				isPushedLButton_ = false;
