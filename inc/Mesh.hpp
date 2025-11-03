@@ -4,6 +4,8 @@
 
 #include "Alias.hpp"
 
+#include "Object.hpp"
+
 namespace sqrp
 {
 	class Buffer;
@@ -17,7 +19,7 @@ namespace sqrp
 		glm::vec2 uv = { 0.0f, 0.0f };
 	};
 
-	class Mesh
+	class MeshBase
 	{
 	protected:
 		const Device* pDevice_ = nullptr;
@@ -29,9 +31,25 @@ namespace sqrp
 		std::vector<uint32_t> indices_;
 		BufferHandle indexBuffer_ = nullptr;
 
-		static bool LoadModel(std::string modelPath, std::vector<Vertex>& vertices, std::vector<uint32_t>& indices);
 		virtual bool CreateVertexBuffer();
 		bool CreateIndexBuffer();
+
+
+	public:
+		MeshBase(const Device& device);
+		~MeshBase() = default;
+
+		std::string GetName() const;
+		BufferHandle GetVertexBuffer() const;
+		BufferHandle GetIndexBuffer() const;
+		virtual int GetNumIndices() const;
+	};
+
+	class Mesh : public MeshBase
+	{
+	protected:
+
+		bool LoadModel(std::string modelPath);
 		
 
 	public:
@@ -39,9 +57,47 @@ namespace sqrp
 		Mesh(const Device& device, const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices);
 		~Mesh() = default;
 
-		std::string GetName() const;
-		BufferHandle GetVertexBuffer() const;
-		BufferHandle GetIndexBuffer() const;
-		int GetNumIndices() const;
+	};
+
+	struct MeshRange
+	{
+		uint32_t offset = 0;
+		uint32_t count = 0;
+	};
+
+	struct SubMeshInfo
+	{
+		TransformMatrix mat = {};
+		int meshIndex = 0;
+	};
+
+	class GLTFMesh : public MeshBase
+	{
+	protected:
+		int meshNum_ = 0;
+		std::vector<int> primitiveNumPerMesh_;
+		// Mesh data is saved per primitive of glTF mesh (= per material)
+		std::vector<MeshRange> vertexRanges_;
+		std::vector<MeshRange> indexRanges_;
+		std::vector<int> materialIndices_;
+
+		// SubMeshInfo per node (except for nodes without mesh)
+		std::vector<SubMeshInfo> subMeshInfos_;
+
+		bool LoadModel(std::string modelPath);
+
+
+	public:
+		GLTFMesh(const Device& device, std::string modelPath);
+		~GLTFMesh() = default;
+
+		int GetMeshNum() const;
+		int GetPrimitiveNumPerMesh(int meshIndex) const;
+		MeshRange GetVertexRange(int primitiveIndex) const;
+		MeshRange GetIndexRange(int primitiveIndex) const;
+		int GetMaterialIndex(int primitiveIndex) const;
+		const std::vector<SubMeshInfo>& GetSubMeshInfos() const;
+		int GetNumIndices(int primitiveIndex) const;
+
 	};
 }

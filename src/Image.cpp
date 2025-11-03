@@ -299,6 +299,11 @@ namespace sqrp
 		return mipImageView_[mipLevel];
 	}
 
+	std::string Image::GetName() const
+	{
+		return name_;
+	}
+
 	void Image::SetImageLayout(vk::ImageLayout imageLayout)
 	{
 		imageLayout_ = imageLayout;

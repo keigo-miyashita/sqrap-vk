@@ -10,6 +10,8 @@ namespace sqrp
 	class FrameBuffer;
 	class GUI;
 	class Image;
+	class MeshBase;
+	class GLTFMesh;
 	class Mesh;
 	class Pipeline;
 	class GraphicsPipeline;
@@ -26,6 +28,8 @@ namespace sqrp
 	using FrameBufferHandle = std::shared_ptr<FrameBuffer>;
 	using GUIHandle = std::shared_ptr<GUI>;
 	using ImageHandle = std::shared_ptr<Image>;
+	using MeshBaseHandle = std::shared_ptr<MeshBase>;
+	using GLTFMeshHandle = std::shared_ptr<GLTFMesh>;
 	using MeshHandle = std::shared_ptr<Mesh>;
 	using GraphicsPipelineHandle = std::shared_ptr<GraphicsPipeline>;
 	using ComputePipelineHandle = std::shared_ptr<ComputePipeline>;

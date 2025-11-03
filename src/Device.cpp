@@ -354,6 +354,11 @@ namespace sqrp
 		return std::make_shared<Image>(*this, name, imageCreateInfo, aspectFlags, samplerCreateInfo);
 	}
 
+	GLTFMeshHandle Device::CreateGLTFMesh(std::string modelPath) const
+	{
+		return std::make_shared<GLTFMesh>(*this, modelPath);
+	}
+
 	MeshHandle Device::CreateMesh(std::string modelPath) const
 	{
 		return std::make_shared<Mesh>(*this, modelPath);

@@ -281,13 +281,13 @@ namespace sqrp
 			vector<vk::ImageView> attachments;
 			if (pSwapchain_.has_value()) {
 				attachments.push_back(swapchainImageViews_.value()[i].get());
-				cout << "Framebuffer has swapchain image view" << endl;
+				//cout << "Framebuffer has swapchain image view" << endl;
 			}
 			for (int j = 0; j < attachmentImages_.size(); j++) {
 				attachments.push_back(attachmentImages_[j][i]->GetImageView());
 				//cout << "Framebuffer has attachment image view: " << frameBufferInfos_[j].debugName << endl;
 			}
-			cout << "Framebuffer attachments: " << attachments.size() << endl;
+			//cout << "Framebuffer attachments: " << attachments.size() << endl;
 			vk::FramebufferCreateInfo framebufferInfo = {};
 			framebufferInfo
 				.setRenderPass(pRenderPass_->GetRenderPass())

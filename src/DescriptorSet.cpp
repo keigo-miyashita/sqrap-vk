@@ -42,7 +42,7 @@ namespace sqrp
 			cout << "Failed to create descriptor set layout" << endl;
 		}
 		else {
-			cout << "Successed to create descriptor set layout" << endl;
+			//cout << "Successed to create descriptor set layout" << endl;
 		}
 
 		// Create Descriptor Pool
@@ -55,7 +55,7 @@ namespace sqrp
 			index++;
 		};
 
-		cout << "poolSizes.size() = " << poolSizes.size() << endl;
+		//cout << "poolSizes.size() = " << poolSizes.size() << endl;
 		descriptorPool_ = pDevice_->GetDevice().createDescriptorPoolUnique(vk::DescriptorPoolCreateInfo{}
 			.setFlags(vk::DescriptorPoolCreateFlagBits::eFreeDescriptorSet)
 			.setMaxSets(1)
@@ -91,6 +91,7 @@ namespace sqrp
 			}
 			else if (std::holds_alternative<ImageHandle>(descriptorSetCreateInfo.pResource)) {
 				auto image = std::get<ImageHandle>(descriptorSetCreateInfo.pResource);
+				cout << "image name: " << image->GetName() << endl;
 				if (descriptorSetCreateInfo.type == vk::DescriptorType::eCombinedImageSampler) {
 					descriptorImageInfos[index].setImageLayout(vk::ImageLayout::eShaderReadOnlyOptimal); // Set expected layout
 				}

@@ -95,10 +95,16 @@ namespace sqrp
 		commandBuffer_->bindPipeline(pipelineBindPoint, pPipeline->GetPipeline());
 	}
 
-	void CommandBuffer::BindMeshBuffer(MeshHandle pMesh)
+	void CommandBuffer::BindMeshBuffer(MeshBaseHandle pMesh)
 	{
 		commandBuffer_->bindVertexBuffers(0, pMesh->GetVertexBuffer()->GetBuffer(), { 0 });
 		commandBuffer_->bindIndexBuffer(pMesh->GetIndexBuffer()->GetBuffer(), 0, vk::IndexType::eUint32);
+	}
+
+	void CommandBuffer::BindMeshBuffer(MeshBaseHandle pMesh, int vertexByteOffset, int indexByteOffset)
+	{
+		commandBuffer_->bindVertexBuffers(0, pMesh->GetVertexBuffer()->GetBuffer(), vertexByteOffset);
+		commandBuffer_->bindIndexBuffer(pMesh->GetIndexBuffer()->GetBuffer(), indexByteOffset, vk::IndexType::eUint32);
 	}
 
 	void CommandBuffer::BindDescriptorSet(PipelineHandle pPipeline, DescriptorSetHandle pDescriptorSet, vk::PipelineBindPoint pipelineBindPoint)
@@ -256,9 +262,9 @@ namespace sqrp
 		);
 	}
 
-	void CommandBuffer::DrawMesh(MeshHandle pMesh)
+	void CommandBuffer::DrawMesh(MeshBaseHandle pMesh, int numIndices)
 	{
-		commandBuffer_->drawIndexed(static_cast<uint32_t>(pMesh->GetNumIndices()), 1, 0, 0, 0);
+		commandBuffer_->drawIndexed(static_cast<uint32_t>(numIndices), 1, 0, 0, 0);
 	}
 
 	void CommandBuffer::Draw(uint32_t vertexCount, uint32_t instanceCount)

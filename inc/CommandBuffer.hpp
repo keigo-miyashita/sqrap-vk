@@ -13,6 +13,7 @@ namespace sqrp
 	class FrameBuffer;
 	class GUI;
 	class Image;
+	class MeshBase;
 	class Mesh;
 	class Pipeline;
 	class RenderPass;
@@ -38,7 +39,8 @@ namespace sqrp
 		void BeginRenderPass(RenderPassHandle pRenderPass, FrameBufferHandle pFrameBuffer, uint32_t imageIndex);
 		void EndRenderPass();
 		void BindPipeline(PipelineHandle pPipeline, vk::PipelineBindPoint pipelineBindPoint);
-		void BindMeshBuffer(MeshHandle pMesh);
+		void BindMeshBuffer(MeshBaseHandle pMesh);
+		void BindMeshBuffer(MeshBaseHandle pMesh, int vertexByteOffset, int indexByteOffset);
 		void BindDescriptorSet(PipelineHandle pPipeline, DescriptorSetHandle pDescriptorSet, vk::PipelineBindPoint pipelineBindPoint);
 		void PushConstants(PipelineHandle pPipeline, vk::ShaderStageFlags stageFlags, uint32_t size, const void* pValues);
 		void CopyBuffer(BufferHandle srcBuffer, BufferHandle dstBuffer);
@@ -57,7 +59,7 @@ namespace sqrp
 			vk::AccessFlags dstAccessMask = {}
 		);
 
-		void DrawMesh(MeshHandle pMesh);
+		void DrawMesh(MeshBaseHandle pMesh, int numIndices);
 		void Draw(uint32_t vertexCount, uint32_t instanceCount);
 		void Dispatch(uint32_t groupCountX, uint32_t groupCountY, uint32_t groupCountZ);
 

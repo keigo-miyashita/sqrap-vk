@@ -73,6 +73,7 @@ namespace sqrp
 		vk::Format GetFormat() const;
 		vk::ImageUsageFlags GetUsage() const;
 		vk::ImageView GetMipImageView(uint32_t mipLevel) const;
+		std::string GetName() const;
 
 		void SetImageLayout(vk::ImageLayout imageLayout);
 

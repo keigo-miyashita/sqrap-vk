@@ -94,6 +94,7 @@ namespace sqrp
 			vk::ImageCreateInfo imageCreateInfo = {},
 			vk::ImageAspectFlags aspectFlags = vk::ImageAspectFlagBits::eColor,
 			vk::SamplerCreateInfo samplerCreateInfo = {}) const;
+		GLTFMeshHandle CreateGLTFMesh(std::string modelPath) const;
 		MeshHandle CreateMesh(std::string modelPath) const;
 		MeshHandle CreateMesh(const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices) const;
 		GraphicsPipelineHandle CreateGraphicsPipeline(
