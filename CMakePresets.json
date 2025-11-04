@@ -24,10 +24,6 @@
         "CMAKE_BUILD_TYPE": "Debug",
         "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/win-x64-Debug"
       },
-      "architecture": {
-        "value": "x64",
-        "strategy": "external"
-      },
       "condition": {
         "type": "equals",
         "lhs": "${hostSystemName}",
@@ -44,10 +40,6 @@
         "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/external/vcpkg/scripts/buildsystems/vcpkg.cmake",
         "CMAKE_BUILD_TYPE": "Release",
         "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/win-x64-Release"
-      },
-      "architecture": {
-        "value": "x64",
-        "strategy": "external"
       },
       "condition": {
         "type": "equals",
