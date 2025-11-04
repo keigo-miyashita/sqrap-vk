@@ -61,7 +61,6 @@ namespace sqrp
 		initInfo.Queue = queueContext.at(QueueContextType::General).queue;
 		initInfo.PipelineCache = nullptr;
 		initInfo.DescriptorPool = imguiDescPool_.get();
-		initInfo.DescriptorPoolSize = 0;
 		initInfo.MinImageCount = minImageCount;
 		initInfo.ImageCount = imageCount;
 		initInfo.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
