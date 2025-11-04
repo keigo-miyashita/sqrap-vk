@@ -13,7 +13,6 @@
   },
 
   "configurePresets": [
-    // windows
     {
       "name": "win-x64-Debug",
       "displayName": "Windows x64 Debug",
@@ -59,7 +58,6 @@
       }
     },
 
-   // linux
     {
       "name": "linux-x64-Debug",
       "displayName": "Linux x64 Debug",
