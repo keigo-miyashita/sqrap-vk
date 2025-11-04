@@ -15,6 +15,7 @@ private:
 	sqrp::Device device_;
 	sqrp::Compiler compiler_;
 	sqrp::SwapchainHandle swapchain_;
+	std::vector<sqrp::ImageHandle> depthImages_;
 	sqrp::RenderPassHandle renderPass_;
 	sqrp::FrameBufferHandle	frameBuffer_;
 	sqrp::MeshHandle mesh_;

@@ -8,14 +8,13 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# ライブラリのリンク
+# link sqrap-vk
 target_link_libraries(
     ${PROJECT_NAME}-sample-raster PRIVATE
     sqrap-vk
 )
 
-# インクルードディレクトリへのパスを追加
-# 作成したラッパーのincludeを指定
+# sqrap-vk include directory
 target_include_directories(${PROJECT_NAME}-sample-raster PRIVATE "${PROJECT_SOURCE_DIR}/inc")
 
 set(SHADER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/shaders/")

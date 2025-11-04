@@ -11,25 +11,22 @@ set(VULKAN_LIB ${VULKAN_SDK}/Lib)
 set(VULKAN_INC ${VULKAN_SDK}/Include)
 set(VULKAN_SRC ${VULKAN_SDK}/Source)
 
-# 変数にファイルを格納
 file(GLOB_RECURSE WRAPPER_SOURCES "src/*.cpp")
 file(GLOB_RECURSE WRAPPER_HEADERS "inc/*.hpp")
 
-# hpp, cppファイルのまま扱うためのターゲット設定
 add_library(${PROJECT_NAME} ${WRAPPER_SOURCES})
 
 target_precompile_headers(${PROJECT_NAME} PUBLIC inc/pch.hpp)
 
+find_package(glfw3 CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
-find_package(glfw3       REQUIRED)
 find_package(imgui CONFIG REQUIRED)
-find_path(TINYGLTF_INCLUDE_DIRS "tiny_gltf.h")
-#find_package(VulkanHeaders CONFIG REQUIRED)
 find_package(VulkanMemoryAllocator CONFIG REQUIRED)
 find_package(glslang CONFIG REQUIRED)
+find_path(TINYGLTF_INCLUDE_DIRS "tiny_gltf.h")
 
 
-# ヘッダーファイルのあるディレクトリをインクルード
+# include header files directory
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/inc)
 
 target_include_directories(${PROJECT_NAME}
@@ -42,10 +39,9 @@ target_include_directories(${PROJECT_NAME}
 target_link_libraries(
     ${PROJECT_NAME}
     PUBLIC
-        glm::glm
         glfw
+        glm::glm
         imgui::imgui
-        #Vulkan::Headers
         GPUOpen::VulkanMemoryAllocator
         glslang::glslang glslang::glslang-default-resource-limits glslang::SPIRV glslang::SPVRemapper
         ${VULKAN_LIB}/vulkan-1.lib

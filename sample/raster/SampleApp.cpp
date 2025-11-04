@@ -16,7 +16,44 @@ void SampleApp::OnStart()
 	swapchain_ = device_.CreateSwapchain(windowWidth_, windowHeight_);
 
 	renderPass_ = device_.CreateRenderPass(swapchain_);
-	frameBuffer_ = device_.CreateFrameBuffer(renderPass_, swapchain_);
+
+	depthImages_.resize(swapchain_->GetInflightCount());
+	vk::SamplerCreateInfo depthSamplerInfo;
+	depthSamplerInfo
+		.setMagFilter(vk::Filter::eNearest)
+		.setMinFilter(vk::Filter::eNearest)
+		.setMipmapMode(vk::SamplerMipmapMode::eNearest)
+		.setAddressModeU(vk::SamplerAddressMode::eClampToEdge)
+		.setAddressModeV(vk::SamplerAddressMode::eClampToEdge)
+		.setAddressModeW(vk::SamplerAddressMode::eClampToEdge)
+		.setMipLodBias(0.0f)
+		.setAnisotropyEnable(VK_FALSE)
+		.setMaxAnisotropy(1.0f)
+		.setCompareEnable(VK_FALSE)
+		.setCompareOp(vk::CompareOp::eAlways)
+		.setMinLod(0.0f)
+		.setMaxLod(0.0f)
+		.setBorderColor(vk::BorderColor::eIntOpaqueWhite)
+		.setUnnormalizedCoordinates(VK_FALSE);
+
+	for (int i = 0; i < swapchain_->GetInflightCount(); i++) {
+
+		depthImages_[i] = device_.CreateImage(
+			"Depth" + to_string(i),
+			vk::Extent3D{ windowWidth_, windowHeight_, 1 },
+			vk::ImageType::e2D,
+			vk::ImageUsageFlagBits::eDepthStencilAttachment | vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eTransferDst,
+			vk::Format::eD32Sfloat,
+			vk::ImageLayout::eUndefined,
+			vk::ImageAspectFlagBits::eDepth,
+			1,
+			1,
+			vk::SampleCountFlagBits::e1, vk::ImageTiling::eOptimal,
+			depthSamplerInfo
+		);
+	}
+
+	frameBuffer_ = device_.CreateFrameBuffer(renderPass_, swapchain_, depthImages_);
 
 	mesh_ = device_.CreateMesh(string(MODEL_DIR) + "Suzanne.gltf");
 
@@ -78,7 +115,7 @@ void SampleApp::OnUpdate()
 	commandBuffer->BindPipeline(pipeline_, vk::PipelineBindPoint::eGraphics);
 	commandBuffer->BindDescriptorSet(pipeline_, descriptorSet_, vk::PipelineBindPoint::eGraphics);
 	commandBuffer->BindMeshBuffer(mesh_);
-	commandBuffer->DrawMesh(mesh_);
+	commandBuffer->DrawMesh(mesh_, mesh_->GetNumIndices());
 
 	commandBuffer->EndRenderPass();
 
