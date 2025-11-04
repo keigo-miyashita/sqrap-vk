@@ -9,7 +9,7 @@
         "glfw-binding",
         "vulkan-binding"
       ],
-      "version>=": "1.91.0"
+      "version>=": "1.91.9"
     },
     "vulkan-memory-allocator",
     "glslang"
