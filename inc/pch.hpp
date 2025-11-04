@@ -22,7 +22,7 @@
 #include <vk_mem_alloc.h>
 
 #include <glslang/Public/ShaderLang.h>
-#include <glslang/SPIRV/GLSLangToSpv.h>
+#include <glslang/SPIRV/GlslangToSpv.h>
 
 // define statement is needed to cpp file
 #include <tiny_gltf.h>

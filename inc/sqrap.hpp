@@ -13,7 +13,7 @@
 #include <Image.hpp>
 #include <Mesh.hpp>
 #include <Object.hpp>
-#include <PipeLine.hpp>
+#include <Pipeline.hpp>
 #include <RenderPass.hpp>
 #include <Shader.hpp>
 #include <Semaphore.hpp>
