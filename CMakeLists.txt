@@ -44,7 +44,8 @@ target_link_libraries(
         imgui::imgui
         GPUOpen::VulkanMemoryAllocator
         glslang::glslang glslang::glslang-default-resource-limits glslang::SPIRV glslang::SPVRemapper
-        ${VULKAN_LIB}/vulkan-1.lib
+        $<$<PLATFORM_ID:Windows>:${VULKAN_LIB}/vulkan-1.lib>
+        $<$<PLATFORM_ID:Linux>:Vulkan::Vulkan>
 )
 
 add_subdirectory(sample/raster)
