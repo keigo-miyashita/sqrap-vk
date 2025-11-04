@@ -33,7 +33,7 @@ target_include_directories(${PROJECT_NAME}
     PUBLIC
         ${TINYGLTF_INCLUDE_DIRS}
         ${VULKAN_INC}/
-        ${VULKAN_SOURCE}/
+        ${VULKAN_SRC}/
 )
 
 target_link_libraries(
