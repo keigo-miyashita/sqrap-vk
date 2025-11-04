@@ -28,7 +28,6 @@
         "value": "x64",
         "strategy": "external"
       },
-      "toolset": { "value": "host=x64" },
       "condition": {
         "type": "equals",
         "lhs": "${hostSystemName}",
@@ -50,7 +49,6 @@
         "value": "x64",
         "strategy": "external"
       },
-      "toolset": { "value": "host=x64" },
       "condition": {
         "type": "equals",
         "lhs": "${hostSystemName}",
