@@ -467,9 +467,15 @@ namespace sqrp
 			auto waitSemaphores = pWaitSemaphores->GetSemaphore();
 			submitInfo.setWaitSemaphores(waitSemaphores);
 		}
+		else {
+			submitInfo.setWaitSemaphoreCount(0);
+		}
 		if (pSignalSemaphores) {
 			auto signalSemaphore = pSignalSemaphores->GetSemaphore();
 			submitInfo.setSignalSemaphores(signalSemaphore);
+		}
+		else {
+			submitInfo.setSignalSemaphoreCount(0);
 		}
 
 		if (pFence) {
