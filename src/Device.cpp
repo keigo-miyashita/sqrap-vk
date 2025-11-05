@@ -402,7 +402,7 @@ namespace sqrp
 		return std::make_shared<RenderPass>(*this, subPassInfos, attachmentNameToInfo);
 	}
 
-	SemaphoreHandle Device::CreateVkSemaphore(std::string name) const
+	SemaphoreHandle Device::CreateSemaphore(std::string name) const
 	{
 		return std::make_shared<Semaphore>(*this, name);
 	}
@@ -450,8 +450,8 @@ namespace sqrp
 		QueueContextType type,
 		CommandBufferHandle pCommandBuffer,
 		vk::PipelineStageFlags waitDstStageMask,
-		SemaphoreHandle pWaitSemaphores,
-		SemaphoreHandle pSignalSemaphores,
+		vk::Semaphore waitSemaphore,
+		vk::Semaphore signalSemaphore,
 		FenceHandle pFence
 	) const
 	{
@@ -463,21 +463,15 @@ namespace sqrp
 		if (waitDstStageMask != vk::PipelineStageFlagBits::eNone) {
 			submitInfo.setPWaitDstStageMask(&waitDstStageMask);
 		}
-		if (pWaitSemaphores) {
-			auto waitSemaphores = pWaitSemaphores->GetSemaphore();
-			//submitInfo.setWaitSemaphores(waitSemaphores);
-			submitInfo.setPWaitSemaphores(&waitSemaphores);
-			submitInfo.setWaitSemaphoreCount(1);
+		if (waitSemaphore) {
+			submitInfo.setWaitSemaphores(waitSemaphore);
 		}
 		else {
 			submitInfo.setPWaitSemaphores(nullptr);
 			submitInfo.setWaitSemaphoreCount(0);
 		}
-		if (pSignalSemaphores) {
-			auto signalSemaphore = pSignalSemaphores->GetSemaphore();
-			//submitInfo.setSignalSemaphores(signalSemaphore);
-			submitInfo.setPSignalSemaphores(&signalSemaphore);
-			submitInfo.setSignalSemaphoreCount(1);
+		if (signalSemaphore) {
+			submitInfo.setSignalSemaphores(signalSemaphore);
 		}
 		else {
 			submitInfo.setPSignalSemaphores(nullptr);

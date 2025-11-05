@@ -123,7 +123,7 @@ void SampleApp::OnUpdate()
 
 	device_.Submit(
 		QueueContextType::General, commandBuffer, vk::PipelineStageFlagBits::eColorAttachmentOutput,
-		swapchain_->GetImageAcquireSemaphore(), swapchain_->GetRenderCompleteSemaphore(), swapchain_->GetCurrentFence()
+		swapchain_->GetImageAcquireSemaphore()->GetSemaphore(), swapchain_->GetRenderCompleteSemaphore()->GetSemaphore(), swapchain_->GetCurrentFence()
 	);
 
 	swapchain_->Present();

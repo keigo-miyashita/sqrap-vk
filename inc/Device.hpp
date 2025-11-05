@@ -114,7 +114,7 @@ namespace sqrp
 		) const;
 		RenderPassHandle CreateRenderPass(SwapchainHandle pSwapchain, bool depth = true) const;
 		RenderPassHandle CreateRenderPass(std::vector<SubPassInfo> subPassInfos, std::map<std::string, AttachmentInfo> attachmentNameToInfo) const;
-		SemaphoreHandle CreateVkSemaphore(std::string name = "Semaphore") const;
+		SemaphoreHandle CreateSemaphore(std::string name = "Semaphore") const;
 		ShaderHandle CreateShader(const Compiler& compiler, const std::string& fileName, ShaderType shaderType) const;
 		SwapchainHandle CreateSwapchain(uint32_t width, uint32_t height) const;
 
@@ -130,8 +130,8 @@ namespace sqrp
 			QueueContextType type,
 			CommandBufferHandle pCommandBuffer,
 			vk::PipelineStageFlags waitDstStageMask = vk::PipelineStageFlagBits::eNone,
-			SemaphoreHandle pWaitSemaphore = nullptr,
-			SemaphoreHandle pSignalSemaphore = nullptr,
+			vk::Semaphore waitSemaphore = nullptr,
+			vk::Semaphore signalSemaphore = nullptr,
 			FenceHandle pFence = nullptr
 		) const;
 		void WaitIdle(QueueContextType type) const;
