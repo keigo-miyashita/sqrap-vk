@@ -108,7 +108,7 @@ void SampleApp::OnUpdate()
 
 	commandBuffer->Begin();
 
-	commandBuffer->TransitionToColorAttachment(swapchain_);
+	commandBuffer->TransitionLayout(swapchain_->GetCurrentImage(), vk::ImageLayout::eUndefined, vk::ImageLayout::eColorAttachmentOptimal);
 
 	commandBuffer->BeginRenderPass(renderPass_, frameBuffer_, infligtIndex);
 
@@ -120,6 +120,8 @@ void SampleApp::OnUpdate()
 	commandBuffer->DrawMesh(mesh_, mesh_->GetNumIndices());
 
 	commandBuffer->EndRenderPass();
+
+	commandBuffer->TransitionLayout(swapchain_->GetCurrentImage(), vk::ImageLayout::eUndefined, vk::ImageLayout::ePresentSrcKHR);
 
 	commandBuffer->End();
 

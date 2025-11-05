@@ -49,7 +49,7 @@ namespace sqrp
 		void SetScissor(uint32_t width, uint32_t height);
 		void SetViewport(uint32_t width, uint32_t height);
 		void TransitionLayout(ImageHandle pImage, vk::ImageLayout oldLayout, vk::ImageLayout newLayout);
-		void TransitionToColorAttachment(SwapchainHandle pSwapchain);
+		void TransitionLayout(vk::Image image, vk::ImageLayout oldLayout, vk::ImageLayout newLayout);
 		void ImageBarrier(
 			ImageHandle pImage,
 			vk::ImageLayout oldLayout,
