@@ -234,7 +234,7 @@ namespace sqrp
 		barrier.setNewLayout(vk::ImageLayout::eColorAttachmentOptimal);
 		barrier.setSrcQueueFamilyIndex(VK_QUEUE_FAMILY_IGNORED);
 		barrier.setDstQueueFamilyIndex(VK_QUEUE_FAMILY_IGNORED);
-		barrier.setImage(pSwapchain->GetSwapchainImages()[pSwapchain->GetImageIndex()]);
+		barrier.setImage(pSwapchain->GetCurrentImage());
 		barrier.setSubresourceRange(
 			vk::ImageSubresourceRange()
 			.setAspectMask(vk::ImageAspectFlagBits::eColor)

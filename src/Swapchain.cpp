@@ -236,6 +236,11 @@ namespace sqrp
 		return surfaceFormat_.format;
 	}
 
+	vk::Image Swapchain::GetCurrentImage() const
+	{
+		return swapchainImages_[imageIndex_];
+	}
+
 	uint32_t Swapchain::GetInflightCount() const
 	{
 		return inflightCount_;

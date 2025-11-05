@@ -53,6 +53,7 @@ namespace sqrp
 		uint32_t GetHeight() const;
 		vk::Extent2D GetExtent2D() const;
 		vk::Format GetSurfaceFormat() const;
+		vk::Image GetCurrentImage() const;
 		uint32_t GetInflightCount() const;
 		uint32_t GetCurrentInflightIndex() const;
 		uint32_t GetImageIndex() const;
