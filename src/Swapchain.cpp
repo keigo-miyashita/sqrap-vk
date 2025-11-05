@@ -197,35 +197,6 @@ namespace sqrp
 		graphicsFences_[inflightIndex_]->Reset();
 	}
 
-	void Swapchain::TransitionToColorAttachment()
-	{
-		vk::ImageMemoryBarrier barrier{};
-		barrier.setOldLayout(vk::ImageLayout::eUndefined);
-		barrier.setNewLayout(vk::ImageLayout::eColorAttachmentOptimal);
-		barrier.setSrcQueueFamilyIndex(VK_QUEUE_FAMILY_IGNORED);
-		barrier.setDstQueueFamilyIndex(VK_QUEUE_FAMILY_IGNORED);
-		barrier.setImage(swapchainImages_[imageIndex_]);
-		barrier.setSubresourceRange(
-			vk::ImageSubresourceRange()
-			.setAspectMask(vk::ImageAspectFlagBits::eColor)
-			.setBaseMipLevel(0)
-			.setLevelCount(1)
-			.setBaseArrayLayer(0)
-			.setLayerCount(1)
-		);
-		barrier.setSrcAccessMask(vk::AccessFlagBits::eNone);
-		barrier.setDstAccessMask(vk::AccessFlagBits::eColorAttachmentWrite);
-
-		graphicsCommandBuffers_[inflightIndex_]->GetCommandBuffer().pipelineBarrier(
-			vk::PipelineStageFlagBits::eBottomOfPipe,
-			vk::PipelineStageFlagBits::eColorAttachmentOutput,
-			{},
-			{},
-			{},
-			{ barrier }
-		);
-	}
-
 	void Swapchain::Present()
 	{
 		vk::PresentInfoKHR presentInfo;

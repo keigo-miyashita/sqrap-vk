@@ -108,7 +108,7 @@ void SampleApp::OnUpdate()
 
 	commandBuffer->Begin();
 
-	swapchain_->TransitionToColorAttachment();
+	commandBuffer->TransitionToColorAttachment(swapchain_);
 
 	commandBuffer->BeginRenderPass(renderPass_, frameBuffer_, infligtIndex);
 

@@ -227,6 +227,35 @@ namespace sqrp
 		pImage->SetImageLayout(newLayout);
 	}
 
+	void CommandBuffer::TransitionToColorAttachment(SwapchainHandle pSwapchain)
+	{
+		vk::ImageMemoryBarrier barrier{};
+		barrier.setOldLayout(vk::ImageLayout::eUndefined);
+		barrier.setNewLayout(vk::ImageLayout::eColorAttachmentOptimal);
+		barrier.setSrcQueueFamilyIndex(VK_QUEUE_FAMILY_IGNORED);
+		barrier.setDstQueueFamilyIndex(VK_QUEUE_FAMILY_IGNORED);
+		barrier.setImage(pSwapchain->GetSwapchainImages()[pSwapchain->GetImageIndex()]);
+		barrier.setSubresourceRange(
+			vk::ImageSubresourceRange()
+			.setAspectMask(vk::ImageAspectFlagBits::eColor)
+			.setBaseMipLevel(0)
+			.setLevelCount(1)
+			.setBaseArrayLayer(0)
+			.setLayerCount(1)
+		);
+		barrier.setSrcAccessMask(vk::AccessFlagBits::eNone);
+		barrier.setDstAccessMask(vk::AccessFlagBits::eColorAttachmentWrite);
+
+		pSwapchain->GetCurrentCommandBuffer()->GetCommandBuffer().pipelineBarrier(
+			vk::PipelineStageFlagBits::eBottomOfPipe,
+			vk::PipelineStageFlagBits::eColorAttachmentOutput,
+			{},
+			{},
+			{},
+			{ barrier }
+		);
+	}
+
 	void CommandBuffer::ImageBarrier(
 		ImageHandle pImage,
 		vk::ImageLayout oldLayout,

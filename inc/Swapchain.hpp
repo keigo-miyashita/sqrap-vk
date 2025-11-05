@@ -46,7 +46,6 @@ namespace sqrp
 		void Recreate(uint32_t width, uint32_t height);
 		CommandBufferHandle& GetCurrentCommandBuffer();
 		void WaitFrame();
-		void TransitionToColorAttachment();
 		void Present();
 
 		const std::vector<vk::Image>& GetSwapchainImages() const;
