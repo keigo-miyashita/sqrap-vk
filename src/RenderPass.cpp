@@ -40,7 +40,7 @@ namespace sqrp
             depthAttachment.format = vk::Format::eD32Sfloat;
             depthAttachment.samples = vk::SampleCountFlagBits::e1;
             depthAttachment.loadOp = vk::AttachmentLoadOp::eClear;
-            depthAttachment.storeOp = vk::AttachmentStoreOp::eDontCare;
+            depthAttachment.storeOp = vk::AttachmentStoreOp::eStore;
             depthAttachment.stencilLoadOp = vk::AttachmentLoadOp::eDontCare;
             depthAttachment.stencilStoreOp = vk::AttachmentStoreOp::eDontCare;
             depthAttachment.initialLayout = vk::ImageLayout::eUndefined;

@@ -108,7 +108,7 @@ void SampleApp::OnUpdate()
 
 	commandBuffer->Begin();
 
-	commandBuffer->TransitionLayout(swapchain_->GetCurrentImage(), vk::ImageLayout::eUndefined, vk::ImageLayout::eColorAttachmentOptimal);
+	//commandBuffer->TransitionLayout(swapchain_->GetCurrentImage(), vk::ImageLayout::eUndefined, vk::ImageLayout::eColorAttachmentOptimal);
 
 	commandBuffer->BeginRenderPass(renderPass_, frameBuffer_, infligtIndex);
 
@@ -121,7 +121,7 @@ void SampleApp::OnUpdate()
 
 	commandBuffer->EndRenderPass();
 
-	commandBuffer->TransitionLayout(swapchain_->GetCurrentImage(), vk::ImageLayout::eUndefined, vk::ImageLayout::ePresentSrcKHR);
+	//commandBuffer->TransitionLayout(swapchain_->GetCurrentImage(), vk::ImageLayout::eUndefined, vk::ImageLayout::ePresentSrcKHR);
 
 	commandBuffer->End();
 
