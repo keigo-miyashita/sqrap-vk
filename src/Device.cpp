@@ -468,6 +468,7 @@ namespace sqrp
 			submitInfo.setWaitSemaphores(waitSemaphores);
 		}
 		else {
+			submitInfo.setPWaitSemaphores(nullptr);
 			submitInfo.setWaitSemaphoreCount(0);
 		}
 		if (pSignalSemaphores) {
@@ -475,6 +476,7 @@ namespace sqrp
 			submitInfo.setSignalSemaphores(signalSemaphore);
 		}
 		else {
+			submitInfo.setPSignalSemaphores(nullptr);
 			submitInfo.setSignalSemaphoreCount(0);
 		}
 
