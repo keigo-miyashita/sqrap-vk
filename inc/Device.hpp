@@ -114,7 +114,7 @@ namespace sqrp
 		) const;
 		RenderPassHandle CreateRenderPass(SwapchainHandle pSwapchain, bool depth = true) const;
 		RenderPassHandle CreateRenderPass(std::vector<SubPassInfo> subPassInfos, std::map<std::string, AttachmentInfo> attachmentNameToInfo) const;
-		SemaphoreHandle CreateSemaphore() const;
+		SemaphoreHandle CreateVkSemaphore() const;
 		ShaderHandle CreateShader(const Compiler& compiler, const std::string& fileName, ShaderType shaderType) const;
 		SwapchainHandle CreateSwapchain(uint32_t width, uint32_t height) const;
 

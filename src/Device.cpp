@@ -402,7 +402,7 @@ namespace sqrp
 		return std::make_shared<RenderPass>(*this, subPassInfos, attachmentNameToInfo);
 	}
 
-	SemaphoreHandle Device::CreateSemaphore() const
+	SemaphoreHandle Device::CreateVkSemaphore() const
 	{
 		return std::make_shared<Semaphore>(*this);
 	}

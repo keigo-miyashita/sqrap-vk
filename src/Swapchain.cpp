@@ -83,8 +83,8 @@ namespace sqrp
 		imageAcquireSemaphores_.resize(inflightCount_);
 		renderCompleteSemaphores_.resize(inflightCount_);
 		for (int i = 0; i < inflightCount_; i++) {
-			imageAcquireSemaphores_[i] = pDevice_->CreateSemaphore();
-			renderCompleteSemaphores_[i] = pDevice_->CreateSemaphore();
+			imageAcquireSemaphores_[i] = pDevice_->CreateVkSemaphore();
+			renderCompleteSemaphores_[i] = pDevice_->CreateVkSemaphore();
 		}
 	}
 
@@ -176,8 +176,8 @@ namespace sqrp
 		imageAcquireSemaphores_.resize(inflightCount_);
 		renderCompleteSemaphores_.resize(inflightCount_);
 		for (int i = 0; i < inflightCount_; i++) {
-			imageAcquireSemaphores_[i] = pDevice_->CreateSemaphore();
-			renderCompleteSemaphores_[i] = pDevice_->CreateSemaphore();
+			imageAcquireSemaphores_[i] = pDevice_->CreateVkSemaphore();
+			renderCompleteSemaphores_[i] = pDevice_->CreateVkSemaphore();
 		}
 	}
 
