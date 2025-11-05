@@ -13,10 +13,11 @@ namespace sqrp
 	private:
 		const Device* pDevice_ = nullptr;
 
+		std::string name_ = "Semaphore";
 		vk::UniqueSemaphore semaphore_;
 
 	public:
-		Semaphore(const Device& device);
+		Semaphore(const Device& device, std::string name = "Semaphore");
 		~Semaphore() = default;
 
 		vk::Semaphore GetSemaphore() const;

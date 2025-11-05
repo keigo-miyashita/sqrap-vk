@@ -402,9 +402,9 @@ namespace sqrp
 		return std::make_shared<RenderPass>(*this, subPassInfos, attachmentNameToInfo);
 	}
 
-	SemaphoreHandle Device::CreateVkSemaphore() const
+	SemaphoreHandle Device::CreateVkSemaphore(std::string name) const
 	{
-		return std::make_shared<Semaphore>(*this);
+		return std::make_shared<Semaphore>(*this, name);
 	}
 
 	ShaderHandle Device::CreateShader(const Compiler& compiler, const std::string& fileName, ShaderType shaderType) const
