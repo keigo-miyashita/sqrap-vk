@@ -108,6 +108,8 @@ void SampleApp::OnUpdate()
 
 	commandBuffer->Begin();
 
+	swapchain_->TransitionToColorAttachment();
+
 	commandBuffer->BeginRenderPass(renderPass_, frameBuffer_, infligtIndex);
 
 	commandBuffer->SetViewport(swapchain_->GetWidth(), swapchain_->GetHeight());
