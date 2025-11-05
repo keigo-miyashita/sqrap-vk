@@ -465,7 +465,9 @@ namespace sqrp
 		}
 		if (pWaitSemaphores) {
 			auto waitSemaphores = pWaitSemaphores->GetSemaphore();
-			submitInfo.setWaitSemaphores(waitSemaphores);
+			//submitInfo.setWaitSemaphores(waitSemaphores);
+			submitInfo.setPWaitSemaphores(&waitSemaphores);
+			submitInfo.setWaitSemaphoreCount(1);
 		}
 		else {
 			submitInfo.setPWaitSemaphores(nullptr);
@@ -473,7 +475,9 @@ namespace sqrp
 		}
 		if (pSignalSemaphores) {
 			auto signalSemaphore = pSignalSemaphores->GetSemaphore();
-			submitInfo.setSignalSemaphores(signalSemaphore);
+			//submitInfo.setSignalSemaphores(signalSemaphore);
+			submitInfo.setPSignalSemaphores(&signalSemaphore);
+			submitInfo.setSignalSemaphoreCount(1);
 		}
 		else {
 			submitInfo.setPSignalSemaphores(nullptr);
