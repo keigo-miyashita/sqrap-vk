@@ -12,6 +12,7 @@ namespace sqrp
 		semaphore_ = pDevice_->GetDevice().createSemaphoreUnique(
 			vk::SemaphoreCreateInfo()
 		);
+		pDevice_->SetObjectName((uint64_t)(VkSemaphore)semaphore_.get(), vk::ObjectType::eSemaphore, name_);
 	}
 
 	vk::Semaphore Semaphore::GetSemaphore() const {
