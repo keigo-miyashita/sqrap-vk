@@ -32,8 +32,8 @@ namespace sqrp
 			);
 		}
 
-		attachmentImages_.resize(1);
 		if (depthImages.size() > 0) {
+			attachmentImages_.resize(1);
 			attachmentImages_[0] = vector<ImageHandle>();
 			for (size_t j = 0; j < pSwapchain->GetInflightCount(); j++) {
 				attachmentImages_[0].push_back(
