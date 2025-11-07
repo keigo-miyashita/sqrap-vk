@@ -198,7 +198,7 @@ namespace sqrp
 				queueFamilyInfos[context.queueFamilyIndex] = 1;
 			}
 		}
-		cout << "queueFamilyInfos.size() = " << queueFamilyInfos.size() << endl;
+		cout << "queueFamilyNum = " << queueFamilyInfos.size() << endl;
 		float queuePriority = 1.0f;
 		vector<float> queuePriorities;
 		for (const auto [familyIndex, count] : queueFamilyInfos) {
@@ -291,37 +291,39 @@ namespace sqrp
 		return true;
 	}
 
-	BufferHandle Device::CreateBuffer(int size,
+	BufferHandle Device::CreateBuffer(
+		std::string name,
+		int size,
 		vk::BufferUsageFlags usage,
 		VmaAllocationCreateFlags allocationFlags,
 		VmaMemoryUsage memoryUsage) const
 	{
-		return std::make_shared<Buffer>(*this, size, usage, allocationFlags, memoryUsage);
+		return std::make_shared<Buffer>(*this, name, size, usage, allocationFlags, memoryUsage);
 	}
 
-	CommandBufferHandle Device::CreateCommandBuffer(QueueContextType queueType) const
+	CommandBufferHandle Device::CreateCommandBuffer(std::string name, QueueContextType queueType) const
 	{
-		return std::make_shared<CommandBuffer>(*this, queueType);
+		return std::make_shared<CommandBuffer>(*this, name, queueType);
 	}
 
-	DescriptorSetHandle Device::CreateDescriptorSet(std::vector<DescriptorSetCreateInfo> descriptorSetCreateInfos) const
+	DescriptorSetHandle Device::CreateDescriptorSet(std::string name, std::vector<DescriptorSetCreateInfo> descriptorSetCreateInfos) const
 	{
-		return std::make_shared<DescriptorSet>(*this, descriptorSetCreateInfos);
+		return std::make_shared<DescriptorSet>(*this, name, descriptorSetCreateInfos);
 	}
 
-	FenceHandle Device::CreateFence(bool signal) const
+	FenceHandle Device::CreateFence(std::string name, bool signal) const
 	{
-		return std::make_shared<Fence>(*this, signal);
+		return std::make_shared<Fence>(*this, name, signal);
 	}
 
-	FrameBufferHandle Device::CreateFrameBuffer(RenderPassHandle pRenderPass, SwapchainHandle pSwapchain, std::vector<ImageHandle> depthImages) const
+	FrameBufferHandle Device::CreateFrameBuffer(std::string name, RenderPassHandle pRenderPass, SwapchainHandle pSwapchain, std::vector<ImageHandle> depthImages) const
 	{
-		return std::make_shared<FrameBuffer>(*this, pRenderPass, pSwapchain, depthImages);
+		return std::make_shared<FrameBuffer>(*this, name, pRenderPass, pSwapchain, depthImages);
 	}
 	
-	FrameBufferHandle Device::CreateFrameBuffer(RenderPassHandle pRenderPass, std::vector<std::vector<ImageHandle>> attachmentImages, uint32_t width, uint32_t height, int inflightCount, SwapchainHandle pSwapchain) const
+	FrameBufferHandle Device::CreateFrameBuffer(std::string name, RenderPassHandle pRenderPass, std::vector<std::vector<ImageHandle>> attachmentImages, uint32_t width, uint32_t height, int inflightCount, SwapchainHandle pSwapchain) const
 	{
-		return std::make_shared<FrameBuffer>(*this, pRenderPass, attachmentImages, width, height, inflightCount, pSwapchain);
+		return std::make_shared<FrameBuffer>(*this, name, pRenderPass, attachmentImages, width, height, inflightCount, pSwapchain);
 	}
 
 	GUIHandle Device::CreateGUI(GLFWwindow* window, SwapchainHandle pSwapchain, RenderPassHandle pRenderPass) const
@@ -372,6 +374,7 @@ namespace sqrp
 	}
 
 	GraphicsPipelineHandle Device::CreateGraphicsPipeline(
+		std::string name,
 		RenderPassHandle pRenderPass,
 		SwapchainHandle pSwapchain,
 		ShaderHandle pVertexShader,
@@ -382,26 +385,27 @@ namespace sqrp
 		bool needVertexBuffer
 	) const
 	{
-		return std::make_shared<GraphicsPipeline>(*this, pRenderPass, pSwapchain, pVertexShader, pPixelShader, pDescriptorSet, pushConstantRange, enableDepthWrite, needVertexBuffer);
+		return std::make_shared<GraphicsPipeline>(*this, name, pRenderPass, pSwapchain, pVertexShader, pPixelShader, pDescriptorSet, pushConstantRange, enableDepthWrite, needVertexBuffer);
 	}
 
 	ComputePipelineHandle Device::CreateComputePipeline(
+		std::string name,
 		ShaderHandle pComputeShader,
 		DescriptorSetHandle pDescriptorSet,
 		vk::PushConstantRange pushConstantRange
 	) const
 	{
-		return make_shared<ComputePipeline>(*this, pComputeShader, pDescriptorSet, pushConstantRange);
+		return make_shared<ComputePipeline>(*this, name, pComputeShader, pDescriptorSet, pushConstantRange);
 	}
 
-	RenderPassHandle Device::CreateRenderPass(SwapchainHandle pSwapchain, bool depth) const
+	RenderPassHandle Device::CreateRenderPass(std::string name, SwapchainHandle pSwapchain, bool depth) const
 	{
-		return std::make_shared<RenderPass>(*this, pSwapchain, depth);
+		return std::make_shared<RenderPass>(*this, name, pSwapchain, depth);
 	}
 
-	RenderPassHandle Device::CreateRenderPass(std::vector<SubPassInfo> subPassInfos, std::map<string, AttachmentInfo> attachmentNameToInfo) const
+	RenderPassHandle Device::CreateRenderPass(std::string name, std::vector<SubPassInfo> subPassInfos, std::map<string, AttachmentInfo> attachmentNameToInfo) const
 	{
-		return std::make_shared<RenderPass>(*this, subPassInfos, attachmentNameToInfo);
+		return std::make_shared<RenderPass>(*this, name, subPassInfos, attachmentNameToInfo);
 	}
 
 	SemaphoreHandle Device::CreateSemaphore(std::string name) const
@@ -503,7 +507,7 @@ namespace sqrp
 			}
 		}
 
-		CommandBufferHandle commandBuffer = CreateCommandBuffer(selectedType);
+		CommandBufferHandle commandBuffer = CreateCommandBuffer("onetimesubmit", selectedType);
 
 		vk::CommandBufferBeginInfo beginInfo{};
 		beginInfo.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit;

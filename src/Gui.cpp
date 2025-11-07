@@ -62,7 +62,8 @@ namespace sqrp
 
 		ImGui_ImplVulkan_Init(&initInfo);
 
-		CommandBufferHandle commandBuffer = pDevice_->CreateCommandBuffer(QueueContextType::General);
+		// CommandBuffer is not necessary in recent version
+		// CommandBufferHandle commandBuffer = pDevice_->CreateCommandBuffer("Test", QueueContextType::General);
 		ImGui_ImplVulkan_CreateFontsTexture();
 
 		return true;

@@ -31,6 +31,7 @@ namespace sqrp
 
     GraphicsPipeline::GraphicsPipeline(
         const Device& device,
+        std::string name,
         RenderPassHandle pRenderPass,
         SwapchainHandle pSwapchain,
         ShaderHandle pVertexShader,
@@ -181,10 +182,16 @@ namespace sqrp
             throw std::runtime_error("failed to create graphics pipeline!");
         }
 		pipeline_ = std::move(result.value.front());
+        pDevice_->SetObjectName(
+            (uint64_t)(VkPipeline)(pipeline_.get()),
+            vk::ObjectType::ePipeline,
+            name + "_GraphicsPipeline"
+		);
     }
 
     ComputePipeline::ComputePipeline(
         const Device& device,
+        std::string name,
         ShaderHandle pComputeShader,
         DescriptorSetHandle pDescriptorSet,
         vk::PushConstantRange pushConstantRange
@@ -214,5 +221,10 @@ namespace sqrp
             throw std::runtime_error("failed to create compute pipeline!");
         }
         pipeline_ = std::move(result.value.front());
+        pDevice_->SetObjectName(
+            (uint64_t)(VkPipeline)(pipeline_.get()),
+            vk::ObjectType::ePipeline,
+            name + "_ComputePipeline"
+        );
     }
 }

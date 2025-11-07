@@ -16,7 +16,7 @@ namespace sqrp
 		vk::UniqueFence fence_;
 
 	public:
-		Fence(const Device& device, bool signal = true);
+		Fence(const Device& device, std::string name, bool signal = true);
 		~Fence() = default;
 		void Finished();
 		void Reset();

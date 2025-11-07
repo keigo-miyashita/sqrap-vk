@@ -36,6 +36,7 @@ namespace sqrp
 	public:
 		GraphicsPipeline(
 			const Device& device,
+			std::string name,
 			RenderPassHandle pRenderPass,
 			SwapchainHandle pSwapchain,
 			ShaderHandle pVertexShader,
@@ -53,6 +54,7 @@ namespace sqrp
 	public:
 		ComputePipeline(
 			const Device& device,
+			std::string name,
 			ShaderHandle pComputeShader,
 			DescriptorSetHandle pDescriptorSet,
 			vk::PushConstantRange pushConstantRange = vk::PushConstantRange{}

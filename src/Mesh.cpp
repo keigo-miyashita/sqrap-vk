@@ -25,6 +25,7 @@ namespace sqrp
 	{
 		BufferHandle vertexStagingBuffer;
 		vertexStagingBuffer = pDevice_->CreateBuffer(
+			name_ + "_vertexstaging",
 			sizeof(Vertex) * vertices_.size(),
 			vk::BufferUsageFlagBits::eTransferSrc,
 			VmaAllocationCreateFlagBits::VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT,
@@ -38,6 +39,7 @@ namespace sqrp
 		}
 
 		vertexBuffer_ = pDevice_->CreateBuffer(
+			name_ + "_vertex",
 			sizeof(Vertex) * vertices_.size(),
 			vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eVertexBuffer,
 			0,
@@ -55,6 +57,7 @@ namespace sqrp
 	{
 		BufferHandle indexStagingBuffer;
 		indexStagingBuffer = pDevice_->CreateBuffer(
+			name_ + "_indexstaging",
 			sizeof(uint32_t) * indices_.size(),
 			vk::BufferUsageFlagBits::eTransferSrc,
 			VmaAllocationCreateFlagBits::VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT,
@@ -68,6 +71,7 @@ namespace sqrp
 		}
 
 		indexBuffer_ = pDevice_->CreateBuffer(
+			name_ + "_index",
 			sizeof(uint32_t) * indices_.size(),
 			vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eIndexBuffer,
 			0,

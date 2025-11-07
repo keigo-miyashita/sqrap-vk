@@ -62,16 +62,16 @@ namespace sqrp
 				graphicsCommandBuffers_.resize(inflightCount_);
 				graphicsFences_.resize(inflightCount_);
 				for (int i = 0; i < inflightCount_; i++) {
-					graphicsCommandBuffers_[i] = pDevice_->CreateCommandBuffer(flag);
-					graphicsFences_[i] = pDevice_->CreateFence();
+					graphicsCommandBuffers_[i] = pDevice_->CreateCommandBuffer("graphics", flag);
+					graphicsFences_[i] = pDevice_->CreateFence("graphics");
 				}
 			}
 			else if (flag == QueueContextType::Compute) {
 				computeCommandBuffers_.resize(inflightCount_);
 				computeFences_.resize(inflightCount_);
 				for (int i = 0; i < inflightCount_; i++) {
-					computeCommandBuffers_[i] = pDevice_->CreateCommandBuffer(flag);
-					computeFences_[i] = pDevice_->CreateFence();
+					computeCommandBuffers_[i] = pDevice_->CreateCommandBuffer("compute", flag);
+					computeFences_[i] = pDevice_->CreateFence("compute");
 				}
 			}
 		}
@@ -151,16 +151,16 @@ namespace sqrp
 				graphicsCommandBuffers_.resize(inflightCount_);
 				graphicsFences_.resize(inflightCount_);
 				for (int i = 0; i < inflightCount_; i++) {
-					graphicsCommandBuffers_[i] = pDevice_->CreateCommandBuffer(flag);
-					graphicsFences_[i] = pDevice_->CreateFence();
+					graphicsCommandBuffers_[i] = pDevice_->CreateCommandBuffer("graphics", flag);
+					graphicsFences_[i] = pDevice_->CreateFence("graphics");
 				}
 			}
 			else if (flag == QueueContextType::Compute) {
 				computeCommandBuffers_.resize(inflightCount_);
 				computeFences_.resize(inflightCount_);
 				for (int i = 0; i < inflightCount_; i++) {
-					computeCommandBuffers_[i] = pDevice_->CreateCommandBuffer(flag);
-					computeFences_[i] = pDevice_->CreateFence();
+					computeCommandBuffers_[i] = pDevice_->CreateCommandBuffer("compute", flag);
+					computeFences_[i] = pDevice_->CreateFence("compute");
 				}
 			}
 		}

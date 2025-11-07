@@ -30,7 +30,7 @@ namespace sqrp
 		vk::UniqueDescriptorSet descriptorSets_;
 
 	public:
-		DescriptorSet(const Device& device, std::vector<DescriptorSetCreateInfo> descriptorSetCreateInfos);
+		DescriptorSet(const Device& device, std::string name, std::vector<DescriptorSetCreateInfo> descriptorSetCreateInfos);
 		~DescriptorSet() = default;
 
 		vk::DescriptorSet GetDescriptorSet() const;

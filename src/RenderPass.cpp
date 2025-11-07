@@ -9,6 +9,7 @@ namespace sqrp
 {
 	RenderPass::RenderPass(
         const Device& device,
+        std::string name,
         SwapchainHandle pSwapchain,
         bool depth
 	)
@@ -79,10 +80,16 @@ namespace sqrp
         );
 
         renderPass_ = pDevice_->GetDevice().createRenderPassUnique(renderPassInfo);
+        pDevice_->SetObjectName(
+            (uint64_t)(VkRenderPass)(renderPass_.get()),
+            vk::ObjectType::eRenderPass,
+            name + "_RenderPass"
+		);
 	}
 
     RenderPass::RenderPass(
         const Device& device,
+        std::string name,
         std::vector<SubPassInfo> subPassInfos,
         std::map<string, AttachmentInfo> attachmentNameToInfo
 	) : pDevice_(&device)
@@ -156,6 +163,11 @@ namespace sqrp
             .setPDependencies(&dependency);
 
 		renderPass_ = pDevice_->GetDevice().createRenderPassUnique(renderPassInfo);
+        pDevice_->SetObjectName(
+            (uint64_t)(VkRenderPass)(renderPass_.get()),
+            vk::ObjectType::eRenderPass,
+            name + "_RenderPass"
+        );
     }
 
     vk::RenderPass RenderPass::GetRenderPass() const

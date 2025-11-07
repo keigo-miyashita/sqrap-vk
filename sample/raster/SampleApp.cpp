@@ -15,7 +15,7 @@ void SampleApp::OnStart()
 
 	swapchain_ = device_.CreateSwapchain(windowWidth_, windowHeight_);
 
-	renderPass_ = device_.CreateRenderPass(swapchain_);
+	renderPass_ = device_.CreateRenderPass("", swapchain_);
 
 	depthImages_.resize(swapchain_->GetInflightCount());
 	vk::SamplerCreateInfo depthSamplerInfo;
@@ -53,7 +53,7 @@ void SampleApp::OnStart()
 		);
 	}
 
-	frameBuffer_ = device_.CreateFrameBuffer(renderPass_, swapchain_, depthImages_);
+	frameBuffer_ = device_.CreateFrameBuffer("", renderPass_, swapchain_, depthImages_);
 
 	mesh_ = device_.CreateMesh(string(MODEL_DIR) + "Suzanne.gltf");
 
@@ -70,19 +70,21 @@ void SampleApp::OnStart()
 	sphere0_.model = modelMat;
 	sphere0_.invTransModel = XMMatrixTranspose(XMMatrixInverse(nullptr, sphere0_.model));*/
 
-	cameraBuffer_ = device_.CreateBuffer(sizeof(CameraMatrix), vk::BufferUsageFlagBits::eUniformBuffer, VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_HOST);
+	cameraBuffer_ = device_.CreateBuffer("camera", sizeof(CameraMatrix), vk::BufferUsageFlagBits::eUniformBuffer, VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_HOST);
 	cameraBuffer_->Write(CameraMatrix{ camera_.GetView(), camera_.GetProj() });
 	
-	objectBuffer_ = device_.CreateBuffer(sizeof(TransformMatrix), vk::BufferUsageFlagBits::eUniformBuffer, VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_HOST);
+	objectBuffer_ = device_.CreateBuffer("object", sizeof(TransformMatrix), vk::BufferUsageFlagBits::eUniformBuffer, VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_HOST);
 	objectBuffer_->Write(object_);
 
-	lightBuffer_ = device_.CreateBuffer(sizeof(Light), vk::BufferUsageFlagBits::eUniformBuffer, VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_HOST);
+	lightBuffer_ = device_.CreateBuffer("light", sizeof(Light), vk::BufferUsageFlagBits::eUniformBuffer, VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_HOST);
 	lightBuffer_->Write(light0_);
 
-	colorBuffer_ = device_.CreateBuffer(sizeof(glm::vec4), vk::BufferUsageFlagBits::eUniformBuffer, VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_HOST);
+	colorBuffer_ = device_.CreateBuffer("color", sizeof(glm::vec4), vk::BufferUsageFlagBits::eUniformBuffer, VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT, VMA_MEMORY_USAGE_AUTO_PREFER_HOST);
 	colorBuffer_->Write(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
 
-	descriptorSet_ = device_.CreateDescriptorSet({
+	descriptorSet_ = device_.CreateDescriptorSet(
+		"",
+		{
 		{ cameraBuffer_, vk::DescriptorType::eUniformBuffer, vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment },
 		{ objectBuffer_, vk::DescriptorType::eUniformBuffer, vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment },
 		{ lightBuffer_, vk::DescriptorType::eUniformBuffer, vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment },
@@ -93,7 +95,7 @@ void SampleApp::OnStart()
 	vertShader_ = device_.CreateShader(compiler_, string(SHADER_DIR) + "Lambert.shader", sqrp::ShaderType::Vertex);
 	pixelShader_ = device_.CreateShader(compiler_, string(SHADER_DIR) + "Lambert.shader", sqrp::ShaderType::Pixel);
 
-	pipeline_ = device_.CreateGraphicsPipeline(renderPass_, swapchain_, vertShader_, pixelShader_, descriptorSet_);
+	pipeline_ = device_.CreateGraphicsPipeline("", renderPass_, swapchain_, vertShader_, pixelShader_, descriptorSet_);
 }
 
 void SampleApp::OnUpdate()

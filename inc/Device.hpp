@@ -63,16 +63,17 @@ namespace sqrp
 		~Device();
 		bool Init(Application application);
 		BufferHandle CreateBuffer(
+			std::string name,
 			int size,
 			vk::BufferUsageFlags usage,
 			VmaAllocationCreateFlags allocationFlags,
 			VmaMemoryUsage memoryUsage = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE
 		) const;
-		CommandBufferHandle CreateCommandBuffer(QueueContextType queueType = QueueContextType::General) const;
-		DescriptorSetHandle CreateDescriptorSet(std::vector<DescriptorSetCreateInfo> descriptorSetCreateInfos) const;
-		FenceHandle CreateFence(bool signal = true) const;
-		FrameBufferHandle CreateFrameBuffer(RenderPassHandle pRenderPass, SwapchainHandle pSwapchain, std::vector<ImageHandle> depthImages = {}) const;
-		FrameBufferHandle CreateFrameBuffer(RenderPassHandle pRenderPass, std::vector<std::vector<ImageHandle>> attachmentImages, uint32_t width, uint32_t height, int inflightCount, SwapchainHandle pSwapchain = nullptr) const;
+		CommandBufferHandle CreateCommandBuffer(std::string name, QueueContextType queueType = QueueContextType::General) const;
+		DescriptorSetHandle CreateDescriptorSet(std::string name, std::vector<DescriptorSetCreateInfo> descriptorSetCreateInfos) const;
+		FenceHandle CreateFence(std::string name, bool signal = true) const;
+		FrameBufferHandle CreateFrameBuffer(std::string name, RenderPassHandle pRenderPass, SwapchainHandle pSwapchain, std::vector<ImageHandle> depthImages = {}) const;
+		FrameBufferHandle CreateFrameBuffer(std::string name, RenderPassHandle pRenderPass, std::vector<std::vector<ImageHandle>> attachmentImages, uint32_t width, uint32_t height, int inflightCount, SwapchainHandle pSwapchain = nullptr) const;
 		GUIHandle CreateGUI(GLFWwindow* window, SwapchainHandle pSwapchain, RenderPassHandle pRenderPass) const;
 		ImageHandle CreateImage(
 			std::string name = "Image",
@@ -97,6 +98,7 @@ namespace sqrp
 		MeshHandle CreateMesh(std::string modelPath) const;
 		MeshHandle CreateMesh(const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices) const;
 		GraphicsPipelineHandle CreateGraphicsPipeline(
+			std::string name,
 			RenderPassHandle pRenderPass,
 			SwapchainHandle pSwapchain,
 			ShaderHandle pVertexShader,
@@ -107,12 +109,13 @@ namespace sqrp
 			bool needVertexBuffer = true
 		) const;
 		ComputePipelineHandle CreateComputePipeline(
+			std::string name,
 			ShaderHandle pComputeShader,
 			DescriptorSetHandle pDescriptorSet,
 			vk::PushConstantRange pushConstantRange = vk::PushConstantRange{}
 		) const;
-		RenderPassHandle CreateRenderPass(SwapchainHandle pSwapchain, bool depth = true) const;
-		RenderPassHandle CreateRenderPass(std::vector<SubPassInfo> subPassInfos, std::map<std::string, AttachmentInfo> attachmentNameToInfo) const;
+		RenderPassHandle CreateRenderPass(std::string name, SwapchainHandle pSwapchain, bool depth = true) const;
+		RenderPassHandle CreateRenderPass(std::string name, std::vector<SubPassInfo> subPassInfos, std::map<std::string, AttachmentInfo> attachmentNameToInfo) const;
 		SemaphoreHandle CreateSemaphore(std::string name = "Semaphore") const;
 		ShaderHandle CreateShader(const Compiler& compiler, const std::string& fileName, ShaderType shaderType) const;
 		SwapchainHandle CreateSwapchain(uint32_t width, uint32_t height) const;

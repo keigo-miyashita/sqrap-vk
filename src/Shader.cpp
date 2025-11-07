@@ -7,35 +7,37 @@ namespace sqrp
 	Shader::Shader(const Device& device, const Compiler& compiler, const std::string& fileName, ShaderType shaderType)
 		: pDevice_(&device), pCompiler_(&compiler)
 	{
+		std::filesystem::path path(fileName);
+		std::string name = path.stem().string();
         switch (shaderType) {
         case ShaderType::Vertex:
-            shaderStage_ = vk::ShaderStageFlagBits::eVertex; break;
+            shaderStage_ = vk::ShaderStageFlagBits::eVertex; name + "_vertex"; break;
         case ShaderType::Pixel:
-            shaderStage_ = vk::ShaderStageFlagBits::eFragment; break;
+            shaderStage_ = vk::ShaderStageFlagBits::eFragment; name + "_fragment"; break;
         case ShaderType::Geometry:
-            shaderStage_ = vk::ShaderStageFlagBits::eGeometry; break;
+            shaderStage_ = vk::ShaderStageFlagBits::eGeometry; name + "_geometry"; break;
         case ShaderType::Domain:
-            shaderStage_ = vk::ShaderStageFlagBits::eTessellationEvaluation; break;
+            shaderStage_ = vk::ShaderStageFlagBits::eTessellationEvaluation; name + "_tessellationEvalution"; break;
         case ShaderType::Hull:
-            shaderStage_ = vk::ShaderStageFlagBits::eTessellationControl; break;
+            shaderStage_ = vk::ShaderStageFlagBits::eTessellationControl; name + "_tessellationControl"; break;
         case ShaderType::Amplification:
-            shaderStage_ = vk::ShaderStageFlagBits::eTaskEXT; break;
+            shaderStage_ = vk::ShaderStageFlagBits::eTaskEXT; name + "_task"; break;
         case ShaderType::Mesh:
-            shaderStage_ = vk::ShaderStageFlagBits::eMeshEXT; break;
+            shaderStage_ = vk::ShaderStageFlagBits::eMeshEXT; name + "_mesh"; break;
         case ShaderType::Compute:
-            shaderStage_ = vk::ShaderStageFlagBits::eCompute; break;
+            shaderStage_ = vk::ShaderStageFlagBits::eCompute; name + "_compute"; break;
         case ShaderType::RayGen:
-            shaderStage_ = vk::ShaderStageFlagBits::eRaygenKHR; break;
+            shaderStage_ = vk::ShaderStageFlagBits::eRaygenKHR; name + "_raygen"; break;
         case ShaderType::Miss:
-            shaderStage_ = vk::ShaderStageFlagBits::eMissKHR; break;
+            shaderStage_ = vk::ShaderStageFlagBits::eMissKHR; name + "_miss"; break;
         case ShaderType::ClosestHit:
-            shaderStage_ = vk::ShaderStageFlagBits::eClosestHitKHR; break;
+            shaderStage_ = vk::ShaderStageFlagBits::eClosestHitKHR; name + "_closesthit"; break;
         case ShaderType::AnyHit:
-            shaderStage_ = vk::ShaderStageFlagBits::eAnyHitKHR; break;
+            shaderStage_ = vk::ShaderStageFlagBits::eAnyHitKHR; name + "_anyhit"; break;
         case ShaderType::Intersection:
-            shaderStage_ = vk::ShaderStageFlagBits::eIntersectionKHR; break;
+            shaderStage_ = vk::ShaderStageFlagBits::eIntersectionKHR; name + "_intersect"; break;
         case ShaderType::Callable:
-            shaderStage_ = vk::ShaderStageFlagBits::eCallableKHR; break;
+            shaderStage_ = vk::ShaderStageFlagBits::eCallableKHR; name + "_callable"; break;
         default:
             throw std::runtime_error("Unsupported shader type");
         }

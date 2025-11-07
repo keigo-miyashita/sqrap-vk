@@ -9,7 +9,7 @@ using namespace std;
 
 namespace sqrp
 {
-	DescriptorSet::DescriptorSet(const Device& device, std::vector<DescriptorSetCreateInfo> descriptorSetCreateInfos)
+	DescriptorSet::DescriptorSet(const Device& device, std::string name, std::vector<DescriptorSetCreateInfo> descriptorSetCreateInfos)
 		: pDevice_(&device), descriptorSetCreateInfos_(descriptorSetCreateInfos)
 	{
 		// Create Descriptor Set Layout
@@ -39,7 +39,13 @@ namespace sqrp
 			.setPBindings(layoutBindings.data())
 		);
 		if (!descriptorSetLayout_) {
-			cout << "Failed to create descriptor set layout" << endl;
+			throw std::runtime_error("Failed to create descriptor set layout");
+		} else {
+			pDevice_->SetObjectName(
+				(uint64_t)(VkDescriptorSetLayout)(descriptorSetLayout_.get()),
+				vk::ObjectType::eDescriptorSetLayout,
+				name + "_DescriptorSetLayout"
+			);
 		}
 
 		// Create Descriptor Pool
@@ -52,11 +58,17 @@ namespace sqrp
 			index++;
 		};
 
+		// Decriptor Pool
 		descriptorPool_ = pDevice_->GetDevice().createDescriptorPoolUnique(vk::DescriptorPoolCreateInfo{}
 			.setFlags(vk::DescriptorPoolCreateFlagBits::eFreeDescriptorSet)
 			.setMaxSets(1)
 			.setPoolSizeCount(static_cast<uint32_t>(poolSizes.size()))
 			.setPPoolSizes(poolSizes.data())
+		);
+		pDevice_->SetObjectName(
+			(uint64_t)(VkDescriptorPool)(descriptorPool_.get()),
+			vk::ObjectType::eDescriptorPool,
+			name + "_DescriptorPool"
 		);
 
 		// Create Descriptor Sets
@@ -65,6 +77,11 @@ namespace sqrp
 			.setDescriptorSetCount(1)
 			.setPSetLayouts(&descriptorSetLayout_.get())
 		).front());
+		pDevice_->SetObjectName(
+			(uint64_t)(VkDescriptorSet)(descriptorSets_.get()),
+			vk::ObjectType::eDescriptorSet,
+			name + "_DescriptorSet"
+		);
 
 		std::vector<vk::WriteDescriptorSet> writeDescriptorSets(descriptorSetCreateInfos_.size());
 		std::vector<vk::DescriptorBufferInfo> descriptorBufferInfos(descriptorSetCreateInfos_.size());

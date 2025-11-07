@@ -9,8 +9,8 @@ using namespace std;
 
 namespace sqrp
 {
-	FrameBuffer::FrameBuffer(const Device& device, RenderPassHandle pRenderPass, SwapchainHandle pSwapchain, std::vector<ImageHandle> depthImages)
-		: pDevice_(&device), pRenderPass_(pRenderPass)
+	FrameBuffer::FrameBuffer(const Device& device, std::string name, RenderPassHandle pRenderPass, SwapchainHandle pSwapchain, std::vector<ImageHandle> depthImages)
+		: pDevice_(&device), pRenderPass_(pRenderPass), name_(name)
 	{
 		pSwapchain_ = pSwapchain;
 		inflightCount_ = pSwapchain->GetInflightCount();
@@ -60,11 +60,16 @@ namespace sqrp
 				.setHeight(pSwapchain->GetHeight())
 				.setLayers(1);
 			framebuffers_[i] = pDevice_->GetDevice().createFramebufferUnique(framebufferInfo);
+			pDevice_->SetObjectName(
+				(uint64_t)(VkFramebuffer)(framebuffers_[i].get()),
+				vk::ObjectType::eFramebuffer,
+				name_ + "_FrameBuffer_" + std::to_string(i)
+			);
 		}
 	}
 
-	FrameBuffer::FrameBuffer(const Device& device, RenderPassHandle pRenderPass, std::vector<std::vector<ImageHandle>> attachmentImages, uint32_t width, uint32_t height, int inflightCount, SwapchainHandle pSwapchain)
-		: pDevice_(&device), pRenderPass_(pRenderPass), attachmentImages_(attachmentImages), inflightCount_(inflightCount), width_(width), height_(height)
+	FrameBuffer::FrameBuffer(const Device& device, std::string name, RenderPassHandle pRenderPass, std::vector<std::vector<ImageHandle>> attachmentImages, uint32_t width, uint32_t height, int inflightCount, SwapchainHandle pSwapchain)
+		: pDevice_(&device), pRenderPass_(pRenderPass), name_(name), attachmentImages_(attachmentImages), inflightCount_(inflightCount), width_(width), height_(height)
 	{
 		if (pSwapchain != nullptr) {
 			pSwapchain_ = pSwapchain;
@@ -101,6 +106,11 @@ namespace sqrp
 				.setHeight(height_)
 				.setLayers(1);
 			framebuffers_[i] = pDevice_->GetDevice().createFramebufferUnique(framebufferInfo);
+			pDevice_->SetObjectName(
+				(uint64_t)(VkFramebuffer)(framebuffers_[i].get()),
+				vk::ObjectType::eFramebuffer,
+				name_ + "_FrameBuffer_" + std::to_string(i)
+			);
 		}
 	}
 
@@ -147,6 +157,11 @@ namespace sqrp
 				.setHeight(height)
 				.setLayers(1);
 			framebuffers_[i] = pDevice_->GetDevice().createFramebufferUnique(framebufferInfo);
+			pDevice_->SetObjectName(
+				(uint64_t)(VkFramebuffer)(framebuffers_[i].get()),
+				vk::ObjectType::eFramebuffer,
+				name_ + "_FrameBuffer_" + std::to_string(i)
+			);
 		}
 	}
 

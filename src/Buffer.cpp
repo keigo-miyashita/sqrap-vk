@@ -6,7 +6,7 @@ using namespace std;
 
 namespace sqrp
 {
-	Buffer::Buffer(const Device& device, int size, vk::BufferUsageFlags usage, VmaAllocationCreateFlags allocationFlags, VmaMemoryUsage memoryUsage)
+	Buffer::Buffer(const Device& device, std::string name, int size, vk::BufferUsageFlags usage, VmaAllocationCreateFlags allocationFlags, VmaMemoryUsage memoryUsage)
 		: pDevice_(&device), size_(vk::DeviceSize(size)), usage_(usage), allocationFlags_(allocationFlags), memoryUsage_(memoryUsage)
 	{
 		vk::BufferCreateInfo bufferCreateInfo{};
@@ -25,7 +25,7 @@ namespace sqrp
 			throw std::runtime_error("Failed to create buffer!");
 		}
 		buffer_ = vk::Buffer(buffer);
-		pDevice_->SetObjectName(reinterpret_cast<uint64_t>(static_cast<VkBuffer>(buffer_)), vk::ObjectType::eBuffer, "Buffer");
+		pDevice_->SetObjectName(reinterpret_cast<uint64_t>(static_cast<VkBuffer>(buffer_)), vk::ObjectType::eBuffer, name + "_Buffer");
 	}
 
 	Buffer::~Buffer()

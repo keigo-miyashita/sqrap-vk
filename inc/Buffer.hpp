@@ -22,7 +22,7 @@ namespace sqrp
 		VmaAllocationCreateFlags allocationFlags_;
 
 	public:
-		Buffer(const Device& device, int size, vk::BufferUsageFlags usage, VmaAllocationCreateFlags allocationFlags, VmaMemoryUsage memoryUsage = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
+		Buffer(const Device& device, std::string name, int size, vk::BufferUsageFlags usage, VmaAllocationCreateFlags allocationFlags, VmaMemoryUsage memoryUsage = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE);
 		~Buffer();
 		
 		void* Map();

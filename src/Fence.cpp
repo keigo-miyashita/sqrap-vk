@@ -6,7 +6,7 @@ using namespace std;
 
 namespace sqrp
 {
-	Fence::Fence(const Device& device, bool signal)
+	Fence::Fence(const Device& device, std::string name, bool signal)
 		: pDevice_(&device)
 	{
 		if (signal) {
@@ -20,6 +20,11 @@ namespace sqrp
 				vk::FenceCreateInfo()
 			);
 		}
+		pDevice_->SetObjectName(
+			(uint64_t)(VkFence)(fence_.get()),
+			vk::ObjectType::eFence,
+			name + "_Fence"
+		);
 	}
 
 	void Fence::Finished()

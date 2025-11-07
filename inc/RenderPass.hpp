@@ -35,11 +35,13 @@ namespace sqrp
 	public:
 		RenderPass(
 			const Device& device,
+			std::string name,
 			SwapchainHandle pSwapchain,
 			bool depth = true
 		);
 		RenderPass(
 			const Device& device,
+			std::string name,
 			std::vector<SubPassInfo> subPassInfos,
 			std::map<std::string, AttachmentInfo> attachmentNameToInfo
 		);

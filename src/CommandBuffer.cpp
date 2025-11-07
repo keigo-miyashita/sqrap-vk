@@ -14,7 +14,7 @@ using namespace std;
 
 namespace sqrp
 {
-	CommandBuffer::CommandBuffer(const Device& device, QueueContextType queueType)
+	CommandBuffer::CommandBuffer(const Device& device, std::string name, QueueContextType queueType)
 		: pDevice_(&device), queueType_(queueType)
 	{
 		auto it = pDevice_->GetQueueContexts().find(queueType_);
@@ -28,6 +28,11 @@ namespace sqrp
 			.setCommandBufferCount(1)
 			.setLevel(vk::CommandBufferLevel::ePrimary)
 		).front());
+		pDevice_->SetObjectName(
+			(uint64_t)(VkCommandBuffer)(commandBuffer_.get()),
+			vk::ObjectType::eCommandBuffer,
+			name + "_CommandBuffer"
+		);
 	}
 
 	void CommandBuffer::Begin()

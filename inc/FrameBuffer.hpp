@@ -17,6 +17,8 @@ namespace sqrp
 		const Device* pDevice_ = nullptr;
 		RenderPassHandle pRenderPass_ = nullptr;
 		std::optional<SwapchainHandle> pSwapchain_ = std::nullopt;
+
+		std::string name_ = "FrameBuffer";
 		
 		int inflightCount_ = 3;
 
@@ -28,8 +30,8 @@ namespace sqrp
 		uint32_t height_ = 0;
 
 	public:
-		FrameBuffer(const Device& device, RenderPassHandle pRenderPass, SwapchainHandle pSwapchain, std::vector<ImageHandle> depthImages = {});
-		FrameBuffer(const Device& device, RenderPassHandle pRenderPass, std::vector<std::vector<ImageHandle>> attachmentImages, uint32_t width, uint32_t height, int inflightCount, SwapchainHandle pSwapchain = nullptr);
+		FrameBuffer(const Device& device, std::string name, RenderPassHandle pRenderPass, SwapchainHandle pSwapchain, std::vector<ImageHandle> depthImages = {});
+		FrameBuffer(const Device& device, std::string name, RenderPassHandle pRenderPass, std::vector<std::vector<ImageHandle>> attachmentImages, uint32_t width, uint32_t height, int inflightCount, SwapchainHandle pSwapchain = nullptr);
 		~FrameBuffer() = default;
 
 		void Recreate(uint32_t width, uint32_t height);
