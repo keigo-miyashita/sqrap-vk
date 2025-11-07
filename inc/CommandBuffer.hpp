@@ -36,7 +36,7 @@ namespace sqrp
 		void End();
 		void BeginRender(SwapchainHandle pSwapchain);
 		void EndRender(SwapchainHandle pSwapchain);
-		void BeginRenderPass(RenderPassHandle pRenderPass, FrameBufferHandle pFrameBuffer, uint32_t imageIndex);
+		void BeginRenderPass(RenderPassHandle pRenderPass, FrameBufferHandle pFrameBuffer, uint32_t inflightIndex);
 		void EndRenderPass();
 		void BindPipeline(PipelineHandle pPipeline, vk::PipelineBindPoint pipelineBindPoint);
 		void BindMeshBuffer(MeshBaseHandle pMesh);

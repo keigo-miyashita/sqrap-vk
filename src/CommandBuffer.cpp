@@ -61,11 +61,11 @@ namespace sqrp
 
 	}
 
-	void CommandBuffer::BeginRenderPass(RenderPassHandle pRenderPass, FrameBufferHandle pFrameBuffer, uint32_t imageIndex)
+	void CommandBuffer::BeginRenderPass(RenderPassHandle pRenderPass, FrameBufferHandle pFrameBuffer, uint32_t inflightIndex)
 	{
 		vk::RenderPassBeginInfo renderPassInfo{};
 		renderPassInfo.renderPass = pRenderPass->GetRenderPass();
-		renderPassInfo.framebuffer = pFrameBuffer->GetFrameBuffer(imageIndex);
+		renderPassInfo.framebuffer = pFrameBuffer->GetFrameBuffer(inflightIndex);
 		renderPassInfo.renderArea.offset = vk::Offset2D{ 0, 0 };
 		renderPassInfo.renderArea.extent = vk::Extent2D{ pFrameBuffer->GetWidth() , pFrameBuffer->GetHeight()};
 		std::vector<vk::ClearValue> clearValues(pRenderPass->GetNumAttachments());
