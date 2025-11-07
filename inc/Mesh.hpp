@@ -45,6 +45,7 @@ namespace sqrp
 		virtual int GetNumIndices() const;
 	};
 
+	// For simple mesh
 	class Mesh : public MeshBase
 	{
 	protected:
@@ -59,20 +60,20 @@ namespace sqrp
 
 	};
 
-	struct MeshRange
-	{
-		uint32_t offset = 0;
-		uint32_t count = 0;
-	};
-
-	struct SubMeshInfo
-	{
-		TransformMatrix mat = {};
-		int meshIndex = 0;
-	};
-
+	// For detailed glTF mesh
 	class GLTFMesh : public MeshBase
 	{
+		struct MeshRange
+		{
+			uint32_t offset = 0;
+			uint32_t count = 0;
+		};
+
+		struct SubMeshInfo
+		{
+			TransformMatrix mat = {};
+			int meshIndex = 0;
+		};
 	protected:
 		int meshNum_ = 0;
 		std::vector<int> primitiveNumPerMesh_;

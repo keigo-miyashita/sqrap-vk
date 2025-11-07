@@ -14,10 +14,10 @@ namespace sqrp
 		const Device* pDevice_ = nullptr;
 
 		vk::Buffer buffer_;
-		VmaAllocation allocation_;
-		VmaAllocationInfo allocationInfo_;
 		vk::DeviceSize size_ = 0;
 		vk::BufferUsageFlags usage_;
+		VmaAllocation allocation_;
+		VmaAllocationInfo allocationInfo_;
 		VmaMemoryUsage memoryUsage_;
 		VmaAllocationCreateFlags allocationFlags_;
 

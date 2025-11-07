@@ -245,19 +245,21 @@ namespace sqrp
 
 			vk::PhysicalDeviceRayTracingPipelineFeaturesKHR rayTracingPipelineFeatures{};
 			rayTracingPipelineFeatures.rayTracingPipeline = VK_TRUE;
-			rayTracingPipelineFeatures.pNext = &bufferAddrFeatures; // pNextチェーンに接続
+			rayTracingPipelineFeatures.pNext = &bufferAddrFeatures; // Connect to pNext chain
 
 			vk::PhysicalDeviceAccelerationStructureFeaturesKHR accelStructFeatures{};
 			accelStructFeatures.accelerationStructure = VK_TRUE;
-			accelStructFeatures.pNext = &rayTracingPipelineFeatures; // pNextチェーンに接続
+			accelStructFeatures.pNext = &rayTracingPipelineFeatures; // Connect to pNext chain
 
-			// 2. StructureChain に DeviceCreateInfo と機能構造体をまとめる
+			// Combine DeviceCreateInfo and feature structures using StructureChain
 			vk::StructureChain<vk::DeviceCreateInfo,
 				vk::PhysicalDeviceAccelerationStructureFeaturesKHR,
 				vk::PhysicalDeviceRayTracingPipelineFeaturesKHR,
 				vk::PhysicalDeviceBufferDeviceAddressFeatures> createInfoChain{
-				 deviceCreateInfo,       // DeviceCreateInfo
-				 accelStructFeatures,    // 最初の機能構造体
+				// DeviceCreateInfo
+				 deviceCreateInfo,
+				 // features
+				 accelStructFeatures,
 				 rayTracingPipelineFeatures,
 				 bufferAddrFeatures
 			};

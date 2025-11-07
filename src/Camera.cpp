@@ -73,28 +73,17 @@ namespace sqrp
 			auto currentMousePos = Input::GetPos();
 
 			if (!(Input::GetDeltaPos().y == 0 && Input::GetDeltaPos().x == 0 )) {
-				float yaw = glm::radians((float)Input::GetDeltaPos().x ) * rotateScale_ * -1; // YŽ²‰ñ“]
-				float pitch = glm::radians((float)Input::GetDeltaPos().y) * rotateScale_ * -1; // XŽ²‰ñ“]
+				float yaw = glm::radians((float)Input::GetDeltaPos().x) * rotateScale_ * -1; // rotation around Y
+				float pitch = glm::radians((float)Input::GetDeltaPos().y) * rotateScale_ * -1; // rotation around X
 
-				glm::quat qYaw = glm::angleAxis(yaw, GetUp()); // YŽ²‰ñ“]
-				glm::quat qPitch = glm::angleAxis(pitch, GetRight()); // XŽ²‰ñ“]
+				glm::quat qYaw = glm::angleAxis(yaw, GetUp());
+				glm::quat qPitch = glm::angleAxis(pitch, GetRight());
 				rotation_ = qYaw * rotation_;
-				// ƒfƒ‹ƒ^‰ñ“]‚ðƒNƒH[ƒ^ƒjƒIƒ“‚Åì¬
-				//glm::quat qPitch = glm::angleAxis(pitch, GetRight()); // XŽ²‰ñ“]
 				glm::vec3 pitchRotation = glm::degrees(glm::eulerAngles(qPitch));
 				rotation_ = qPitch * rotation_;
-				//glm::quat qYaw = glm::angleAxis(yaw, vec3(0.0f, 1.0f, 0.0f)); // YŽ²‰ñ“]
-				//rotation_ = qYaw * rotation_;
 
-				// Œ»Ý‚ÌƒJƒƒ‰ƒNƒH[ƒ^ƒjƒIƒ“‚Éƒfƒ‹ƒ^‚ðŠ|‚¯‚é
-				// ’: Yaw‚Íƒ[ƒ‹ƒhYŽ²‰ñ“]APitch‚ÍƒJƒƒ‰‚Ìƒ[ƒJƒ‹XŽ²‰ñ“]
-				//rotation_ = qYaw * rotation_ * qPitch;
-				/*rotation_ = qPitch * rotation_;*/
-				//rotation_ = qYaw * rotation_;
 				//rotation_ = qYaw * qPitch * rotation_;
-				//rotation_ = glm::normalize(rotation_); // ³‹K‰»‚µ‚ÄŒë·‚ð–h‚®
-				/*rotation_.x += Input::GetDeltaPos().y * rotateScale_;
-				rotation_.y += Input::GetDeltaPos().x * rotateScale_;*/
+				//rotation_ = glm::normalize(rotation_);
 			}
 		}
 
@@ -118,20 +107,6 @@ namespace sqrp
 
 	vec3 Camera::GetFront() const
 	{
-		//mat4x4 identity = glm::mat4(1.0f);
-		//// Rotate X + -> counter clockwise -> camera direction turn up
-		//mat4x4 rotationX = glm::rotate(identity, -rotation_.x, glm::vec3{ 1, 0, 0 });
-		//// Rotate Y + -> counter clockwise -> camera direction turn right
-		//mat4x4 rotationY = glm::rotate(identity, -rotation_.y, glm::vec3{ 0, 1, 0 });
-
-		//vec4 frontDir = vec4(0.0f, 0.0f, -1.0f, 1.0f);
-
-		//frontDir = rotationY * rotationX * frontDir;
-		/*vec4 frontDir = vec4(0.0f, 0.0f, -1.0f, 1.0f);
-		frontDir = rotation_ * frontDir;
-
-		return normalize(glm::vec3(frontDir));*/
-
 		/*vec4 frontDir = vec4(0.0f, 0.0f, -1.0f, 1.0f);
 		frontDir = rotation_ * frontDir;*/
 
@@ -153,7 +128,6 @@ namespace sqrp
 		vec3 yPlusDir = vec3(0.0f, 1.0f, 0.0f);
 
 		return normalize(glm::cross(frontDir, yPlusDir));
-
 		//return normalize(rotation_ * vec3(1.0f, 0.0f, 0.0f));
 	}
 

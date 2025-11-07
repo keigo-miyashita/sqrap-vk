@@ -35,10 +35,6 @@ namespace sqrp
 
 		// Remove duplicate queue family indices
 		set<uint32_t> uniqueQueueFamilyIndices;
-		/*= {
-			pDevice_->GetGraphicsQueueFamilyIndex(),
-			pDevice_->GetPresentQueueFamilyIndex()
-		};*/
 		for (const auto& element : pDevice_->GetQueueContexts()) {
 			uniqueQueueFamilyIndices.insert(element.second.queueFamilyIndex);
 		}
@@ -128,10 +124,6 @@ namespace sqrp
 
 		// Remove duplicate queue family indices
 		set<uint32_t> uniqueQueueFamilyIndices;
-		/*= {
-			pDevice_->GetGraphicsQueueFamilyIndex(),
-			pDevice_->GetPresentQueueFamilyIndex()
-		};*/
 		for (const auto& element : pDevice_->GetQueueContexts()) {
 			uniqueQueueFamilyIndices.insert(element.second.queueFamilyIndex);
 		}

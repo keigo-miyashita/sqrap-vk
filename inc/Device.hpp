@@ -43,7 +43,6 @@ namespace sqrp
 	{
 	private:
 		vk::UniqueInstance instance_;
-		//vk::DispatchLoaderDynamic dispatchLoader_;
 		std::vector<const char*> layers_ = {};
 		std::vector<const char*> requestInstanceExtensions_ = {};
 		std::vector<const char*> requestDeviceExtensions_ = {};
@@ -135,7 +134,6 @@ namespace sqrp
 			FenceHandle pFence = nullptr
 		) const;
 		void WaitIdle(QueueContextType type) const;
-
 		void OneTimeSubmit(std::function<void(CommandBufferHandle pCommandBuffer)>&& command) const;
 		void SetObjectName(uint64_t object, vk::ObjectType objectType, const std::string& name) const;
 

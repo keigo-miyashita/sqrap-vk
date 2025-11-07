@@ -24,7 +24,11 @@ namespace sqrp
 
 	void Fence::Finished()
 	{
-		pDevice_->GetDevice().getFenceStatus(fence_.get());
+		auto result = pDevice_->GetDevice().getFenceStatus(fence_.get());
+
+		if (result != vk::Result::eSuccess && result != vk::Result::eNotReady) {
+			throw std::runtime_error("Failed to get fence status");
+		}
 	}
 
 	void Fence::Reset()

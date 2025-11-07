@@ -17,7 +17,7 @@ namespace sqrp
         numColorAttachments_ = 1;
 		numDepthAttachments_ = 1;
 
-        // カラーアタッチメント
+		// Color Attachment for swapchain
         vk::AttachmentDescription colorAttachment{};
         colorAttachment.format = pSwapchain->GetSurfaceFormat();
         colorAttachment.samples = vk::SampleCountFlagBits::e1;
@@ -28,15 +28,14 @@ namespace sqrp
         colorAttachment.initialLayout = vk::ImageLayout::eUndefined;
         colorAttachment.finalLayout = vk::ImageLayout::ePresentSrcKHR;
 
-        // アタッチメント参照
         vk::AttachmentReference colorRef{};
         colorRef.attachment = 0;
         colorRef.layout = vk::ImageLayout::eColorAttachmentOptimal;
 
+		// Depth Attachment
         vk::AttachmentReference depthRef{};
         vk::AttachmentDescription depthAttachment{};
         if (depth) {
-            // 深度アタッチメント
             depthAttachment.format = vk::Format::eD32Sfloat;
             depthAttachment.samples = vk::SampleCountFlagBits::e1;
             depthAttachment.loadOp = vk::AttachmentLoadOp::eClear;
@@ -50,15 +49,12 @@ namespace sqrp
             depthRef.layout = vk::ImageLayout::eDepthStencilAttachmentOptimal;
         }
 
-        // サブパス
         vk::SubpassDescription subpass{};
         subpass.pipelineBindPoint = vk::PipelineBindPoint::eGraphics;
         subpass.colorAttachmentCount = 1;
         subpass.pColorAttachments = &colorRef;
         subpass.pDepthStencilAttachment = (depth) ? &depthRef : nullptr;
 
-        // RenderPass 作成
-        //std::array<vk::AttachmentDescription, 2> attachments = { colorAttachment, depthAttachment };
 		std::vector<vk::AttachmentDescription> attachments;
 		attachments.push_back(colorAttachment);
         if (depth) {
@@ -125,13 +121,11 @@ namespace sqrp
                         .setAttachment(attachmentNameToDescID[attachmentName])
                         .setLayout(vk::ImageLayout::eColorAttachmentOptimal)
 					);
-					//cout << "colorRef: " << globalIndex << endl;
                 }
                 else if (attachmentNameToInfo[attachmentName].imageLayout == vk::ImageLayout::eDepthStencilAttachmentOptimal) {
                     allDepthRefs[i] = vk::AttachmentReference{}
                         .setAttachment(attachmentNameToDescID[attachmentName])
                         .setLayout(vk::ImageLayout::eDepthStencilAttachmentOptimal);
-					//cout << "depthRef: " << globalIndex << endl;
                 }
 			}
 
@@ -150,7 +144,7 @@ namespace sqrp
         dependency.dstStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput | vk::PipelineStageFlagBits::eEarlyFragmentTests;
         dependency.srcAccessMask = {};
         dependency.dstAccessMask = vk::AccessFlagBits::eColorAttachmentWrite | vk::AccessFlagBits::eDepthStencilAttachmentWrite;
-        dependency.dependencyFlags = vk::DependencyFlagBits::eByRegion; // タイル単位の同期（最適化付き）
+		dependency.dependencyFlags = vk::DependencyFlagBits::eByRegion;  // Synchronize within the pixel region
 
         vk::RenderPassCreateInfo renderPassInfo{};
         renderPassInfo

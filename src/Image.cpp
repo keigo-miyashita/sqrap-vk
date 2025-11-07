@@ -23,7 +23,7 @@ namespace sqrp
 		vk::ImageTiling tiling,
 		vk::SamplerCreateInfo samplerCreateInfo
 	)
-		: pDevice_(&device), name_(name), aspectFlags_(aspectFlags)/*, extent3D_(extent3D), imageType_(imageType), format_(format), imageLayout_(imageLayout), aspectFlags_(aspectFlags), usage_(usage), mipLevels_(mipLevels), arrayLayers_(arrayLayers)*/
+		: pDevice_(&device), name_(name), aspectFlags_(aspectFlags)
 	{
 		imageId_ = imageIdCounter_;
 		imageIdCounter_++;
@@ -43,7 +43,6 @@ namespace sqrp
 		VmaAllocationCreateInfo allocCreateInfo{};
 		allocCreateInfo.usage = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE;
 
-		//imageCreateInfo_ = imageCreateInfo;
 		VkImage image;
 		if (vmaCreateImage(pDevice_->GetAllocator(), reinterpret_cast<VkImageCreateInfo*>(&imageCreateInfo_), &allocCreateInfo, &image, &allocation_, &allocationInfo_) != VK_SUCCESS) {
 			throw std::runtime_error("Failed to create image!");
@@ -75,7 +74,6 @@ namespace sqrp
 			.setLayerCount(arrayLayers)
 		);
 
-		//imageViewCreateInfo_ = imageViewCreateInfo;
 		imageView_ = pDevice_->GetDevice().createImageView(imageViewCreateInfo_);
 		pDevice_->SetObjectName((uint64_t)(VkImageView)imageView_, vk::ObjectType::eImageView, name + "ImageView");
 
@@ -112,7 +110,10 @@ namespace sqrp
 
 		imageViewCreateInfo_.setImage(image_);
 		imageViewCreateInfo_.setFormat(imageCreateInfo_.format);
-		if (imageCreateInfo_.imageType == vk::ImageType::e2D) {
+		if (imageCreateInfo_.imageType == vk::ImageType::e1D) {
+			imageViewCreateInfo_.setViewType(vk::ImageViewType::e1D);
+		}
+		else if (imageCreateInfo_.imageType == vk::ImageType::e2D) {
 			imageViewCreateInfo_.setViewType(vk::ImageViewType::e2D);
 			if (imageCreateInfo_.flags & vk::ImageCreateFlagBits::eCubeCompatible) {
 				imageViewCreateInfo_.setViewType(vk::ImageViewType::eCube);
@@ -120,9 +121,6 @@ namespace sqrp
 		}
 		else if (imageCreateInfo_.imageType == vk::ImageType::e3D) {
 			imageViewCreateInfo_.setViewType(vk::ImageViewType::e3D);
-		}
-		else if (imageCreateInfo_.imageType == vk::ImageType::e1D) {
-			imageViewCreateInfo_.setViewType(vk::ImageViewType::e1D);
 		}
 		imageViewCreateInfo_.setSubresourceRange(
 			vk::ImageSubresourceRange()
@@ -219,7 +217,6 @@ namespace sqrp
 
 		pDevice_->SetObjectName((uint64_t)(VkImage)image_, vk::ObjectType::eImage, name_ + "Image");
 
-		//vk::ImageViewCreateInfo imageViewCreateInfo{};
 		imageViewCreateInfo_.setImage(image_);
 
 		imageView_ = pDevice_->GetDevice().createImageView(imageViewCreateInfo_);

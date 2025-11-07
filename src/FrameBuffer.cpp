@@ -82,79 +82,6 @@ namespace sqrp
 				);
 			}
 		}
-	
-		//for (int i = 0; i < pImages.size(); i++) {
-		//	attachmentImages_.push_back(vector<ImageHandle>());
-		//	for (size_t j = 0; j < inflightCount_; j++) {
-		//		if (frameBufferInfos_[i].pImage->GetUsage() & vk::ImageUsageFlagBits::eColorAttachment) {
-		//			//cout << "Creating color attachment image: " << frameBufferInfos_[i].debugName << endl;
-		//			attachmentImages_[i].push_back(frameBufferInfos_[i].pImage);
-		//			/*attachmentImages_[i].push_back(
-		//				pDevice_->CreateImage(
-		//					frameBufferInfos_[i].debugName + to_string(j),
-		//					vk::Extent3D{ width_, height_, 1 },
-		//					vk::ImageType::e2D,
-		//					frameBufferInfos_[i].imageUsage,
-		//					frameBufferInfos_[i].format,
-		//					vk::ImageLayout::eUndefined,
-		//					vk::ImageAspectFlagBits::eColor,
-		//					1,
-		//					1,
-		//					vk::SampleCountFlagBits::e1, vk::ImageTiling::eOptimal,
-		//					vk::SamplerCreateInfo{}
-		//					.setMagFilter(vk::Filter::eLinear)
-		//					.setMinFilter(vk::Filter::eLinear)
-		//					.setMipmapMode(vk::SamplerMipmapMode::eNearest)
-		//					.setAddressModeU(vk::SamplerAddressMode::eClampToEdge)
-		//					.setAddressModeV(vk::SamplerAddressMode::eClampToEdge)
-		//					.setAddressModeW(vk::SamplerAddressMode::eClampToEdge)
-		//					.setMipLodBias(0.0f)
-		//					.setAnisotropyEnable(VK_FALSE)
-		//					.setMaxAnisotropy(1.0f)
-		//					.setCompareEnable(VK_FALSE)
-		//					.setCompareOp(vk::CompareOp::eAlways)
-		//					.setMinLod(0.0f)
-		//					.setMaxLod(0.0f)
-		//					.setBorderColor(vk::BorderColor::eIntOpaqueWhite)
-		//					.setUnnormalizedCoordinates(VK_FALSE)
-		//				));*/
-		//		}
-		//		else if (frameBufferInfos_[i].pImage->GetUsage() & vk::ImageUsageFlagBits::eDepthStencilAttachment) {
-		//			//cout << "Creating depth attachment image: " << frameBufferInfos_[i].debugName << endl;
-		//			attachmentImages_[i].push_back(frameBufferInfos_[i].pImage);
-		//			/*attachmentImages_[i].push_back(
-		//				pDevice_->CreateImage(
-		//					frameBufferInfos_[i].debugName + to_string(j),
-		//					vk::Extent3D{ width_, height_, 1 },
-		//					vk::ImageType::e2D,
-		//					frameBufferInfos_[i].imageUsage,
-		//					frameBufferInfos_[i].format,
-		//					vk::ImageLayout::eUndefined,
-		//					vk::ImageAspectFlagBits::eDepth,
-		//					1,
-		//					1,
-		//					vk::SampleCountFlagBits::e1, vk::ImageTiling::eOptimal,
-		//					vk::SamplerCreateInfo{}
-		//					.setMagFilter(vk::Filter::eNearest)
-		//					.setMinFilter(vk::Filter::eNearest)
-		//					.setMipmapMode(vk::SamplerMipmapMode::eNearest)
-		//					.setAddressModeU(vk::SamplerAddressMode::eClampToEdge)
-		//					.setAddressModeV(vk::SamplerAddressMode::eClampToEdge)
-		//					.setAddressModeW(vk::SamplerAddressMode::eClampToEdge)
-		//					.setMipLodBias(0.0f)
-		//					.setAnisotropyEnable(VK_FALSE)
-		//					.setMaxAnisotropy(1.0f)
-		//					.setCompareEnable(VK_FALSE)
-		//					.setCompareOp(vk::CompareOp::eAlways)
-		//					.setMinLod(0.0f)
-		//					.setMaxLod(0.0f)
-		//					.setBorderColor(vk::BorderColor::eIntOpaqueWhite)
-		//					.setUnnormalizedCoordinates(VK_FALSE)
-		//				)
-		//			);*/
-		//		}
-		//	}
-		//}
 
 		framebuffers_.resize(inflightCount_);
 		for (int i = 0; i < inflightCount_; i++) {
@@ -165,7 +92,6 @@ namespace sqrp
 			for (int j = 0; j < attachmentImages_.size(); j++) {
 				attachments.push_back(attachmentImages_[j][i]->GetImageView());
 			}
-			cout << "Framebuffer attachments: " << attachments.size() << endl;
 			vk::FramebufferCreateInfo framebufferInfo = {};
 			framebufferInfo
 				.setRenderPass(pRenderPass_->GetRenderPass())
@@ -187,7 +113,6 @@ namespace sqrp
 		framebuffers_.resize(inflightCount_);
 
 		swapchainImageViews_.reset();
-		//attachmentImages_.clear();
 
 		if (pSwapchain_.has_value()) {
 			swapchainImageViews_ = vector<vk::UniqueImageView>();
@@ -205,90 +130,14 @@ namespace sqrp
 			}
 		}
 
-		//for (int i = 0; i < frameBufferInfos_.size(); i++) {
-		//	attachmentImages_[i] = vector<ImageHandle>();
-		//	for (size_t j = 0; j < inflightCount_; j++) {
-		//		if (frameBufferInfos_[i].pImage->GetUsage() & vk::ImageUsageFlagBits::eColorAttachment) {
-		//			//cout << "Creating color attachment image: " << frameBufferInfos_[i].debugName << endl;
-		//			/*attachmentImages_[i].push_back(
-		//				pDevice_->CreateImage(
-		//					frameBufferInfos_[i].debugName + to_string(j),
-		//					vk::Extent3D{ width_, height_, 1 },
-		//					vk::ImageType::e2D,
-		//					frameBufferInfos_[i].imageUsage,
-		//					frameBufferInfos_[i].format,
-		//					vk::ImageLayout::eUndefined,
-		//					vk::ImageAspectFlagBits::eColor,
-		//					1,
-		//					1,
-		//					vk::SampleCountFlagBits::e1, vk::ImageTiling::eOptimal,
-		//					vk::SamplerCreateInfo{}
-		//					.setMagFilter(vk::Filter::eLinear)
-		//					.setMinFilter(vk::Filter::eLinear)
-		//					.setMipmapMode(vk::SamplerMipmapMode::eNearest)
-		//					.setAddressModeU(vk::SamplerAddressMode::eClampToEdge)
-		//					.setAddressModeV(vk::SamplerAddressMode::eClampToEdge)
-		//					.setAddressModeW(vk::SamplerAddressMode::eClampToEdge)
-		//					.setMipLodBias(0.0f)
-		//					.setAnisotropyEnable(VK_FALSE)
-		//					.setMaxAnisotropy(1.0f)
-		//					.setCompareEnable(VK_FALSE)
-		//					.setCompareOp(vk::CompareOp::eAlways)
-		//					.setMinLod(0.0f)
-		//					.setMaxLod(0.0f)
-		//					.setBorderColor(vk::BorderColor::eIntOpaqueWhite)
-		//					.setUnnormalizedCoordinates(VK_FALSE)
-		//				));*/
-		//			attachmentImages_[i].push_back(frameBufferInfos_[i].pImage);
-		//		}
-		//		else if (frameBufferInfos_[i].pImage->GetUsage() & vk::ImageUsageFlagBits::eDepthStencilAttachment) {
-		//			//cout << "Creating depth attachment image: " << frameBufferInfos_[i].debugName << endl;
-		//			/*attachmentImages_[i].push_back(
-		//				pDevice_->CreateImage(
-		//					frameBufferInfos_[i].debugName + to_string(j),
-		//					vk::Extent3D{ width_, height_, 1 },
-		//					vk::ImageType::e2D,
-		//					frameBufferInfos_[i].imageUsage,
-		//					frameBufferInfos_[i].format,
-		//					vk::ImageLayout::eUndefined,
-		//					vk::ImageAspectFlagBits::eDepth,
-		//					1,
-		//					1,
-		//					vk::SampleCountFlagBits::e1, vk::ImageTiling::eOptimal,
-		//					vk::SamplerCreateInfo{}
-		//					.setMagFilter(vk::Filter::eNearest)
-		//					.setMinFilter(vk::Filter::eNearest)
-		//					.setMipmapMode(vk::SamplerMipmapMode::eNearest)
-		//					.setAddressModeU(vk::SamplerAddressMode::eClampToEdge)
-		//					.setAddressModeV(vk::SamplerAddressMode::eClampToEdge)
-		//					.setAddressModeW(vk::SamplerAddressMode::eClampToEdge)
-		//					.setMipLodBias(0.0f)
-		//					.setAnisotropyEnable(VK_FALSE)
-		//					.setMaxAnisotropy(1.0f)
-		//					.setCompareEnable(VK_FALSE)
-		//					.setCompareOp(vk::CompareOp::eAlways)
-		//					.setMinLod(0.0f)
-		//					.setMaxLod(0.0f)
-		//					.setBorderColor(vk::BorderColor::eIntOpaqueWhite)
-		//					.setUnnormalizedCoordinates(VK_FALSE)
-		//				)
-		//			);*/
-		//			attachmentImages_[i].push_back(frameBufferInfos_[i].pImage);
-		//		}
-		//	}
-		//}
-
 		for (int i = 0; i < inflightCount_; i++) {
 			vector<vk::ImageView> attachments;
 			if (pSwapchain_.has_value()) {
 				attachments.push_back(swapchainImageViews_.value()[i].get());
-				//cout << "Framebuffer has swapchain image view" << endl;
 			}
 			for (int j = 0; j < attachmentImages_.size(); j++) {
 				attachments.push_back(attachmentImages_[j][i]->GetImageView());
-				//cout << "Framebuffer has attachment image view: " << frameBufferInfos_[j].debugName << endl;
 			}
-			//cout << "Framebuffer attachments: " << attachments.size() << endl;
 			vk::FramebufferCreateInfo framebufferInfo = {};
 			framebufferInfo
 				.setRenderPass(pRenderPass_->GetRenderPass())
@@ -315,18 +164,6 @@ namespace sqrp
 			return pSwapchain_.value();
 		}
 	}
-
-	//ImageHandle FrameBuffer::GetAttachmentImage(int index, int inflightIndex) const
-	//{
-	//	auto it = attachmentImages_.find(index);
-	//	if (it == attachmentImages_.end()) {
-	//		throw std::runtime_error("No such attachment buffer");
-	//	}
-	//	if (inflightIndex < 0 || inflightIndex >= it->second.size()) {
-	//		throw std::runtime_error("Inflight index out of bounds");
-	//	}
-	//	return it->second[inflightIndex]; // check bounds
-	//}
 
 	uint32_t FrameBuffer::GetWidth() const
 	{

@@ -197,9 +197,6 @@ namespace sqrp
 			return false;
 		}
 
-		//vertices_.clear();
-		//indices_.clear();
-
 		uint32_t vertexOffset = 0;
 		uint32_t indexOffset = 0;
 		for (auto& mesh : model.meshes) {
@@ -261,7 +258,7 @@ namespace sqrp
 			glm::mat4 modelMat(1.0f);
 
 			if (node.matrix.size() == 16) {
-				// 4x4行列が直接指定されている場合
+				// When a 4x4 matrix is provided directly
 				modelMat = glm::make_mat4(node.matrix.data());
 			}
 			else {
@@ -298,7 +295,7 @@ namespace sqrp
 			}
 			if (node.mesh != -1) {
 				SubMeshInfo subMeshInfo;
-				subMeshInfo.meshIndex = node.mesh; // -1ならMeshなし
+				subMeshInfo.meshIndex = node.mesh; // if node has no mesh, node.mesh == -1
 				subMeshInfo.mat.model = modelMat;
 				glm::mat3x3 modelMat3x3 = glm::mat3x3(modelMat);
 				subMeshInfo.mat.invTransModel = glm::mat4x4(glm::inverse(glm::transpose(modelMat3x3)));
@@ -306,9 +303,8 @@ namespace sqrp
 			}
 
 			if (node.children.size() > 0) {
-				// 子ノードがある場合は再帰的に処理
+				// If node has child nodes, process them recursively
 				for (const int childIndex : node.children) {
-					// 子ノードの処理（必要に応じて実装）
 					glm::mat4 childModelMat = subMeshInfos_[childIndex].mat.model;
 					subMeshInfos_[childIndex].mat.model = modelMat * childModelMat;
 					glm::mat3x3 modelMat3x3 = glm::mat3x3(subMeshInfos_[childIndex].mat.model);
@@ -341,12 +337,12 @@ namespace sqrp
 		return primitiveNumPerMesh_[meshIndex];
 	}
 
-	MeshRange GLTFMesh::GetVertexRange(int primitiveIndex) const
+	GLTFMesh::MeshRange GLTFMesh::GetVertexRange(int primitiveIndex) const
 	{
 		return vertexRanges_[primitiveIndex];
 	}
 
-	MeshRange GLTFMesh::GetIndexRange(int primitiveIndex) const
+	GLTFMesh::MeshRange GLTFMesh::GetIndexRange(int primitiveIndex) const
 	{
 		return indexRanges_[primitiveIndex];
 	}
@@ -356,7 +352,7 @@ namespace sqrp
 		return materialIndices_[primitiveIndex];
 	}
 
-	const std::vector<SubMeshInfo>& GLTFMesh::GetSubMeshInfos() const
+	const std::vector<GLTFMesh::SubMeshInfo>& GLTFMesh::GetSubMeshInfos() const
 	{
 		return subMeshInfos_;
 	}

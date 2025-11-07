@@ -41,9 +41,6 @@ namespace sqrp
 		if (!descriptorSetLayout_) {
 			cout << "Failed to create descriptor set layout" << endl;
 		}
-		else {
-			//cout << "Successed to create descriptor set layout" << endl;
-		}
 
 		// Create Descriptor Pool
 		vector<vk::DescriptorPoolSize> poolSizes(descriptorTypeCounts.size());
@@ -55,7 +52,6 @@ namespace sqrp
 			index++;
 		};
 
-		//cout << "poolSizes.size() = " << poolSizes.size() << endl;
 		descriptorPool_ = pDevice_->GetDevice().createDescriptorPoolUnique(vk::DescriptorPoolCreateInfo{}
 			.setFlags(vk::DescriptorPoolCreateFlagBits::eFreeDescriptorSet)
 			.setMaxSets(1)
@@ -93,10 +89,10 @@ namespace sqrp
 				auto image = std::get<ImageHandle>(descriptorSetCreateInfo.pResource);
 				cout << "image name: " << image->GetName() << endl;
 				if (descriptorSetCreateInfo.type == vk::DescriptorType::eCombinedImageSampler) {
-					descriptorImageInfos[index].setImageLayout(vk::ImageLayout::eShaderReadOnlyOptimal); // Set expected layout
+					descriptorImageInfos[index].setImageLayout(vk::ImageLayout::eShaderReadOnlyOptimal); // Readonly for shader
 				}
 				else if (descriptorSetCreateInfo.type == vk::DescriptorType::eStorageImage) {
-					descriptorImageInfos[index].setImageLayout(vk::ImageLayout::eGeneral); // Set expected layout
+					descriptorImageInfos[index].setImageLayout(vk::ImageLayout::eGeneral); // Readwrite for shader
 				}
 				if (descriptorSetCreateInfo.mipLevel == -1) {
 					descriptorImageInfos[index].setImageView(image->GetImageView());

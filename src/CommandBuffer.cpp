@@ -22,7 +22,6 @@ namespace sqrp
 			throw std::runtime_error("No such queue context type");
 		}
 		const auto& context = it->second;
-		//commandBuffer = CreateCommandBuffer(pDevice_->GetDevice(), context.commandPool.get());
 		commandBuffer_ = std::move(pDevice_->GetDevice().allocateCommandBuffersUnique(
 			vk::CommandBufferAllocateInfo()
 			.setCommandPool(context.commandPool.get())
@@ -187,24 +186,6 @@ namespace sqrp
 
 	void CommandBuffer::TransitionLayout(ImageHandle pImage, vk::ImageLayout oldLayout, vk::ImageLayout newLayout)
 	{
-		if (pImage->GetImageLayout() == vk::ImageLayout::eUndefined) {
-			cout << "old : vk::ImageLayout::eUndefined" << endl;
-		}
-		else if (pImage->GetImageLayout() == vk::ImageLayout::eColorAttachmentOptimal) {
-			cout << "old : vk::ImageLayout::eColorAttachmentOptimal" << endl;
-		}
-		else if (pImage->GetImageLayout() == vk::ImageLayout::eShaderReadOnlyOptimal) {
-			cout << "old : vk::ImageLayout::eShaderReadOnlyOptimal" << endl;
-		}
-		if (newLayout == vk::ImageLayout::eUndefined) {
-			cout << "new : vk::ImageLayout::eUndefined" << endl;
-		}
-		else if (newLayout == vk::ImageLayout::eColorAttachmentOptimal) {
-			cout << "new : vk::ImageLayout::eColorAttachmentOptimal" << endl;
-		}
-		else if (newLayout == vk::ImageLayout::eShaderReadOnlyOptimal) {
-			cout << "new : vk::ImageLayout::eShaderReadOnlyOptimal" << endl;
-		}
 		if (oldLayout == newLayout) return;
 		vk::ImageMemoryBarrier barrier{};
 		barrier.oldLayout = oldLayout;

@@ -45,13 +45,6 @@ namespace sqrp
 			return false;
 		}
 
-		/*auto imguiCPUHandle = imguiDescHeap_->GetCPUDescriptorHandleForHeapStart();
-		auto imguiGPUHandle = imguiDescHeap_->GetGPUDescriptorHandleForHeapStart();
-		binResult = ImGui_ImplDX12_Init(pDevice_->GetDevice().Get(), 2, DXGI_FORMAT_R8G8B8A8_UNORM, imguiDescHeap_.Get(), imguiCPUHandle, imguiGPUHandle);
-		if (!binResult) {
-			throw std::runtime_error("Failed to ImGui_ImplDX12_Init");
-			return false;
-		}*/
 		ImGui_ImplVulkan_InitInfo initInfo = {};
 		initInfo.Instance = pDevice_->GetInstance();
 		initInfo.PhysicalDevice = pDevice_->GetPhysicalDevice();

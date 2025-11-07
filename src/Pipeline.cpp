@@ -54,7 +54,7 @@ namespace sqrp
 
         vk::PipelineShaderStageCreateInfo shaderStages[] = { vertStage, fragStage };
 
-        // 2. 固定機能ステート
+		// Vertex format
 		vk::VertexInputBindingDescription bindingDescription{};
 		bindingDescription.binding = 0;
 		bindingDescription.stride = sizeof(Vertex);
@@ -62,24 +62,28 @@ namespace sqrp
 
 		std::array<vk::VertexInputAttributeDescription, 4> attributeDescriptions{};
 
+        // position
 		attributeDescriptions[0].binding = 0;
 		attributeDescriptions[0].location = 0;
-		attributeDescriptions[0].format = vk::Format::eR32G32B32A32Sfloat; // position
+		attributeDescriptions[0].format = vk::Format::eR32G32B32A32Sfloat;
 		attributeDescriptions[0].offset = offsetof(Vertex, position);
 
+        // normal
         attributeDescriptions[1].binding = 0;
         attributeDescriptions[1].location = 1;
-        attributeDescriptions[1].format = vk::Format::eR32G32B32A32Sfloat; // position
+        attributeDescriptions[1].format = vk::Format::eR32G32B32A32Sfloat;
         attributeDescriptions[1].offset = offsetof(Vertex, normal);
 
+        // tangent
         attributeDescriptions[2].binding = 0;
         attributeDescriptions[2].location = 2;
-        attributeDescriptions[2].format = vk::Format::eR32G32B32A32Sfloat; // position
+        attributeDescriptions[2].format = vk::Format::eR32G32B32A32Sfloat;
         attributeDescriptions[2].offset = offsetof(Vertex, tangent);
 
+        // uv
         attributeDescriptions[3].binding = 0;
         attributeDescriptions[3].location = 3;
-        attributeDescriptions[3].format = vk::Format::eR32G32Sfloat; // position
+        attributeDescriptions[3].format = vk::Format::eR32G32Sfloat;
         attributeDescriptions[3].offset = offsetof(Vertex, uv);
 
         vk::PipelineVertexInputStateCreateInfo vertexInput{};
@@ -93,7 +97,6 @@ namespace sqrp
             vertexInput.setVertexBindingDescriptionCount(0);
             vertexInput.setVertexAttributeDescriptionCount(0);
         }
-        // 頂点レイアウトは必要に応じて設定
 
         vk::PipelineInputAssemblyStateCreateInfo inputAssembly{};
         inputAssembly.topology = vk::PrimitiveTopology::eTriangleList;
@@ -140,7 +143,7 @@ namespace sqrp
         colorBlending.attachmentCount = colorBlendAttachments.size();
         colorBlending.pAttachments = colorBlendAttachments.data();
 
-        // 3. パイプラインレイアウト
+		// pipeline layout
         vk::PipelineLayoutCreateInfo layoutInfo{};
 		auto descriptorSetLayout = pDescriptorSet->GetDescriptorSetLayout();
         layoutInfo.setLayoutCount = 1;
@@ -157,7 +160,7 @@ namespace sqrp
             .setDepthBoundsTestEnable(vk::False)
             .setStencilTestEnable(vk::False);
 
-        // 4. パイプライン作成
+        // pipeline
         vk::GraphicsPipelineCreateInfo pipelineInfo{};
         pipelineInfo.setStageCount(2);
 		pipelineInfo.setPStages(shaderStages);
@@ -192,7 +195,7 @@ namespace sqrp
         computeStage.module = pComputeShader->GetShaderModule();
         computeStage.pName = "main";
 
-        // 3. パイプラインレイアウト
+		// pipeline layout
         vk::PipelineLayoutCreateInfo layoutInfo{};
         auto descriptorSetLayout = pDescriptorSet->GetDescriptorSetLayout();
         layoutInfo.setLayoutCount = 1;
@@ -201,7 +204,7 @@ namespace sqrp
         layoutInfo.pPushConstantRanges = pushConstantRange.size > 0 ? &pushConstantRange : nullptr;
         pipelineLayout_ = pDevice_->GetDevice().createPipelineLayoutUnique(layoutInfo);
 
-        // 4. パイプライン作成
+		// pipeline
         vk::ComputePipelineCreateInfo pipelineInfo{};
 		pipelineInfo.setStage(computeStage);
 		pipelineInfo.setLayout(pipelineLayout_.get());
