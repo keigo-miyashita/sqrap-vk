@@ -219,6 +219,17 @@ namespace sqrp
 				tinygltf::Buffer& normalBuffer = model.buffers[normalBufferView.buffer];
 				float* normals = reinterpret_cast<float*>(&normalBuffer.data[normalBufferView.byteOffset + normalAccessor.byteOffset]);
 
+				if (!primitive.attributes.contains("TANGENT")) {
+					//// If TANGENT attribute is missing, fill with default values
+					//tangents = new float[posAccessor.count * 4];
+					//for (int i = 0; i < posAccessor.count; i++) {
+					//	tangents[i * 4 + 0] = 1.0f;
+					//	tangents[i * 4 + 1] = 0.0f;
+					//	tangents[i * 4 + 2] = 0.0f;
+					//	tangents[i * 4 + 3] = 1.0f;
+					//}
+					cout << "Warning: TANGENT attribute is missing in glTF model. Filling with default values." << endl;
+				}
 				int tangentAccessorIndex = primitive.attributes["TANGENT"];
 				const tinygltf::Accessor& tangentAccessor = model.accessors[tangentAccessorIndex];
 				const tinygltf::BufferView& tangentBufferView = model.bufferViews[tangentAccessor.bufferView];
