@@ -173,7 +173,8 @@ namespace sqrp
 	SwapchainHandle FrameBuffer::GetSwapchain() const
 	{
 		if (pSwapchain_ == std::nullopt) {
-			throw std::runtime_error("This framebuffer is not associated with a swapchain");
+			std::cerr << "Warning: This framebuffer is not associated with a swapchain" << std::endl;
+			return nullptr;
 		}
 		else {
 			return pSwapchain_.value();

@@ -31,6 +31,7 @@ namespace sqrp
 	{
 		auto result = pDevice_->GetDevice().getFenceStatus(fence_.get());
 
+		// If the fence is neither signaled nor unsignaled, something wrong
 		if (result != vk::Result::eSuccess && result != vk::Result::eNotReady) {
 			throw std::runtime_error("Failed to get fence status");
 		}

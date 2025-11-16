@@ -37,7 +37,7 @@ namespace sqrp
 	{
 		void* data = nullptr;
 		if (vmaMapMemory(pDevice_->GetAllocator(), allocation_, &data) != VK_SUCCESS) {
-			throw std::runtime_error("Failed to map buffer memory");
+			return nullptr;
 		}
 		return data;
 	}

@@ -146,7 +146,7 @@ namespace sqrp
 		// Create surface
 		VkSurfaceKHR rawSurface;
 		if (glfwCreateWindowSurface(instance_.get(), application.GetPWindow(), nullptr, &rawSurface) != VK_SUCCESS) {
-			throw std::runtime_error("failed to create window surface!");
+			throw std::runtime_error("Failed to create window surface!");
 		}
 		surface_ = vk::UniqueSurfaceKHR(rawSurface, instance_.get());
 

@@ -104,7 +104,6 @@ namespace sqrp
 			}
 			else if (std::holds_alternative<ImageHandle>(descriptorSetCreateInfo.pResource)) {
 				auto image = std::get<ImageHandle>(descriptorSetCreateInfo.pResource);
-				cout << "image name: " << image->GetName() << endl;
 				if (descriptorSetCreateInfo.type == vk::DescriptorType::eCombinedImageSampler) {
 					descriptorImageInfos[index].setImageLayout(vk::ImageLayout::eShaderReadOnlyOptimal); // Readonly for shader
 				}

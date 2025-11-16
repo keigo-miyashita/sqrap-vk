@@ -201,55 +201,85 @@ namespace sqrp
 			return false;
 		}
 
+		int meshIndex = 0;
 		uint32_t vertexOffset = 0;
 		uint32_t indexOffset = 0;
+		bool hasNormal = false;
+		bool hasTangent = false;
+		bool hasUV = false;
 		for (auto& mesh : model.meshes) {
 			meshNum_ = model.meshes.size();
 			primitiveNumPerMesh_.push_back(static_cast<int>(mesh.primitives.size()));
 			for (auto& primitive : mesh.primitives) { // mesh is devided if it has multiple material
+				int primitiveIndex = 0;
 				int posAccessorIndex = primitive.attributes["POSITION"];
 				const tinygltf::Accessor& posAccessor = model.accessors[posAccessorIndex];
 				const tinygltf::BufferView& posBufferView = model.bufferViews[posAccessor.bufferView];
 				tinygltf::Buffer& posBuffer = model.buffers[posBufferView.buffer];
 				float* positions = reinterpret_cast<float*>(&posBuffer.data[posBufferView.byteOffset + posAccessor.byteOffset]);
 
-				int normalAccessorIndex = primitive.attributes["NORMAL"];
-				const tinygltf::Accessor& normalAccessor = model.accessors[normalAccessorIndex];
-				const tinygltf::BufferView& normalBufferView = model.bufferViews[normalAccessor.bufferView];
-				tinygltf::Buffer& normalBuffer = model.buffers[normalBufferView.buffer];
-				float* normals = reinterpret_cast<float*>(&normalBuffer.data[normalBufferView.byteOffset + normalAccessor.byteOffset]);
-
-				if (!primitive.attributes.contains("TANGENT")) {
-					//// If TANGENT attribute is missing, fill with default values
-					//tangents = new float[posAccessor.count * 4];
-					//for (int i = 0; i < posAccessor.count; i++) {
-					//	tangents[i * 4 + 0] = 1.0f;
-					//	tangents[i * 4 + 1] = 0.0f;
-					//	tangents[i * 4 + 2] = 0.0f;
-					//	tangents[i * 4 + 3] = 1.0f;
-					//}
-					cout << "Warning: TANGENT attribute is missing in glTF model. Filling with default values." << endl;
+				float* normals = nullptr;
+				if (primitive.attributes.contains("NORMAL")) {
+					hasNormal = true;
+					int normalAccessorIndex = primitive.attributes["NORMAL"];
+					const tinygltf::Accessor& normalAccessor = model.accessors[normalAccessorIndex];
+					const tinygltf::BufferView& normalBufferView = model.bufferViews[normalAccessor.bufferView];
+					tinygltf::Buffer& normalBuffer = model.buffers[normalBufferView.buffer];
+					normals = reinterpret_cast<float*>(&normalBuffer.data[normalBufferView.byteOffset + normalAccessor.byteOffset]);
 				}
-				int tangentAccessorIndex = primitive.attributes["TANGENT"];
-				const tinygltf::Accessor& tangentAccessor = model.accessors[tangentAccessorIndex];
-				const tinygltf::BufferView& tangentBufferView = model.bufferViews[tangentAccessor.bufferView];
-				tinygltf::Buffer& tangentBuffer = model.buffers[tangentBufferView.buffer];
-				float* tangents = reinterpret_cast<float*>(&tangentBuffer.data[tangentBufferView.byteOffset + tangentAccessor.byteOffset]);
+				else {
+					cout << "Warning: NORMAL attribute is missing. Filling with default values." << endl;
+				}
 
-				int uvAccessorIndex = primitive.attributes["TEXCOORD_0"];
-				const tinygltf::Accessor& uvAccessor = model.accessors[uvAccessorIndex];
-				const tinygltf::BufferView& uvBufferView = model.bufferViews[uvAccessor.bufferView];
-				tinygltf::Buffer& uvBuffer = model.buffers[uvBufferView.buffer];
-				float* uvs = reinterpret_cast<float*>(&uvBuffer.data[uvBufferView.byteOffset + uvAccessor.byteOffset]);
+				float* tangents = nullptr;
+				if (primitive.attributes.contains("TANGENT")) {
+					hasTangent = true;
+					int tangentAccessorIndex = primitive.attributes["TANGENT"];
+					const tinygltf::Accessor& tangentAccessor = model.accessors[tangentAccessorIndex];
+					const tinygltf::BufferView& tangentBufferView = model.bufferViews[tangentAccessor.bufferView];
+					tinygltf::Buffer& tangentBuffer = model.buffers[tangentBufferView.buffer];
+					tangents = reinterpret_cast<float*>(&tangentBuffer.data[tangentBufferView.byteOffset + tangentAccessor.byteOffset]);
+				}
+				else {
+					cout << "Warning: TANGENT attribute is missing. Filling with default values." << endl;
+				}
+
+				float* uvs = nullptr;
+				if (primitive.attributes.contains("TEXCOORD_0")) {
+					hasUV = true;
+					int uvAccessorIndex = primitive.attributes["TEXCOORD_0"];
+					const tinygltf::Accessor& uvAccessor = model.accessors[uvAccessorIndex];
+					const tinygltf::BufferView& uvBufferView = model.bufferViews[uvAccessor.bufferView];
+					tinygltf::Buffer& uvBuffer = model.buffers[uvBufferView.buffer];
+					uvs = reinterpret_cast<float*>(&uvBuffer.data[uvBufferView.byteOffset + uvAccessor.byteOffset]);
+				}
+				else {
+					cout << "Warning: TEXCOORD_0 attribute is missing. Filling with default values." << endl;
+				}
 
 				for (int i = 0; i < posAccessor.count; i++) {
+					Vertex vertex = {};
+					vertex.position = vec4(positions[i * 3], positions[i * 3 + 1], positions[i * 3 + 2], 1.0f);
+					if (hasNormal) {
+						vertex.normal = vec4(normals[i * 3], normals[i * 3 + 1], normals[i * 3 + 2], 1.0f);
+					}
+					else {
+						vertex.normal = vec4(0.0f, 0.0f, 0.0f, 1.0f);
+					}
+					if (hasTangent) {
+						vertex.tangent = vec4(tangents[i * 4], tangents[i * 4 + 1], tangents[i * 4 + 2], tangents[i * 4 + 3]);
+					}
+					else {
+						vertex.tangent = vec4(0.0f, 0.0f, 0.0f, 1.0f);
+					}
+					if (hasUV) {
+						vertex.uv = vec2(uvs[i * 2], uvs[i * 2 + 1]);
+					}
+					else {
+						vertex.uv = vec2(0.0f, 0.0f);
+					}
 					vertices_.push_back(
-						{
-							(vec4(positions[i * 3], positions[i * 3 + 1], positions[i * 3 + 2], 1.0f)),
-							(vec4(normals[i * 3], normals[i * 3 + 1], normals[i * 3 + 2], 1.0f)),
-							(vec4(tangents[i * 4], tangents[i * 4 + 1], tangents[i * 4 + 2], tangents[i * 4 + 3])),
-							(vec2(uvs[i * 2], uvs[i * 2 + 1]))
-						}
+						vertex
 					);
 				}
 
@@ -261,12 +291,17 @@ namespace sqrp
 				for (int i = 0; i < indicesAccessor.count; i++) {
 					indices_.push_back(index[i]);
 				}
-				vertexRanges_.push_back({ vertexOffset, static_cast<uint32_t>(vertices_.size()) });
+				vertexRanges_[std::make_pair(meshIndex, primitiveIndex)] = { vertexOffset, static_cast<uint32_t>(vertices_.size() - vertexOffset) };
+				indexRanges_[std::make_pair(meshIndex, primitiveIndex)] = { indexOffset, static_cast<uint32_t>(indices_.size() - indexOffset) };
+				materialIndices_[std::make_pair(meshIndex, primitiveIndex)] = primitive.material;
+				/*vertexRanges_.push_back({ vertexOffset, static_cast<uint32_t>(vertices_.size()) });
 				indexRanges_.push_back({ indexOffset, static_cast<uint32_t>(indices_.size()) });
-				materialIndices_.push_back(primitive.material);
+				materialIndices_.push_back(primitive.material);*/
 				vertexOffset = static_cast<uint32_t>(vertices_.size());
 				indexOffset = static_cast<uint32_t>(indices_.size());
+				primitiveIndex++;
 			}
+			meshIndex++;
 		}
 
 		for (const auto& node : model.nodes) {
@@ -352,19 +387,19 @@ namespace sqrp
 		return primitiveNumPerMesh_[meshIndex];
 	}
 
-	GLTFMesh::MeshRange GLTFMesh::GetVertexRange(int primitiveIndex) const
+	GLTFMesh::MeshRange GLTFMesh::GetVertexRange(int meshIndex, int primitiveIndex) const
 	{
-		return vertexRanges_[primitiveIndex];
+		return vertexRanges_.at(std::make_pair(meshIndex, primitiveIndex));
 	}
 
-	GLTFMesh::MeshRange GLTFMesh::GetIndexRange(int primitiveIndex) const
+	GLTFMesh::MeshRange GLTFMesh::GetIndexRange(int meshIndex, int primitiveIndex) const
 	{
-		return indexRanges_[primitiveIndex];
+		return indexRanges_.at(std::make_pair(meshIndex, primitiveIndex));
 	}
 
-	int GLTFMesh::GetMaterialIndex(int primitiveIndex) const
+	int GLTFMesh::GetMaterialIndex(int meshIndex, int primitiveIndex) const
 	{
-		return materialIndices_[primitiveIndex];
+		return materialIndices_.at(std::make_pair(meshIndex, primitiveIndex));
 	}
 
 	const std::vector<GLTFMesh::SubMeshInfo>& GLTFMesh::GetSubMeshInfos() const
@@ -372,8 +407,8 @@ namespace sqrp
 		return subMeshInfos_;
 	}
 
-	int GLTFMesh::GetNumIndices(int primitiveIndex) const
+	int GLTFMesh::GetNumIndices(int meshIndex, int primitiveIndex) const
 	{
-		return indexRanges_[primitiveIndex].count;
+		return indexRanges_.at(std::make_pair(meshIndex, primitiveIndex)).count;
 	}
 }

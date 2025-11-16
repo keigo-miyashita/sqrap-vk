@@ -78,9 +78,10 @@ namespace sqrp
 		int meshNum_ = 0;
 		std::vector<int> primitiveNumPerMesh_;
 		// Mesh data is saved per primitive of glTF mesh (= per material)
-		std::vector<MeshRange> vertexRanges_;
-		std::vector<MeshRange> indexRanges_;
-		std::vector<int> materialIndices_;
+		// key : (meshIndex, primitiveIndex)
+		std::map<std::pair<int, int>, MeshRange> vertexRanges_;
+		std::map<std::pair<int, int>, MeshRange> indexRanges_;
+		std::map<std::pair<int, int>, int> materialIndices_;
 
 		// SubMeshInfo per node (except for nodes without mesh)
 		std::vector<SubMeshInfo> subMeshInfos_;
@@ -94,11 +95,11 @@ namespace sqrp
 
 		int GetMeshNum() const;
 		int GetPrimitiveNumPerMesh(int meshIndex) const;
-		MeshRange GetVertexRange(int primitiveIndex) const;
-		MeshRange GetIndexRange(int primitiveIndex) const;
-		int GetMaterialIndex(int primitiveIndex) const;
+		MeshRange GetVertexRange(int meshIndex, int primitiveIndex) const;
+		MeshRange GetIndexRange(int meshIndex, int primitiveIndex) const;
+		int GetMaterialIndex(int meshIndex, int primitiveIndex) const;
 		const std::vector<SubMeshInfo>& GetSubMeshInfos() const;
-		int GetNumIndices(int primitiveIndex) const;
+		int GetNumIndices(int meshIndex, int primitiveIndex) const;
 
 	};
 }
