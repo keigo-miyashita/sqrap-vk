@@ -389,17 +389,26 @@ namespace sqrp
 
 	GLTFMesh::MeshRange GLTFMesh::GetVertexRange(int meshIndex, int primitiveIndex) const
 	{
-		return vertexRanges_.at(std::make_pair(meshIndex, primitiveIndex));
+		auto it = vertexRanges_.find(std::make_pair(meshIndex, primitiveIndex));
+		if (it != vertexRanges_.end()) {
+			return it->second;
+		}
 	}
 
 	GLTFMesh::MeshRange GLTFMesh::GetIndexRange(int meshIndex, int primitiveIndex) const
 	{
-		return indexRanges_.at(std::make_pair(meshIndex, primitiveIndex));
+		auto it = indexRanges_.find(std::make_pair(meshIndex, primitiveIndex));
+		if (it != indexRanges_.end()) {
+			return it->second;
+		}
 	}
 
 	int GLTFMesh::GetMaterialIndex(int meshIndex, int primitiveIndex) const
 	{
-		return materialIndices_.at(std::make_pair(meshIndex, primitiveIndex));
+		auto it = materialIndices_.find(std::make_pair(meshIndex, primitiveIndex));
+		if (it != materialIndices_.end()) {
+			return it->second;
+		}
 	}
 
 	const std::vector<GLTFMesh::SubMeshInfo>& GLTFMesh::GetSubMeshInfos() const
@@ -409,6 +418,9 @@ namespace sqrp
 
 	int GLTFMesh::GetNumIndices(int meshIndex, int primitiveIndex) const
 	{
-		return indexRanges_.at(std::make_pair(meshIndex, primitiveIndex)).count;
+		auto it = indexRanges_.find(std::make_pair(meshIndex, primitiveIndex));
+		if (it != indexRanges_.end()) {
+			return it->second.count;
+		}
 	}
 }

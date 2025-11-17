@@ -50,8 +50,13 @@ namespace sqrp
 		initInfo.PhysicalDevice = pDevice_->GetPhysicalDevice();
 		initInfo.Device = pDevice_->GetDevice();
 		const auto& queueContext = pDevice_->GetQueueContexts();
-		initInfo.QueueFamily = queueContext.at(QueueContextType::General).queueFamilyIndex;
-		initInfo.Queue = queueContext.at(QueueContextType::General).queue;
+		// NOTE : For simplicity, only General queue is used here
+		auto queueContextItr = queueContext.find(QueueContextType::General);
+		if (queueContextItr == queueContext.end()) {
+			throw std::runtime_error("Invalid QueueContext");
+		}
+		initInfo.QueueFamily = queueContextItr->second.queueFamilyIndex;
+		initInfo.Queue = queueContextItr->second.queue;
 		initInfo.PipelineCache = nullptr;
 		initInfo.DescriptorPool = imguiDescPool_.get();
 		initInfo.MinImageCount = minImageCount;

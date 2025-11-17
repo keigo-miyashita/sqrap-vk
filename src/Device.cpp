@@ -432,7 +432,11 @@ namespace sqrp
 		FenceHandle pFence
 	) const
 	{
-		vk::Queue queue = queueContexts_.at(type).queue;
+		auto queueContextItr = queueContexts_.find(type);
+		if (queueContextItr == queueContexts_.end()) {
+			throw std::runtime_error("Invalid QueueContextType for Submit");
+		}
+		vk::Queue queue = queueContextItr->second.queue;
 		auto commandBuffer = pCommandBuffer->GetCommandBuffer();
 
 		vk::SubmitInfo submitInfo{};
@@ -461,7 +465,11 @@ namespace sqrp
 		FenceHandle pFence
 	) const
 	{
-		vk::Queue queue = queueContexts_.at(type).queue;
+		auto queueContextItr = queueContexts_.find(type);
+		if (queueContextItr == queueContexts_.end()) {
+			throw std::runtime_error("Invalid QueueContext for Submit");
+		}
+		vk::Queue queue = queueContextItr->second.queue;
 		auto commandBuffer = pCommandBuffer->GetCommandBuffer();
 
 		vk::SubmitInfo submitInfo{};
@@ -494,7 +502,11 @@ namespace sqrp
 
 	void Device::WaitIdle(QueueContextType type) const
 	{
-		queueContexts_.at(type).queue.waitIdle();
+		auto queueContextItr = queueContexts_.find(type);
+		if (queueContextItr == queueContexts_.end()) {
+			throw std::runtime_error("Invalid QueueContext for WaitIdle");
+		}
+		queueContextItr->second.queue.waitIdle();
 	}
 
 	void Device::OneTimeSubmit(std::function<void(CommandBufferHandle pCommandBuffer)>&& command) const
@@ -566,7 +578,11 @@ namespace sqrp
 
 	vk::Queue Device::GetQueue(QueueContextType type) const
 	{
-		return queueContexts_.at(type).queue;
+		auto queueContextItr = queueContexts_.find(type);
+		if (queueContextItr == queueContexts_.end()) {
+			throw std::runtime_error("Invalid QueueContext for GetQueue");
+		}
+		return queueContextItr->second.queue;
 	}
 
 	/*uint32_t Device::GetGraphicsQueueFamilyIndex() const
